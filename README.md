@@ -14,7 +14,7 @@ The plan covers Mumbai, Delhi, Kolkata, Chennai, and Bangalore, with auto ricksh
 
 ## Website development
 
-The landing page uses React, TypeScript, and Vite. It includes original Mumbai hero art, five city previews, a vehicle and character section, a keyboard/touch controls guide, and responsive navigation. City selection opens a concept preview; it does not start a playable game yet. No credentials or backend are required.
+The landing page uses React, TypeScript, and Vite. It is a single-screen hero with original Mumbai artwork, game branding, and one main button opening five city previews. City selection opens a concept preview; it does not start a playable game yet. No credentials or backend are required.
 
 Use Node.js 22 or newer:
 
@@ -30,7 +30,7 @@ npm run build
 npm run preview
 ```
 
-The build runs TypeScript checks and outputs the static site to `dist/`. Fonts and images are served locally. The two WebP images together are approximately 690 KB. The controls guide describes planned gameplay controls.
+The build runs TypeScript checks and outputs the static site to `dist/`. Fonts and images are served locally. The two WebP images together are approximately 690 KB. The hero fills the viewport on desktop and mobile. City preview artwork preserves its original proportions through SVG viewboxes.
 
 ## Deploy to Vercel
 
@@ -43,11 +43,11 @@ Future pushes to the connected production branch can deploy automatically. This 
 
 ## Landing page validation
 
-The production build and TypeScript checks pass. Chromium checks cover desktop and mobile layouts, city preview selection, controls dialog, Escape dismissal, mobile navigation, image loading, and horizontal overflow. The first playable Mumbai/auto slice will add Three.js and React Three Fiber after this landing-page milestone.
+The production build and TypeScript checks pass. Chromium checks cover six desktop/mobile viewport sizes, single-screen height without page overflow, all five city selections, proportional preview rendering, and Escape/close dismissal. The first playable Mumbai/auto slice will add Three.js and React Three Fiber after this landing-page milestone.
 
 ## Website artwork
 
-`public/images/landing-hero.webp` is original generated concept art based on the approved blocky city/character storyboard. `public/images/world-board.webp` is the approved world storyboard, displayed through CSS panel windows for the city and cast previews. Both were encoded as WebP for delivery. The hero was generated on 24 October 2026; the images are promotional concept art, not screenshots of working gameplay. Font packages include their upstream licenses in `node_modules/@fontsource/`.
+`public/images/landing-hero.webp` is original generated concept art based on the approved blocky city/character storyboard. `public/images/world-board.webp` is the approved world storyboard, displayed through proportional SVG panel windows for the city previews. Both were encoded as WebP for delivery. The hero was generated on 24 October 2026; the images are promotional concept art, not screenshots of working gameplay. Font packages include their upstream licenses in `node_modules/@fontsource/`.
 
 ## Document tools
 
