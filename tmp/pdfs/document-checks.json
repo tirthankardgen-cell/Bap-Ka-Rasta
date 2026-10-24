@@ -1,0 +1,99 @@
+{
+  "pages": 26,
+  "words": 9885,
+  "pdf_bytes": 153720,
+  "references": 26,
+  "links": 70,
+  "required_content": "present",
+  "empty_pages": 0,
+  "headings": [
+    {
+      "heading": "1 Project decision",
+      "page": 1
+    },
+    {
+      "heading": "2 Research and technology choice",
+      "page": 3
+    },
+    {
+      "heading": "3 Launch scope",
+      "page": 4
+    },
+    {
+      "heading": "4 Player journey and screen behavior",
+      "page": 5
+    },
+    {
+      "heading": "5 Name and visual identity",
+      "page": 6
+    },
+    {
+      "heading": "6 Driving rules and replay value",
+      "page": 7
+    },
+    {
+      "heading": "7 City circuits and Indian street references",
+      "page": 8
+    },
+    {
+      "heading": "8 Initial vehicle roster",
+      "page": 9
+    },
+    {
+      "heading": "9 Controls and accessibility",
+      "page": 10
+    },
+    {
+      "heading": "10 Application architecture",
+      "page": 12
+    },
+    {
+      "heading": "11 Data contracts and screen state",
+      "page": 13
+    },
+    {
+      "heading": "12 Simulation loop and arcade controller",
+      "page": 15
+    },
+    {
+      "heading": "13 Road system traffic and world streaming",
+      "page": 16
+    },
+    {
+      "heading": "14 Rendering camera audio and cleanup",
+      "page": 17
+    },
+    {
+      "heading": "15 Asset production and optimization",
+      "page": 18
+    },
+    {
+      "heading": "16 Performance budgets and measurement",
+      "page": 19
+    },
+    {
+      "heading": "17 Storage privacy and resilience",
+      "page": 20
+    },
+    {
+      "heading": "18 Vercel deployment and operating cost",
+      "page": 20
+    },
+    {
+      "heading": "19 Implementation milestones and effort",
+      "page": 22
+    },
+    {
+      "heading": "20 Test plan and launch acceptance",
+      "page": 23
+    },
+    {
+      "heading": "21 Main risks and design responses",
+      "page": 24
+    },
+    {
+      "heading": "22 Primary research sources",
+      "page": 25
+    }
+  ]
+}

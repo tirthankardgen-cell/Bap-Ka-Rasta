@@ -1,0 +1,473 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bap ka Road Game Design and Architecture</title><style>
+    :root{color-scheme:light;--ink:#20262d;--muted:#52626b;--line:#d9d9d9;--accent:#146572}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#edf1f2;color:var(--ink);font:16px/1.68 'Segoe UI',system-ui,sans-serif}
+    .layout{display:grid;grid-template-columns:260px minmax(0,950px);gap:28px;max-width:1260px;margin:30px auto;padding:0 24px}
+    nav{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;padding:8px 0}nav a{display:block;color:var(--muted);text-decoration:none;font-size:13px;padding:5px 10px;border-radius:5px}nav a:hover,nav a:focus{background:#fff;color:var(--accent)}
+    main{background:white;padding:52px 56px;border:1px solid #e0e6e8;border-radius:12px;min-width:0}h1{font-size:36px;line-height:1.2;margin:0 0 18px;color:#000}h2{font-size:25px;line-height:1.28;color:#000;margin:44px 0 16px;scroll-margin-top:24px}h3{font-size:19px;color:#000;margin:26px 0 10px}p{margin:0 0 17px}li{margin:8px 0}a{color:var(--accent);overflow-wrap:anywhere}
+    .table-wrap{overflow:auto;margin:22px 0}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}td,th{border:1px solid var(--line);text-align:left;vertical-align:middle;padding:11px 12px}th{background:#eaf1f5;color:#000}tbody tr:nth-child(even){background:#fafbfc}
+    code{font:0.87em Consolas,monospace;background:#f5f8fa;padding:2px 4px;border-radius:3px}pre{background:#f5f8fa;border:1px solid var(--line);padding:18px;overflow:auto;line-height:1.55}pre code{padding:0;background:none;font-size:13px}
+    .flow{display:flex;align-items:center;gap:10px;margin:25px 0 10px}.flow span,.architecture div{border:1px solid var(--line);background:#f5f8fa;border-radius:7px;padding:16px;text-align:center;font-weight:600}.flow span{flex:1;font-size:14px}.flow b{color:var(--accent)}.caption{font-size:13px;color:var(--muted)}.architecture{display:grid;gap:10px;margin:24px 0}.architecture div:not(:last-child)::after{content:'↓';display:block;color:var(--accent);font-size:22px;margin-bottom:-10px}
+    @media(max-width:900px){.layout{display:block;margin:12px auto;padding:0 12px}nav{position:static;max-height:250px;margin-bottom:20px}main{padding:28px 22px}h1{font-size:29px}.flow{flex-wrap:wrap}.flow span{min-width:100px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{body{background:white;font-size:11pt}.layout{display:block;margin:0;padding:0}nav{display:none}main{border:0;padding:0}h2,h3{break-after:avoid}tr,pre,.flow,.architecture{break-inside:avoid}a{color:inherit;text-decoration:none}}
+    </style></head><body><div class="layout"><nav aria-label="Document contents"><a href="#section-2">1 Project decision</a><a href="#section-8">2 Research and technology choice</a><a href="#section-21">3 Launch scope</a><a href="#section-26">4 Player journey and screen behavior</a><a href="#section-43">5 Name and visual identity</a><a href="#section-52">6 Driving rules and replay value</a><a href="#section-67">7 City circuits and Indian street references</a><a href="#section-88">8 Initial vehicle roster</a><a href="#section-96">9 Controls and accessibility</a><a href="#section-103">10 Application architecture</a><a href="#section-116">11 Data contracts and screen state</a><a href="#section-128">12 Simulation loop and arcade controller</a><a href="#section-140">13 Road system traffic and world streaming</a><a href="#section-154">14 Rendering camera audio and cleanup</a><a href="#section-170">15 Asset production and optimization</a><a href="#section-181">16 Performance budgets and measurement</a><a href="#section-196">17 Storage privacy and resilience</a><a href="#section-202">18 Vercel deployment and operating cost</a><a href="#section-217">19 Implementation milestones and effort</a><a href="#section-231">20 Test plan and launch acceptance</a><a href="#section-242">21 Main risks and design responses</a><a href="#section-245">22 Primary research sources</a></nav><main><h1 id="section-0">Bap ka Road Game Design and Architecture</h1>
+<p>Product specification and implementation plan Version 1 revision 1 | 24 October 2026</p>
+<h2 id="section-2">1 Project decision</h2>
+<p>Bap ka Road will be a lightweight, single-player, 3D arcade driving website with an Indian street setting. A visitor opens the website, presses <strong>Mera Baap Ka Road</strong>, chooses a city, chooses a vehicle, and starts driving. Every launch city and vehicle is available immediately. The game runs in the browser and requires no account, download, payment, or installation.</p>
+<p>The recommended implementation is <strong>React, TypeScript, Vite, and Three.js through React Three Fiber</strong>, hosted as a static application on <strong>Vercel</strong>. Driving uses a small arcade simulation rather than a full vehicle physics engine. Reusable road pieces and scenery create five recognisable city circuits while keeping the active download and rendering workload small.</p>
+<p>This document defines the product, player experience, city and vehicle content, software architecture, asset pipeline, performance budgets, deployment approach, and implementation milestones. It is the specification for building the game from an empty project. Performance numbers and development effort are proposed targets; they become verified results when a playable build is measured.</p>
+<div class="table-wrap"><table><thead><tr><th>Item</th><th>Version 1 decision</th></tr></thead><tbody>
+<tr><td>Working game name</td><td>Bap ka Road</td></tr>
+<tr><td>Main landing button</td><td>Mera Baap Ka Road</td></tr>
+<tr><td>Launch cities</td><td>Mumbai, Delhi, Kolkata, Chennai, Bangalore</td></tr>
+<tr><td>Launch vehicles</td><td>Auto rickshaw, Thar, Fortuner, scooty, KTM</td></tr>
+<tr><td>Main mode</td><td>Relaxed free driving around a city circuit</td></tr>
+<tr><td>Platforms</td><td>Desktop and mobile browsers with WebGL 2</td></tr>
+<tr><td>Hosting</td><td>Vercel static deployment</td></tr>
+<tr><td>Accounts and backend</td><td>No login, database, or game server in Version 1</td></tr>
+<tr><td>Art direction</td><td>Original, stylised, low-poly Indian streets</td></tr>
+</tbody></table></div>
+<p>Build a Mumbai and auto rickshaw prototype first to establish the controls, road system, and mobile performance. Then extend the same engine to all five vehicles and cities before the public Version 1 launch. The prototype is a development milestone, not a reduction of the requested launch roster.</p>
+<h2 id="section-8">2 Research and technology choice</h2>
+<h3 id="section-9">What the primary sources establish</h3>
+<p>Vite produces a static build, normally in <code>dist</code>, and Vercel supports Vite projects directly. This fits a browser game whose simulation runs on the player&#x27;s device. Vercel serves the website and asset files; it does not need to run a continuous driving simulation. <code>vite preview</code> is for local build inspection rather than the production server. [S01, S02]</p>
+<p>The current Three.js WebGL renderer requires WebGL 2; WebGL 1 support ended in r163. The game therefore needs a capability check and a useful unsupported-device screen. WebGPU can be evaluated later, but it is not required for this launch. [S03]</p>
+<p>React Three Fiber&#x27;s guidance recommends mutating objects inside <code>useFrame</code> for fast updates and avoiding React state updates in frame loops. Its performance guidance and Three.js <code>InstancedMesh</code> documentation support sharing geometry and materials and instancing repeated objects. These are directly relevant to road markings, trees, lamps, shops, and traffic. [S04, S05, S06]</p>
+<p><code>GLTFLoader</code> supports compressed geometry and texture extensions, including Meshopt and KTX2 when the matching decoder or loader is configured. glTF Transform provides an asset optimization pipeline. These capabilities help keep 3D downloads manageable, but actual savings must be measured on the models produced for this game. [S07, S22]</p>
+<p>Browser input, audio, and lifecycle constraints matter as much as graphics. Pointer Events support touch and mouse input, audio should be unlocked by a user gesture, and background pages may suspend animation callbacks. Local storage can be blocked or unavailable, so saving settings must be optional. [S09, S10, S11, S12]</p>
+<h3 id="section-15">Engine options</h3>
+<div class="table-wrap"><table><thead><tr><th>Option</th><th>Fit for this project</th><th>Main tradeoff</th><th>Decision</th></tr></thead><tbody>
+<tr><td>React with Three.js and React Three Fiber</td><td>Good separation between website screens and a custom 3D game loop</td><td>Requires explicit ownership of physics, traffic, and assets</td><td>Recommended</td></tr>
+<tr><td>Direct Three.js with a small UI layer</td><td>Strong control over a compact rendering runtime</td><td>More manual coordination of menus, settings, and loading</td><td>Good alternative</td></tr>
+<tr><td>Babylon.js</td><td>Complete browser 3D engine with many built-in capabilities</td><td>Broader engine surface than this first game needs</td><td>Keep as an alternative</td></tr>
+<tr><td>Godot web export</td><td>Useful editor and established game workflow</td><td>WebAssembly export and browser constraints add deployment considerations</td><td>Use if an editor-led workflow becomes more important</td></tr>
+</tbody></table></div>
+<p>Babylon.js is a capable WebGL and WebGPU engine. Godot supports web export and offers single-threaded export; its threaded web path has additional cross-origin isolation requirements. Neither alternative is being rejected on a fabricated download-size or frame-rate benchmark. The recommendation follows the requested website flow, small custom driving model, and straightforward static hosting. [S15, S16]</p>
+<h3 id="section-18">Proposed development stack</h3>
+<div class="table-wrap"><table><thead><tr><th>Layer</th><th>Tool</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>Website UI</td><td>React and TypeScript</td><td>Landing, selectors, settings, loading, pause, and results</td></tr>
+<tr><td>Build system</td><td>Vite</td><td>Development server and static production build</td></tr>
+<tr><td>3D rendering</td><td>Three.js with React Three Fiber</td><td>Scene, camera, models, lighting, and frame callback</td></tr>
+<tr><td>Selected 3D helpers</td><td>Drei</td><td>Use only helpers that justify their cost</td></tr>
+<tr><td>UI state</td><td>Zustand</td><td>Selection and low-frequency game screen state</td></tr>
+<tr><td>Driving and traffic</td><td>Custom TypeScript modules</td><td>Fixed-step arcade movement and simple collisions</td></tr>
+<tr><td>Sound</td><td>Web Audio API</td><td>Engine loops, horn, tyre sounds, and ambient layers</td></tr>
+<tr><td>Asset preparation</td><td>Blender and glTF Transform</td><td>Original models, GLB export, optimization, and validation</td></tr>
+<tr><td>Validation</td><td>Vitest and Playwright</td><td>Simulation tests and browser flow checks</td></tr>
+<tr><td>Hosting</td><td>Vercel</td><td>HTTPS delivery and preview deployments</td></tr>
+</tbody></table></div>
+<p>Pin compatible versions and commit the lockfile when the application is scaffolded. React and React Three Fiber major versions must be paired according to their package requirements. This document does not install packages or claim that a compatibility build has already passed.</p>
+<h2 id="section-21">3 Launch scope</h2>
+<p>Version 1 includes all five cities, all five vehicles, a chase camera, keyboard and touch controls, light NPC traffic, simple vehicle and roadside collisions, a horn, a reset action, sound settings, quality settings, local best distance, and a results screen. It also includes loading progress, asset retry, pause on loss of focus, and an unsupported-graphics screen.</p>
+<p>The main experience is free driving. The player can cruise, weave through light traffic, complete laps, and end a session whenever they want. Collisions slow the vehicle and reset handling without ending the game. There is no required mission before driving becomes available.</p>
+<p>Version 1 uses a compact, continuous circuit for each city. The routes are fictional arrangements inspired by recognisable places. The project does not need a street-map provider, live traffic API, real city reconstruction, or streaming satellite imagery.</p>
+<p>The following features belong after the first release: a timed challenge, online leaderboards, multiplayer, police chases, passenger jobs, vehicle upgrades, full interiors, realistic suspension, dynamic weather, and day-night cycling. They would change the download, testing, or server requirements substantially. Basic daylight, one camera, and simple handling should establish a stable baseline first.</p>
+<h2 id="section-26">4 Player journey and screen behavior</h2>
+<div class="flow"><span>Landing</span><b>→</b><span>Choose city</span><b>→</b><span>Choose vehicle</span><b>→</b><span>Load and drive</span></div><p class="caption">Pause, resume, reset, replay, or return to selection. Failed downloads offer retry.</p>
+<h3 id="section-28">Landing</h3>
+<p>Show the game name, a small original street illustration, one clear primary button, and a brief explanation: <strong>Apna sheher. Apni sawaari. Bas chalao.</strong> Include a compact sound toggle and a How to Play link. The first screen uses HTML, CSS, and a static illustration; it should not download or continuously render all five 3D worlds.</p>
+<p>The primary action is <strong>Mera Baap Ka Road</strong>. It opens the location screen immediately. A non-blocking WebGL 2 check can run after that gesture. If graphics are unavailable, retain the normal page and show a browser-support message with a retry action.</p>
+<h3 id="section-31">Choose city</h3>
+<p>Present five cards: Mumbai, Delhi, Kolkata, Chennai, and Bangalore. Each shows an original illustration, a short mood description, and the route name. Bangalore can carry the secondary label Bengaluru. Mumbai is preselected for convenience, but the player must be able to choose any city in one tap.</p>
+<p>Selecting a city highlights the card. <strong>Yahin Chalao</strong> proceeds to vehicle selection. Back returns to the landing page without discarding settings. No city is locked behind play time or sign-up.</p>
+<h3 id="section-34">Choose vehicle</h3>
+<p>Present auto rickshaw, Thar, Fortuner, scooty, and KTM cards. Each has a lightweight vehicle image, a friendly description, and simple speed and handling indicators. Start with the auto rickshaw selected. Avoid a WebGL preview for every card; a static image is enough for the first release.</p>
+<p>The final selection summary shows the city and vehicle together. <strong>Chal Chala</strong> begins the game loading stage. The sound preference remains visible. If the player enables sound, resume the audio context from this button gesture before waiting for network downloads.</p>
+<h3 id="section-37">Loading and driving</h3>
+<p>Load shared game code, shared scenery, the selected city pack, and the selected player vehicle. Other city packs and detailed player models stay unloaded. Show real staged progress such as <strong>Road taiyaar ho raha hai</strong>, <strong>Sawaari aa rahi hai</strong>, and <strong>Bas nikal rahe hain</strong>. When a loader cannot provide a byte total, show a stage label rather than a fake percentage.</p>
+<p>After the scene, colliders, and spawn point are ready, show the controls once and begin driving. The HUD displays speed, distance, lap count, pause, horn, and reset. Keep it small enough that the road remains visible.</p>
+<h3 id="section-40">Pause and results</h3>
+<p>Pause offers Resume, Reset Vehicle, Sound, Graphics, End Drive, Change Vehicle, and Change City. Changing a selection ends the current run and returns to the appropriate selector. A confirmation is unnecessary for an unranked free-drive session with no unlocks to lose.</p>
+<p>Results show distance, completed laps, top speed, and the local best distance for that city and vehicle. <strong>Phir Se</strong> starts a fresh run using the loaded assets. <strong>Sawaari Badlo</strong> returns to vehicle selection. <strong>Sheher Badlo</strong> returns to city selection. A Share action can share the selection URL or copy it if native sharing is unavailable. [S26]</p>
+<h2 id="section-43">5 Name and visual identity</h2>
+<p>Use <strong>Bap ka Road</strong> as the working display name and keep its spelling consistent across the header, browser title, social preview, and results screen. The CTA can use <strong>Mera Baap Ka Road</strong> as requested. These are branding choices; domain availability and trademark clearance have not been established by this technical research.</p>
+<p>The personality should come from familiar street details and original Hinglish writing: an auto&#x27;s rear message, chai stalls, petrol pumps, painted shop signs, speed breakers, bus stops, and a slightly dramatic horn. The graphics should look like a designed arcade world rather than a collection of borrowed film clips or meme images.</p>
+<div class="table-wrap"><table><thead><tr><th>Element</th><th>Direction</th></tr></thead><tbody>
+<tr><td>Main background</td><td>Warm cream <code>#FFF4DF</code></td></tr>
+<tr><td>Primary action</td><td>Orange <code>#F86A2A</code> with readable dark or white text</td></tr>
+<tr><td>Road and primary text</td><td>Charcoal <code>#20262D</code></td></tr>
+<tr><td>Secondary accent</td><td>Teal <code>#167D8D</code></td></tr>
+<tr><td>Accent for signs</td><td>Yellow <code>#F7C948</code></td></tr>
+<tr><td>UI typography</td><td>A readable, self-hosted sans-serif with a system fallback</td></tr>
+<tr><td>3D materials</td><td>Flat colours, a small texture atlas, and simple rough surfaces</td></tr>
+</tbody></table></div>
+<p>Check actual colour combinations for contrast before release. Orange is a brand colour, not an excuse for unreadable white text. Local script can appear on original city signage if the chosen font supports it; the core controls remain understandable in Roman Hinglish and English.</p>
+<p>Suggested original interface copy includes <strong>Sawaari Chun</strong>, <strong>Sheher Chun</strong>, <strong>Arre bhai, road idhar hai</strong>, <strong>Phir Se</strong>, and <strong>Horn se horsepower nahi badhta</strong>. Horn use does not earn points. Optional jokes should not obscure important controls or repeat so often that they distract from driving.</p>
+<h3 id="section-49">Street humour and pop culture</h3>
+<p>Use the attitude of Indian road banter through original writing and props. An auto can carry <strong>Meter down, tension down</strong>; a garage can read <strong>Papa Ki Workshop</strong>; a tea stall can promise <strong>Ek chai, phir drive</strong>. A short reset message such as <strong>Scene ho gaya. Phir se chalao</strong> suits a minor collision. These are proposed game copy, not attributed film dialogue or a claim that a phrase is unused elsewhere.</p>
+<p>City flavour comes from locally recognisable food stalls, scripts, vehicles, and architecture. Keep jokes occasional and use several variants so repeated laps stay pleasant. Film scenes, celebrity faces, recognisable song samples, and copied meme audio are unnecessary for the concept; any later inclusion needs its own asset permission review. The first release can express the requested pop culture tone with entirely original art and sound.</p>
+<h2 id="section-52">6 Driving rules and replay value</h2>
+<h3 id="section-53">Main movement model</h3>
+<p>Use an arcade controller with forward speed, braking, steering, drag, and a simple road contact model. The camera stays behind the selected vehicle. The vehicle accelerates smoothly, turns predictably, and slows on shoulders. Scooty and KTM remain upright automatically; their bodies lean visually into turns.</p>
+<p>The physics world uses metres, seconds, and radians. The HUD converts metres per second to km/h. The proposed vehicle speeds are arcade tuning values, not manufacturer specifications. The vehicle should still feel controllable on a phone, with speed-sensitive steering and a gentle camera.</p>
+<p>Holding brake first decelerates. Reverse begins only after the vehicle is almost stopped and brake remains held for a short intentional delay, such as 0.4 seconds. Limit reverse to about 12 km/h. A brake press at full speed must never instantly switch the vehicle into reverse.</p>
+<h3 id="section-57">Road and collision behavior</h3>
+<p>The roads use left-hand traffic. NPC vehicles follow fixed lane paths and maintain a simple gap from the vehicle ahead. They do not need to obey a complete real-world traffic system. Version 1 keeps the playable road topology simple enough to avoid complex uncontrolled intersections.</p>
+<p>Roadside collision shapes use simple boxes or capsules. A broadphase grid finds nearby candidates, and a narrow collision check resolves only those candidates. The player slows, is pushed out of overlap, and receives a short contact cooldown so one impact does not produce repeated sounds every frame.</p>
+<p>Use swept movement checks or conservative movement substeps at higher speeds to prevent crossing a barrier between simulation ticks. Visual details such as awnings, decorative crowds, and skyline geometry do not all need collision shapes. Moving pedestrians and pedestrian-impact gameplay are outside the initial content requirement.</p>
+<h3 id="section-61">Reset and recovery</h3>
+<p><strong>R</strong> or the on-screen reset button restores the player to the last valid road checkpoint. Update that checkpoint only when the player is on a safe part of the route, moving normally, and clear of traffic. Check the target against nearby NPCs before respawning, with the starting bay as a fallback.</p>
+<p>Reset clears speed and collision impulses, resets camera smoothing, and does not add distance or lap progress. It preserves the current run statistics. A full retry starts a new run with counters at zero.</p>
+<h3 id="section-64">What makes a run worth repeating</h3>
+<p>Version 1 tracks actual distance travelled, completed laps, and top speed. Local best distance is stored separately for each city and vehicle. There is no global ranking that invites score tampering or requires an account.</p>
+<p>A later 90-second challenge can add clean-driving points, time bonuses, and near-miss events. Keeping that mode separate allows the free-drive experience to remain relaxed and easy to learn. Original route landmarks, different handling, and city-specific scenery already provide reasons to replay the first release.</p>
+<h2 id="section-67">7 City circuits and Indian street references</h2>
+<p>The city references below come from official tourism pages. They guide visual identity; the proposed road layouts, route names, traffic profiles, and distances are design decisions. The in-game circuits are compressed, fictional spaces rather than navigation tools. [S17, S18, S19, S20, S21]</p>
+<div class="table-wrap"><table><thead><tr><th>City</th><th>Proposed route</th><th>Target circuit length</th><th>Recognisable visual cues</th></tr></thead><tbody>
+<tr><td>Mumbai</td><td>Samundar Loop</td><td>2.2 km</td><td>Marine Drive-inspired sea wall, curved seafront, dense skyline</td></tr>
+<tr><td>Delhi</td><td>Dilli Boulevard</td><td>2.4 km</td><td>India Gate-inspired distant arch, broad avenue, landscaped roundabout</td></tr>
+<tr><td>Kolkata</td><td>Hooghly Hop</td><td>1.9 km</td><td>Howrah-inspired steel bridge, riverside edge, yellow taxi scenery</td></tr>
+<tr><td>Chennai</td><td>Marina Cruise</td><td>2.1 km</td><td>Marina Beach-inspired coast, palms, broad beachfront road</td></tr>
+<tr><td>Bangalore</td><td>Garden City Run</td><td>2.0 km</td><td>Tree canopy, Cubbon Park-inspired greenery, civic building silhouette</td></tr>
+</tbody></table></div>
+<h3 id="section-70">Mumbai</h3>
+<p>The official Marine Drive reference describes a curved boulevard along the Arabian Sea. Build a broad seafront curve, low promenade wall, buildings set back from the carriageway, and a skyline landmark that the player sees more than once per lap. [S17]</p>
+<p>The playable circuit alternates a coastal stretch with a compact shop street and a wider return section. Add original vada pav and chai stall signs, black-and-yellow taxi props, and a bus stop. The sea uses a flat shaded plane with a small surface animation; it does not need expensive real-time reflections.</p>
+<h3 id="section-73">Delhi</h3>
+<p>Use an India Gate-inspired arch as an exterior skyline landmark, with lawns and broad approaches informed by the official reference. The circuit stays on a fictional road outside the monument area. [S18]</p>
+<p>Wider roads make this the easiest SUV route. Add a landscaped traffic island, sandstone-coloured background buildings, an overhead metro silhouette, and original tea stall signs. The metro is background scenery in Version 1 rather than a moving rail simulation.</p>
+<h3 id="section-76">Kolkata</h3>
+<p>The official Howrah Bridge reference places the bridge across the Hooghly and describes its cantilever form. Use a simplified steel silhouette with a flat playable bridge deck and a river plane below it. [S19]</p>
+<p>The circuit moves from a riverside stretch to a narrower street with shutters, older facades, and yellow taxi traffic. Heritage tram wires or a stationary tram can be decorative references; the game need not claim that a particular tram service operates today. Keep bridge steel decorative and use a small number of deck and barrier colliders.</p>
+<h3 id="section-79">Chennai</h3>
+<p>The Marina Beach reference establishes the Bay of Bengal coast and promenade setting. Use a bright beachfront section, sandy ground beyond a barrier, palms, and open sky. [S20]</p>
+<p>The return section has low-rise shops, original Tamil and English signage, a tea or filter coffee stall, and a petrol pump. The coast should look distinct from Mumbai through its wider beach, lower skyline, and colour palette. A beach texture and a small set of props can achieve that distinction without a larger terrain download.</p>
+<h3 id="section-82">Bangalore</h3>
+<p>The official Bengaluru page identifies Cubbon Park and Vidhana Soudha among the city&#x27;s references. Use a green avenue, a small park edge, and a simplified civic building silhouette. [S21]</p>
+<p>Add glass office facades, coffee stall signs, bus stop shelters, and flowering trees. The circuit combines gentle bends with one traffic pinch point. Bangalore appears as the selector&#x27;s primary label to match the request, with Bengaluru as a secondary label if space permits.</p>
+<h3 id="section-85">What each city pack contains</h3>
+<p>Each city pack defines one circuit, one signature landmark, three or more secondary street cues, a palette, one ambient sound layer, spawn points, lap checkpoints, and prop placement rules. Shared roads, common shops, trees, lamps, and traffic models come from the common asset library.</p>
+<p>The cities must be distinguishable during driving through shape and layout, not only through a menu label or colour filter. A release review should show a screenshot from each route without the HUD and confirm that the signature features remain visible.</p>
+<h2 id="section-88">8 Initial vehicle roster</h2>
+<p>All five requested vehicles are available at launch. Use original simplified models with recognisable silhouettes. The following numbers are starting points for playtesting, not measured vehicle data or final handling promises.</p>
+<div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Player-facing character</th><th>Speed cap</th><th>Acceleration</th><th>Handling</th></tr></thead><tbody>
+<tr><td>Auto rickshaw</td><td>Everyday city chaos, small footprint</td><td>65 km/h</td><td>3.0 m/s2</td><td>Quick low-speed turns, stable at its cap</td></tr>
+<tr><td>Thar</td><td>Upright, chunky SUV</td><td>110 km/h</td><td>4.0 m/s2</td><td>Strong road presence, moderate turning</td></tr>
+<tr><td>Fortuner</td><td>Larger SUV with a smoother feel</td><td>120 km/h</td><td>3.8 m/s2</td><td>Wider turning and stronger braking</td></tr>
+<tr><td>Scooty</td><td>Light, easy city ride</td><td>60 km/h</td><td>2.7 m/s2</td><td>Easiest steering and gentle acceleration</td></tr>
+<tr><td>KTM</td><td>Fast sporty motorcycle</td><td>135 km/h</td><td>6.0 m/s2</td><td>Responsive steering with strong high-speed damping</td></tr>
+</tbody></table></div>
+<p>Maximum speed should be tuned against circuit width, camera visibility, and stopping distance. If the KTM is frustrating on touch controls, reduce its initial cap or soften steering before increasing route complexity. Every vehicle uses the same input actions and UI flow.</p>
+<div class="table-wrap"><table><thead><tr><th>Model requirement</th><th>Auto</th><th>Thar</th><th>Fortuner</th><th>Scooty</th><th>KTM</th></tr></thead><tbody>
+<tr><td>Wheel transforms</td><td>3</td><td>4</td><td>4</td><td>2</td><td>2</td></tr>
+<tr><td>Cosmetic rider</td><td>Driver silhouette</td><td>Optional driver</td><td>Optional driver</td><td>Simple rider</td><td>Simple rider</td></tr>
+<tr><td>Visual lean</td><td>Small body roll</td><td>Mild roll</td><td>Mild roll</td><td>Turn lean</td><td>Turn lean</td></tr>
+<tr><td>Main collider</td><td>Compact box</td><td>SUV box</td><td>Larger SUV box</td><td>Capsule</td><td>Capsule</td></tr>
+<tr><td>Approximate player mesh budget</td><td>4k triangles</td><td>8k triangles</td><td>8k triangles</td><td>5k triangles</td><td>6k triangles</td></tr>
+</tbody></table></div>
+<p>These mesh budgets describe the visible player model. NPC models should use much simpler silhouettes and shared materials. The active traffic roster can contain generic autos, scooters, taxis, buses, and compact cars without downloading the other four detailed player models.</p>
+<p>The vehicle names are the requested working labels. Keep the first asset set original and avoid manufacturer logos, copied showroom models, and claims of official endorsement. Before a public branded release, determine the permitted use of names and designs. A generic-label fallback can retain the same vehicle IDs and handling if needed.</p>
+<p>Each model uses a common forward axis, metres for scale, a road-contact origin, named wheel nodes, and a separate simple collider definition. Those conventions let the controller, camera, and preview pipeline handle all five vehicles consistently.</p>
+<h2 id="section-96">9 Controls and accessibility</h2>
+<div class="table-wrap"><table><thead><tr><th>Action</th><th>Keyboard</th><th>Touch</th></tr></thead><tbody>
+<tr><td>Accelerate</td><td>W or Up Arrow</td><td>Accelerator pedal or optional auto-accelerate</td></tr>
+<tr><td>Brake and then reverse</td><td>S or Down Arrow</td><td>Brake pedal</td></tr>
+<tr><td>Steer</td><td>A and D or Left and Right Arrow</td><td>Large left and right buttons</td></tr>
+<tr><td>Handbrake</td><td>Space</td><td>Secondary button if screen space permits</td></tr>
+<tr><td>Horn</td><td>H</td><td>Horn button</td></tr>
+<tr><td>Reset vehicle</td><td>R</td><td>Reset button</td></tr>
+<tr><td>Pause</td><td>Escape or P</td><td>Pause button</td></tr>
+</tbody></table></div>
+<p>Mobile defaults should favour large controls and an optional auto-accelerate setting. Auto-accelerate stops when the game pauses, brakes, loses focus, or enters a menu. Steering buttons and braking must work together with two fingers; a single shared pointer flag is insufficient.</p>
+<p>Use Pointer Events, track each active pointer, capture pointers when an action starts, and release actions on <code>pointerup</code>, <code>pointercancel</code>, and loss of capture. Apply <code>touch-action: none</code> to the game control surface while leaving menu scrolling and browser zoom usable elsewhere. Prevent arrow and Space scrolling only while gameplay is active. [S09]</p>
+<p>Landscape gives the best road visibility, but do not require rotation or fullscreen to start. Portrait uses a tighter camera and a compact HUD. Fullscreen is an optional button on supporting browsers. Safe-area padding keeps controls clear of notches and home indicators.</p>
+<p>Menu controls have visible focus styles and accessible names. Allow sound to be muted, music to be off, camera shake to be off, and automatic acceleration to be changed. Respect reduced-motion preferences by removing decorative menu motion and chase-camera shake; the required movement of the 3D driving scene remains. [S23]</p>
+<p>Do not rely on colour alone for selected vehicles, loading errors, or steering indicators. Add a visible selection mark and text. Include a short keyboard guide and a touch guide before the first run, with a way to reopen them from pause.</p>
+<h2 id="section-103">10 Application architecture</h2>
+<div class="architecture"><div>Vercel static delivery</div><div>React UI and screen state · Asset manager</div><div>Input → Fixed-step game runtime</div><div>Three.js scene and camera · Web Audio · HUD</div></div>
+<h3 id="section-105">Separation of responsibilities</h3>
+<p>React owns the landing page, selectors, loading overlay, pause screen, results, and settings. Zustand owns selected city, selected vehicle, and screen transitions. It does not publish vehicle position into React on every frame.</p>
+<p>The game runtime owns mutable simulation state: player pose, speed, traffic, collision contacts, checkpoints, and run statistics. It receives a normalized input snapshot and updates at a fixed timestep. Rendering reads the runtime state and interpolates between simulation states.</p>
+<p>The asset manager loads only the selected content, tracks progress and resource ownership, and handles cancellation. The game host creates and destroys a run, connects inputs, coordinates pause, and disposes resources when the player changes city or leaves the game.</p>
+<p>The HUD receives compact snapshots at approximately 5 Hz. That is sufficient for a speed display, distance counter, and lap count without triggering React work at 60 Hz. Audio reads speed and throttle directly, with smoothed parameter changes.</p>
+<h3 id="section-110">Network boundary</h3>
+<p>The network supplies static HTML, CSS, JavaScript, configuration, 3D models, textures, and audio. Once the active run has loaded, movement does not require a server round trip. There is no multiplayer socket, authentication request, or database read on the game loop.</p>
+<p>Version 1 does not promise offline play after closing the browser. Normal browser caching can improve repeat visits; an offline service worker would require a separate cache-update and storage strategy.</p>
+<h3 id="section-113">Proposed project structure</h3>
+<pre><code>bap-ka-road/
+  public/
+    game-assets/v1/
+      shared/
+      cities/{city-id}/
+      vehicles/{vehicle-id}/
+      audio/
+  src/
+    app/                 application shell and screen transitions
+    ui/                  menus, HUD, settings, and controls
+    game/
+      GameHost.tsx       lifecycle and React integration
+      GameCanvas.tsx     lazy-loaded 3D entry
+      core/              clock, runtime state, and event queue
+      driving/           controller and vehicle definitions
+      world/             circuit sampling and visible chunks
+      traffic/           lane following and object pool
+      collision/         spatial grid and collision resolution
+      camera/            chase camera and interpolation
+      input/             keyboard and pointer action state
+      audio/             audio context and sound graph
+      assets/            loader, cache, manifest, and cleanup
+    content/
+      cities/            five typed city configurations
+      vehicles/          five typed vehicle configurations
+    state/               UI store and preferences
+  tests/                 meaningful runtime and browser checks
+  docs/                  plan, references, and asset records
+  package.json
+  package-lock.json
+  vite.config.ts
+  vercel.json</code></pre>
+<p>This is the intended implementation structure. The present workspace contains the research document and its document-building tools; the game application is the next build milestone.</p>
+<h2 id="section-116">11 Data contracts and screen state</h2>
+<h3 id="section-117">Content configuration</h3>
+<p>City and vehicle data should be configuration-driven. A new city changes content definitions and assets without forking the controller or menu logic.</p>
+<pre><code>type CityId = &#x27;mumbai&#x27; | &#x27;delhi&#x27; | &#x27;kolkata&#x27;
+  | &#x27;chennai&#x27; | &#x27;bangalore&#x27;;
+type VehicleId = &#x27;auto&#x27; | &#x27;thar&#x27; | &#x27;fortuner&#x27;
+  | &#x27;scooty&#x27; | &#x27;ktm&#x27;;
+
+interface VehicleDefinition {
+  id: VehicleId;
+  label: string;
+  modelAssetId: AssetId;
+  thumbnailAssetId: AssetId;
+  maxSpeedMps: number;
+  accelerationMps2: number;
+  brakeMps2: number;
+  wheelbaseM: number;
+  steeringAtLowSpeedRad: number;
+  steeringAtHighSpeedRad: number;
+  collider: ColliderDefinition;
+  wheelNodes: string[];
+  engineSoundId: string;
+  leanVisuals: boolean;
+}
+
+interface CityDefinition {
+  id: CityId;
+  label: string;
+  routeName: string;
+  worldUnitsPerMetre: 1;
+  roadGraph: RoadGraph;
+  startSpawn: SpawnPoint;
+  safeCheckpoints: SpawnPoint[];
+  lapGates: OrderedGate[];
+  landmarkAssets: AssetReference[];
+  propRules: PropPlacementRule[];
+  palette: CityPalette;
+  trafficProfile: TrafficProfile;
+  ambienceSoundId: string;
+}</code></pre>
+<p>The referenced types are implementation contracts to define during scaffolding, not a standalone compilable application. <code>AssetId</code> is generated from the content manifest and resolves to a versioned same-origin file. <code>RoadGraph</code> supplies lane centreline samples, width, chunk bounds, adjacency, and ordered progress positions. Vehicle colliders are independent from visible triangles.</p>
+<p>Lap gates must be crossed in order, with forward route progress checked before incrementing a lap. A reset or a backwards crossing cannot finish a lap. The same checkpoints support recovery and browser tests.</p>
+<h3 id="section-122">Screen states</h3>
+<p>Use an explicit state machine: <code>landing</code>, <code>city-select</code>, <code>vehicle-select</code>, <code>loading</code>, <code>playing</code>, <code>paused</code>, <code>results</code>, <code>load-error</code>, and <code>unsupported</code>. Valid transitions are centralized. A loading error carries a recoverable error state and the pending selection rather than silently returning the user to the beginning.</p>
+<p>On a content change, increment a run generation token and cancel pending fetches. A late load callback from the previous selection must not attach the wrong world. If parsing cannot be cancelled, discard the stale result safely after it finishes.</p>
+<h3 id="section-125">Public selection URLs</h3>
+<p>Use <code>/?city=mumbai&amp;vehicle=auto</code> for shareable selections. The URL opens a preselected menu and still requires the final Start gesture. Accept only known city and vehicle IDs and fall back to defaults for unknown values. The URL never controls arbitrary model paths or script loading.</p>
+<p>An optional numeric seed can make traffic placement repeatable for debugging. It is not an authoritative score or an identity. The root-path URL keeps deployment simple without requiring a routing library for the initial game.</p>
+<h2 id="section-128">12 Simulation loop and arcade controller</h2>
+<h3 id="section-129">Fixed-step timing</h3>
+<p>Use one simulation clock with a target timestep of <code>1 / 60</code> seconds. Rendering can run at the browser&#x27;s available refresh rate. Previous and current simulation snapshots support interpolation when the renderer and simulation rates differ.</p>
+<pre><code>onFrame(realDelta):
+  if run is not playing:
+    return
+
+  accumulator += min(realDelta, 0.10)
+  inputSnapshot = readInputActions()
+  steps = 0
+
+  while accumulator &gt;= fixedStep and steps &lt; 5:
+    previousState = currentState
+    simulatePlayer(inputSnapshot, fixedStep)
+    simulateTraffic(fixedStep)
+    resolveCollisions(fixedStep)
+    updateCheckpointsAndStats(fixedStep)
+    accumulator -= fixedStep
+    steps += 1
+
+  if steps == 5 and accumulator &gt;= fixedStep:
+    accumulator = accumulator modulo fixedStep
+
+  alpha = accumulator / fixedStep
+  renderInterpolatedPose(previousState, currentState, alpha)
+  updateCameraAndAudio(realDelta)
+  publishHudIfDue()</code></pre>
+<p><code>previousState</code> must be a separate snapshot of the fields needed for interpolation, not another reference to the object that is mutated in place. Reuse allocated snapshots, vectors, and quaternions to avoid garbage collection spikes. The catch-up limit intentionally drops excess elapsed time under overload instead of creating an unbounded simulation backlog.</p>
+<p>When the tab becomes hidden, pause the run, clear input, suspend sound, and reset the clock accumulator. Return to the pause menu on focus recovery; do not simulate the minutes spent in the background. Page Visibility behavior is a browser constraint, not a reason to move the simulation to a server. [S12]</p>
+<h3 id="section-134">Controller equations</h3>
+<p>Smooth throttle and steering values first. Integrate acceleration, braking, drag, and speed caps using seconds. Calculate yaw from forward speed, steering angle, and wheelbase with a simple bicycle-style approximation. Clamp or damp the response at higher speeds so the player can steer comfortably.</p>
+<p>For the planar model, choose a documented convention: Three.js Y is up, the vehicle&#x27;s local forward is positive Z, yaw zero faces positive Z, and a positive steering value turns towards positive X. If an imported model faces another axis, correct it once in a visual wrapper. Position integration uses <code>x += speed * sin(yaw) * dt</code> and <code>z += speed * cos(yaw) * dt</code>; yaw rate starts from <code>speed / wheelbase * tan(steeringAngle)</code>. Keep braking and drag signed against the current movement direction, and explicitly handle the near-zero transition before reverse. These equations are starting controller rules, not realistic tyre dynamics.</p>
+<p>At almost zero speed, the vehicle should not rotate wildly on the spot. Scooty and KTM use the same stable planar controller, with cosmetic lean added after movement. Wheel rotation follows distance and wheel radius. Model body roll should be small and should not modify collision geometry.</p>
+<p>Handbrake temporarily reduces speed and changes turn response. It can give cars a playful slide, but the beginner default should recover quickly when released. Introduce a tunable maximum steering angle, braking strength, and camera smoothing per vehicle rather than hardcoded vehicle-specific branches.</p>
+<p>NPC lane choice and following decisions can run at about 10 Hz; their positions still integrate on the fixed simulation step. Use seeded placement and a fixed maximum traffic pool so a busy run cannot create an unbounded number of vehicles.</p>
+<h2 id="section-140">13 Road system traffic and world streaming</h2>
+<h3 id="section-141">Compact authored circuits</h3>
+<p>Each city has a closed spline or sampled path approximately two kilometres long. Lane paths are derived from its centreline. The route data stays loaded, while nearby visual chunks are activated around the player. At this scale there is no need for a floating-origin system or an external world server.</p>
+<p>Start with shared straight, gentle curve, tight curve, widened road, and bridge-deck modules. Intersections can be visually suggested by blocked side streets, signs, and background traffic rather than a fully connected urban traffic network. Version 1&#x27;s playable road remains a clear circuit.</p>
+<p>Keep road elevations flat for the first controller. Decorative flyovers, metro lines, and skyline platforms can sit above the route without becoming driveable surfaces. A later elevation feature should add its own contact and camera tests.</p>
+<h3 id="section-145">Visible chunks</h3>
+<p>Split route visuals into approximately 100-metre chunks. Start with around seven nearby chunks on the medium preset, adjusted for turns and visibility. Culling uses world bounds as well as route distance so a nearby landmark is not hidden merely because it is farther along the loop.</p>
+<p>Reuse chunk meshes and instance buffers from a pool. Preparing the next chunk happens ahead of the player and in small work units. Do not create a large React tree or parse a new city model at the moment a vehicle crosses a chunk boundary.</p>
+<p>The first run downloads the selected city&#x27;s entire small content pack before driving. Chunk activation is a local visibility and object-pooling operation; it does not fetch a fresh section over the network every 100 metres. That keeps driving responsive when connectivity drops after loading. Wrapping from the final chunk to the first must use modular route indices and preserve lane direction, lap gates, and scenery continuity.</p>
+<p>Buildings, lamps, trees, road markings, and common roadside props share geometry and materials. Instancing reduces draw calls when these repeated objects use the same geometry and material. Distinct meshes and materials still carry a cost; instancing does not make arbitrary scene complexity free. [S05, S06]</p>
+<h3 id="section-150">Traffic</h3>
+<p>Traffic follows left-side lane paths and keeps a basic following distance. Use simple generic vehicles, no more than the quality preset permits. Spawn outside the visible immediate area and never directly on top of the player. Return distant traffic objects to the pool rather than destroying and recreating them.</p>
+<p>Near the player, NPCs update every simulation step. Farther traffic can receive less frequent decision updates. Traffic avoids static route blockers through predefined lane paths. It does not need navigation mesh generation or a physics engine to find its way around a fixed road circuit.</p>
+<p>A bus, parked auto, or cone line can create a memorable route pinch point. Obstacles should remain visible long enough to react and should not make the loop impossible to complete with the larger Fortuner.</p>
+<h2 id="section-154">14 Rendering camera audio and cleanup</h2>
+<h3 id="section-155">Rendering</h3>
+<p>Use one ambient or hemisphere light and one directional light. Shadows are off on the low preset. Medium and high can use a limited shadow map for the player and nearby scenery if profiling allows it. Use simple car shadow decals if dynamic shadows cost too much.</p>
+<p>Avoid screen-space reflections, bloom stacks, motion blur, volumetric effects, and complex water in Version 1. A limited palette, good silhouettes, fog, and a stable camera do more for this game&#x27;s readability than expensive effects.</p>
+<p>Clamp pixel ratio by quality preset rather than blindly using the device&#x27;s full pixel density. A high-density phone can otherwise multiply the pixel workload. Handle window size and orientation changes without recreating the game state.</p>
+<h3 id="section-159">Camera</h3>
+<p>Use a third-person chase camera with a slight downward angle and a look-ahead point that increases gently with speed. Smooth position and rotation using time-based damping. Reset smoothing on respawn so the camera does not fly across the whole route.</p>
+<p>Adjust the following distance for vehicle length and portrait layout. Camera collision can initially be a small set of checks against solid scenery near the chase line. Avoid camera shake by default on touch devices and turn it off when reduced motion is requested.</p>
+<h3 id="section-162">Audio</h3>
+<p>Create or resume an <code>AudioContext</code> from an explicit Start or Sound button gesture. If the browser still suspends it after loading, show a small Tap for Sound action while gameplay proceeds. Muted audio must never prevent the run from starting. [S10]</p>
+<p>Use a short loop for each vehicle class, with playback rate and volume tied smoothly to throttle and speed. A shared city ambient layer can contain light road noise. Keep the horn brief, apply a cooldown, and limit concurrent sound voices. Do not download long background music tracks in the first drive payload.</p>
+<p>Default to sound off until the player enables it. Save the preference when storage is available. Pause engine and ambient sound when the run pauses or the tab is hidden.</p>
+<h3 id="section-166">Resource ownership</h3>
+<p>On city change or exit, disconnect input listeners, clear held keys and pointers, stop audio sources, cancel scheduled work, and release the old run. Dispose geometry, materials, and textures only when no active scene or cache entry still owns them. Three.js resource disposal is explicit, and cached GLTF resources require deliberate handling. [S07, S08]</p>
+<p>Choose one ownership policy rather than mixing manual disposal with automatic React Three Fiber cleanup of shared assets. A central asset manager can retain shared geometry across runs and dispose it after its final reference is released. Per-run clones share source geometry safely while owning their transforms.</p>
+<p>When WebGL context loss occurs, pause the run and show a recovery message. Try reinitializing from the retained selection; if recovery fails, offer Reload and lower graphics. Do not leave a frozen canvas with active touch controls or looping sound. [S13]</p>
+<h2 id="section-170">15 Asset production and optimization</h2>
+<h3 id="section-171">Asset inventory</h3>
+<div class="table-wrap"><table><thead><tr><th>Asset group</th><th>Initial requirement</th><th>Reuse strategy</th></tr></thead><tbody>
+<tr><td>Player vehicles</td><td>Five original low-poly models and five thumbnails</td><td>Common rig conventions and atlas</td></tr>
+<tr><td>Traffic</td><td>Generic auto, scooter, taxi, small car, and bus</td><td>Simple shared meshes and pooled instances</td></tr>
+<tr><td>Roads</td><td>Straight and curved pieces, shoulders, barriers, bridge deck</td><td>Shared across all cities</td></tr>
+<tr><td>City landmarks</td><td>One signature model for each city</td><td>Loaded only for the selected city</td></tr>
+<tr><td>Street kit</td><td>Shops, stalls, lamps, trees, cones, shelters, petrol pump</td><td>Shared shapes with city colour and sign variants</td></tr>
+<tr><td>Audio</td><td>Short engine loops, horn, contact sound, ambience</td><td>Short compressed files and shared effects</td></tr>
+<tr><td>Website art</td><td>One landing illustration and city and vehicle cards</td><td>Static images with explicit size budgets</td></tr>
+</tbody></table></div>
+<h3 id="section-173">Export and validation process</h3>
+<p>Author assets in Blender using metres and consistent axes. Apply transforms, keep material counts small, name movable wheel parts, and export GLB. Prefer original modelling and procedural street pieces for the first release so the game has a consistent visual style.</p>
+<p>Run asset optimization with glTF Transform: inspect, remove unused data, deduplicate, simplify where justified, quantize geometry, and apply Meshopt compression. Configure <code>GLTFLoader</code> with the matching Meshopt decoder. Verify the optimized file visually; an optimizer can reduce or alter detail. [S07, S22]</p>
+<p>Start with shared 512- or 1024-pixel textures. A model with mostly flat colours may need no detailed texture. Evaluate KTX2 only when measured texture memory or download size justifies adding its transcoder. Compressed transfer size and decoded GPU memory are separate budgets.</p>
+<p>Check player models from the chase-camera distance, inspect wheel animation, and test texture readability on a phone. Keep a simpler fallback mesh for any landmark that cannot meet the selected city budget.</p>
+<h3 id="section-178">Asset provenance</h3>
+<p>Keep a small asset register containing asset ID, author, source URL when applicable, license, attribution requirement, allowed use, source file, optimized file, and file hash. Original assets should still identify their creator and project ownership. Third-party files need an explicit usable license before inclusion.</p>
+<p>Three.js and Meshoptimizer are distributed under MIT licenses; retain the required notices in a third-party notices file when distributing their code. Model, font, and audio permissions are separate from the engine license. [S24, S25]</p>
+<h2 id="section-181">16 Performance budgets and measurement</h2>
+<p>The numbers below are launch engineering targets, not measurements of an existing game. Record actual transfer size, frame time, memory behavior, and device conditions when the vertical slice is built.</p>
+<h3 id="section-183">Download budgets</h3>
+<div class="table-wrap"><table><thead><tr><th>Payload</th><th>Maximum starting budget</th><th>Notes</th></tr></thead><tbody>
+<tr><td>Landing UI and first-screen art</td><td>450 KiB</td><td>Compressed transfer; exclude the lazy 3D engine</td></tr>
+<tr><td>Lazy game code and decoder</td><td>1.4 MiB</td><td>Includes renderer and simulation code</td></tr>
+<tr><td>Shared road and prop pack</td><td>1.5 MiB</td><td>Shared traffic and common textures included</td></tr>
+<tr><td>Selected city pack</td><td>2.2 MiB</td><td>Signature geometry, placement data, and local art</td></tr>
+<tr><td>Selected player vehicle</td><td>350 KiB</td><td>Model and vehicle-specific textures</td></tr>
+<tr><td>Initial audio</td><td>350 KiB</td><td>Only short sounds required for this run</td></tr>
+<tr><td>Total from landing to first drive</td><td>8 MiB</td><td>Includes all required requests with headroom</td></tr>
+</tbody></table></div>
+<p>The sum of the category caps is below the total cap; the remainder covers metadata, thumbnails, and packaging variation. Measure actual bytes transferred over HTTP. Do not assume a GLB receives a particular gzip reduction, and do not count an already cached shared pack twice.</p>
+<p>The first playable scene should appear within a target of 20 seconds on a documented 4 Mbps, 150 ms round-trip test profile with a representative mobile device. An 8 MiB transfer alone takes about 17 seconds at 4 Mbps before overhead; reducing the typical active payload below its maximum makes that target more realistic. A slower connection needs proportionally more time and should retain useful progress and retry controls.</p>
+<h3 id="section-187">Rendering presets</h3>
+<div class="table-wrap"><table><thead><tr><th>Preset</th><th>Frame-rate goal</th><th>Pixel ratio cap</th><th>Visible triangles</th><th>Draw calls</th><th>NPC traffic cap</th></tr></thead><tbody>
+<tr><td>Low</td><td>30 FPS</td><td>1.0</td><td>35k</td><td>45</td><td>8</td></tr>
+<tr><td>Medium</td><td>30 to 60 FPS</td><td>1.25</td><td>80k</td><td>80</td><td>14</td></tr>
+<tr><td>High</td><td>60 FPS</td><td>1.5</td><td>150k</td><td>150</td><td>20</td></tr>
+</tbody></table></div>
+<p>These caps are initial profiling limits rather than universal browser guarantees. Start on Medium for desktop and Low for touch-oriented devices, then refine based on observed frame time. Allow manual selection. Device type alone is not a reliable performance benchmark.</p>
+<p>On an agreed mobile reference device, target a median frame time compatible with 30 FPS and a 95th-percentile frame time below about 40 ms after loading. On the desktop reference device, target 60 FPS with the 95th percentile below about 20 ms. Record the browser, viewport, route, vehicle, preset, and test duration.</p>
+<p>Automatic quality reduction should use several seconds of rolling frame data, cooldown, and hysteresis. Lower pixel ratio and shadows first, then visible scenery and traffic. Avoid rapidly switching settings during a momentary asset upload.</p>
+<h3 id="section-192">Memory and diagnostics</h3>
+<p>Estimate decoded textures, geometries, and render targets per scene. Start with an estimated GPU allocation budget of 96 MiB on Low and 160 MiB on Medium, then validate against real device stability. WebGL does not provide one reliable cross-browser GPU-memory meter. [S13]</p>
+<p>A developer-only overlay can show FPS, frame-time percentiles, visible triangles, draw calls, traffic count, and active chunk count. Run repeated city changes and retries and confirm that scene resources stop growing after the cache policy reaches its intended bound.</p>
+<p>Compare browser traces before and after each major optimization. Reduce the bottleneck that is actually measured, whether it is draw calls, texture uploads, JavaScript work, pixel fill, or network size.</p>
+<h2 id="section-196">17 Storage privacy and resilience</h2>
+<p>Save only preferences and local results: schema version, sound preference, graphics preference, auto-accelerate, camera-shake preference, last city, last vehicle, and best distance by city and vehicle. No user profile, email, location permission, or identity is needed.</p>
+<p>Use a versioned key such as <code>bap-ka-road:v1</code>. Wrap reads and writes in error handling, validate the shape, and fall back to in-memory settings if storage is blocked. Limit writes to settings changes and run completion rather than every frame. Private browsing may clear stored values when its session ends. [S11]</p>
+<p>The first release requires no analytics provider. If aggregate analytics are added later, make that a separate product decision. Vercel delivery logs are a hosting concern and do not require creating a player account.</p>
+<p>Treat local best scores and shared URL values as untrusted input. Validate city and vehicle IDs, avoid arbitrary asset URLs, and never interpolate query text as HTML. Client code must contain no secret keys; Vite client environment variables are part of the shipped application.</p>
+<p>Handle failed downloads with retry and a return to selection. A 3D load error must leave the regular React page operable. A new run must clear old event listeners and timers, and a hidden or paused run must stop receiving movement input.</p>
+<h2 id="section-202">18 Vercel deployment and operating cost</h2>
+<h3 id="section-203">Build and hosting</h3>
+<p>The production application is a static Vite build. Configure Vercel&#x27;s Vite preset, use <code>npm run build</code>, and publish <code>dist</code>. Commit a package lockfile and use <code>npm ci</code> for reproducible dependency installation. Production does not require a Node server process, a long-running function, or a physics backend. [S01, S02]</p>
+<p>Use one root page with selection query parameters for Version 1. If path routes such as <code>/play</code> are introduced later, add the SPA fallback described by Vercel and test direct navigation and refresh. Keep the fallback from hiding real asset errors behind an HTML response.</p>
+<p>An initial static configuration can set immutable caching for content-hashed build assets and a versioned game asset directory:</p>
+<pre><code>{
+  &quot;buildCommand&quot;: &quot;npm run build&quot;,
+  &quot;outputDirectory&quot;: &quot;dist&quot;,
+  &quot;headers&quot;: [
+    {
+      &quot;source&quot;: &quot;/assets/(.*)&quot;,
+      &quot;headers&quot;: [{
+        &quot;key&quot;: &quot;Cache-Control&quot;,
+        &quot;value&quot;: &quot;public, max-age=31536000, immutable&quot;
+      }]
+    },
+    {
+      &quot;source&quot;: &quot;/game-assets/v1/(.*)&quot;,
+      &quot;headers&quot;: [{
+        &quot;key&quot;: &quot;Cache-Control&quot;,
+        &quot;value&quot;: &quot;public, max-age=31536000, immutable&quot;
+      }]
+    }
+  ]
+}</code></pre>
+<p>Use content hashes in every asset filename covered by these long-lived rules. Changing <code>v1</code> content must create a new hash and update the generated asset manifest in the application build. Never overwrite an immutable asset URL with different bytes. Keep the HTML entry and any mutable manifest outside the immutable rule.</p>
+<p>Load assets from the same origin to simplify delivery. Serve them as actual binary files, use HTTPS, and retain source-map visibility intentionally. Public source maps can be disabled in production if a development deployment provides the needed debugging information.</p>
+<h3 id="section-210">Practical release sequence</h3>
+<ol><li>Scaffold the game locally and commit its compatible dependencies and lockfile.</li><li>Build and test the Mumbai and auto rickshaw vertical slice.</li><li>Complete the requested five-city and five-vehicle roster.</li><li>Run the functional and performance checks on a production build.</li><li>Import the repository into Vercel and use a preview deployment for final checks.</li><li>Verify asset paths, caching, mobile controls, audio, and reload behavior on the preview URL.</li><li>Publish the reviewed production build and attach a domain if desired.</li></ol>
+<p>This document does not publish a live website or create an external hosting account. It establishes the implementation and deployment procedure.</p>
+<h3 id="section-213">Cost model</h3>
+<p>The core engine choices do not require a per-player game server charge. Hosting cost is primarily static delivery, deployment usage, and an optional domain. Original models and audio still have production effort even when no asset marketplace purchase is required.</p>
+<p>Vercel&#x27;s Hobby plan is intended for personal, non-commercial use and has usage limits. It can fit an initial personal experiment if the project meets those terms. Advertising, sponsorship, business use, or larger traffic should trigger a plan review. Current quotas and prices must be checked when deploying; this plan does not assume unlimited free hosting. [S14]</p>
+<p>At the 8 MiB cold-session cap, 1,000 first sessions transfer roughly 7.8 GiB and 10,000 transfer roughly 78.1 GiB before other requests. Repeat asset caching can reduce transfer, while changing cities adds their packs. These are planning calculations, not a forecast of users or a bill.</p>
+<h2 id="section-217">19 Implementation milestones and effort</h2>
+<p>The suggested build order limits rework by proving the driving and asset budgets before authoring all five detailed city packs. All dates below are effort estimates. A developer familiar with TypeScript and browser graphics, with some modelling support, might complete the first release in roughly four to six working weeks.</p>
+<div class="table-wrap"><table><thead><tr><th>Milestone</th><th>Main output</th><th>Estimated engineering effort</th><th>Exit condition</th></tr></thead><tbody>
+<tr><td>1 Foundation</td><td>React and Vite shell, selection data, lazy game entry</td><td>2 days</td><td>Landing to loading flow works with valid selections</td></tr>
+<tr><td>2 Vertical slice</td><td>Mumbai circuit, auto controller, chase camera, collisions</td><td>5 days</td><td>One comfortable run works on keyboard and phone</td></tr>
+<tr><td>3 Vehicle roster</td><td>Thar, Fortuner, scooty, KTM and individual tuning</td><td>3 days</td><td>All five vehicles use one stable controller interface</td></tr>
+<tr><td>4 City roster</td><td>Delhi, Kolkata, Chennai, Bangalore city packs</td><td>6 days</td><td>All five routes have their own signature features</td></tr>
+<tr><td>5 Player polish</td><td>Touch refinement, sound, pause, reset, results, local settings</td><td>3 days</td><td>First-time player can start, recover, and replay easily</td></tr>
+<tr><td>6 Quality checks</td><td>Device profiling, payload work, regression fixes</td><td>3 days</td><td>Agreed launch acceptance checks pass</td></tr>
+<tr><td>7 Release</td><td>Vercel preview review and production setup</td><td>1 day</td><td>Reviewed build is ready for public hosting</td></tr>
+</tbody></table></div>
+<p>The table totals about 23 engineering days. Asset production, unfamiliar tools, hardware access, and revision requests can extend the calendar. Treat the estimate as a planning range rather than a delivery commitment or a price quote.</p>
+<p>The first code milestone should implement the actual player journey, not a static gallery. After the selectors, the Mumbai auto must accelerate, steer, brake, follow a camera, collide, reset, and pause. That slice tests the core premise of the project.</p>
+<h3 id="section-222">First playable build tasks</h3>
+<p>Create the Vite React TypeScript project at the workspace root, preserving <code>docs</code>, <code>scripts</code>, and the document outputs. Keep the game dependencies separate from the Python documentation tools. Commit the package lockfile after checking compatible React, Three.js, and React Three Fiber versions.</p>
+<p>Implement typed city and vehicle registries and the landing, city, and vehicle screens. All five requested choices should appear from the start of development. During internal work, the build&#x27;s available playable packs must be explicit so an unfinished selection cannot silently substitute Mumbai or another vehicle. Complete every selection before public launch.</p>
+<p>Build the runtime first with an original procedural auto and a simple Mumbai circuit. Use greybox road geometry, a sea plane, a promenade wall, and pooled NPC silhouettes before spending time on detailed shops. Wire keyboard and touch actions to the same controller, add chase-camera interpolation, then implement collision and safe reset. This establishes a real driving test while keeping replacement of early art inexpensive.</p>
+<p>Add pause, visibility handling, loading cancellation, results, and local preferences before expanding the roster. A fresh Start clears run statistics; Reset preserves them without counting the teleport; changing a city cancels the previous run. Verify those lifecycle boundaries before shared assets and more cities make mistakes harder to diagnose.</p>
+<p>The first slice is accepted when a new visitor can enter Mumbai with the auto, drive for five minutes, brake and reverse, encounter traffic, reset, pause by changing tabs, resume, end the run, and replay on keyboard and a real touch device. Record the production-build payload and frame-time trace. Then add the four remaining vehicle definitions and four city content packs against the same contracts.</p>
+<h3 id="section-228">Content manifest and build validation</h3>
+<p>Generate a manifest at build time with the asset ID, same-origin content-hashed URL, transfer byte size, media type, pack membership, and required decoder for each asset. City and vehicle registries reference manifest IDs rather than duplicating file paths. A selected run resolves the union of shared, city, vehicle, and enabled-audio assets; deduplicate that list before loading and report progress only for required items.</p>
+<p>The build should fail if a required ID has no file, a pack exceeds its agreed starting budget, a model has no declared wheel or collider metadata, or a referenced third-party asset lacks its provenance record. The generated manifest ships with the application code and is replaced by a new build when its hashes change. A content hash supports cache consistency; it does not make client scores authoritative.</p>
+<h2 id="section-231">20 Test plan and launch acceptance</h2>
+<h3 id="section-232">Simulation checks</h3>
+<p>Test behaviors that can regress: the same input sequence at different render rates produces comparable simulated motion; braking enters reverse only after the threshold; a high-speed vehicle cannot tunnel through a barrier; a reset adds no distance or lap progress; checkpoint gates enforce order; and a stale loading generation cannot attach an old city.</p>
+<p>Use meaningful collision, lifecycle, and input scenarios. There is no need to write tests that merely duplicate colour constants or vehicle labels. For deterministic runtime tests, control the seed and fixed clock independently of React.</p>
+<h3 id="section-235">Browser flow checks</h3>
+<p>Automate landing, city selection, vehicle selection, loading, pause, retry, and return to menus. Check all <strong>25 city and vehicle combinations</strong> on the production build, then run longer driving sessions on representative combinations and the fastest vehicle.</p>
+<p>Confirm two-finger steering and braking, pointer cancellation, key release after blur, tab visibility pause, portrait and landscape layout, and a blocked audio context. Emulated touch is useful but does not replace a real phone test.</p>
+<div class="table-wrap"><table><thead><tr><th>Device or browser group</th><th>Required review</th></tr></thead><tbody>
+<tr><td>Windows Chrome and Edge</td><td>Keyboard driving, resizing, production load, and frame-time trace</td></tr>
+<tr><td>Desktop Firefox</td><td>Graphics, input, audio, and local storage behavior</td></tr>
+<tr><td>Mid-range Android Chrome</td><td>Low preset, two-finger touch, heat over a longer run, and orientation</td></tr>
+<tr><td>iPhone Safari</td><td>Gesture-gated audio, safe areas, touch cancellation, and tab recovery</td></tr>
+<tr><td>Unsupported WebGL 2 or lost context</td><td>Useful error and recovery flow</td></tr>
+<tr><td>Throttled network or failed asset</td><td>Real progress, retry, and working return to selector</td></tr>
+</tbody></table></div>
+<h3 id="section-239">Release checklist</h3>
+<ul><li>The landing button reads Mera Baap Ka Road and opens location selection.</li><li>Mumbai, Delhi, Kolkata, Chennai, and Bangalore are selectable without locks.</li><li>Auto rickshaw, Thar, Fortuner, scooty, and KTM are selectable without locks.</li><li>All 25 combinations reach a playable scene without a broken asset request.</li><li>Controls work on keyboard and with simultaneous touch actions.</li><li>Braking, reverse, reset, pause, resume, end drive, and retry behave consistently.</li><li>Leaving the tab stops movement and sound and returns to a paused run.</li><li>A blocked save or audio operation does not stop gameplay.</li><li>The selected city&#x27;s signature landmark and street cues are visible in a run.</li><li>First-drive transfer fits the agreed budget and loads no unrelated city pack.</li><li>Reference devices meet the agreed frame-time target for a sustained test.</li><li>Repeated city changes and retries do not produce unbounded resource growth.</li><li>Asset provenance and required third-party notices are recorded.</li><li>Vercel preview refresh, query links, asset MIME types, and cache behavior work.</li></ul>
+<p>Future application scripts should include lint, typecheck, test, build, and browser checks. Those checks are part of the game implementation milestone. They have not been run against a game in this document-only stage.</p>
+<h2 id="section-242">21 Main risks and design responses</h2>
+<div class="table-wrap"><table><thead><tr><th>Risk</th><th>Practical response</th></tr></thead><tbody>
+<tr><td>Mobile graphics are too expensive</td><td>Lower pixel ratio, disable shadows, instance props, and cap traffic</td></tr>
+<tr><td>All cities feel like one recoloured route</td><td>Give each a visible landmark, a distinct route section, and unique street cues</td></tr>
+<tr><td>Bikes are too difficult to control</td><td>Use automatic balance and speed-sensitive steering</td></tr>
+<tr><td>SUV cannot fit through a route pinch point</td><td>Validate every circuit using the largest collider</td></tr>
+<tr><td>Assets exceed the transfer budget</td><td>Simplify geometry, share atlases, compress assets, and load one pack</td></tr>
+<tr><td>City changes leak resources</td><td>Centralize asset ownership and test repeated changes</td></tr>
+<tr><td>Audio or touch fails on a phone</td><td>Unlock audio by gesture and handle pointer cancellation and capture</td></tr>
+<tr><td>Branded or borrowed assets complicate release</td><td>Use original assets, keep provenance, and retain generic label fallbacks</td></tr>
+<tr><td>Scope grows before the game feels good</td><td>Finish the Mumbai auto slice and preserve the Version 1 feature boundary</td></tr>
+</tbody></table></div>
+<p>The next build action is to scaffold React, Vite, and the typed city and vehicle definitions, implement the selectors, and connect them to a playable Mumbai auto rickshaw slice. That establishes a concrete base for the remaining four cities and four vehicles.</p>
+<h2 id="section-245">22 Primary research sources</h2>
+<p>The following primary pages were retrieved for this plan on <strong>24 October 2026</strong>. The companion research record preserves the URL, retrieval status, title, and short relevant extracts. These sources establish capabilities and reference details; they do not constitute a benchmark of the proposed game.</p>
+<ul><li><strong>S01 Vite static deployment</strong> - Build output, preview behavior, and Vercel deployment. <a href="https://vite.dev/guide/static-deploy.html">https://vite.dev/guide/static-deploy.html</a></li><li><strong>S02 Vite on Vercel</strong> - Framework hosting and SPA deployment considerations. <a href="https://vercel.com/docs/frameworks/frontend/vite">https://vercel.com/docs/frameworks/frontend/vite</a></li><li><strong>S03 Three.js WebGLRenderer</strong> - WebGL 2 requirement and renderer controls. <a href="https://threejs.org/docs/pages/WebGLRenderer.html">https://threejs.org/docs/pages/WebGLRenderer.html</a></li><li><strong>S04 React Three Fiber performance pitfalls</strong> - Frame-loop mutation, deltas, and avoiding repeated React state updates. <a href="https://r3f.docs.pmnd.rs/advanced/pitfalls">https://r3f.docs.pmnd.rs/advanced/pitfalls</a></li><li><strong>S05 React Three Fiber scaling performance</strong> - Instancing, rendering cost, and adaptive performance. <a href="https://r3f.docs.pmnd.rs/advanced/scaling-performance">https://r3f.docs.pmnd.rs/advanced/scaling-performance</a></li><li><strong>S06 Three.js InstancedMesh</strong> - Shared geometry and materials with reduced draw calls. <a href="https://threejs.org/docs/pages/InstancedMesh.html">https://threejs.org/docs/pages/InstancedMesh.html</a></li><li><strong>S07 Three.js GLTFLoader</strong> - Asset loading and compression extension support. <a href="https://threejs.org/docs/pages/GLTFLoader.html">https://threejs.org/docs/pages/GLTFLoader.html</a></li><li><strong>S08 Three.js Texture</strong> - Texture lifecycle and disposal methods. <a href="https://threejs.org/docs/pages/Texture.html">https://threejs.org/docs/pages/Texture.html</a></li><li><strong>S09 MDN Pointer Events</strong> - Multi-input actions, capture, cancellation, and touch behavior. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events">https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events</a></li><li><strong>S10 MDN Web Audio best practices</strong> - User gestures, suspended contexts, and audio startup. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices">https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices</a></li><li><strong>S11 MDN localStorage</strong> - Persistence, errors, and private browsing behavior. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage</a></li><li><strong>S12 MDN Page Visibility API</strong> - Background tabs and lifecycle handling. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API">https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API</a></li><li><strong>S13 MDN WebGL best practices</strong> - Rendering efficiency, resources, and context constraints. <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices">https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices</a></li><li><strong>S14 Vercel Hobby plan</strong> - Personal non-commercial use and plan limits. <a href="https://vercel.com/docs/plans/hobby">https://vercel.com/docs/plans/hobby</a></li><li><strong>S15 Godot web export</strong> - Browser export requirements and threading choices. <a href="https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html">https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html</a></li><li><strong>S16 Babylon.js specifications</strong> - Browser engine capabilities and rendering support. <a href="https://www.babylonjs.com/specifications/">https://www.babylonjs.com/specifications/</a></li><li><strong>S17 Incredible India Marine Drive</strong> - Mumbai&#x27;s curved seafront and Arabian Sea setting. <a href="https://www.incredibleindia.gov.in/en/maharashtra/mumbai/marine-drive">https://www.incredibleindia.gov.in/en/maharashtra/mumbai/marine-drive</a></li><li><strong>S18 Incredible India India Gate</strong> - Delhi landmark and exterior setting. <a href="https://www.incredibleindia.gov.in/en/delhi/delhi/india-gate">https://www.incredibleindia.gov.in/en/delhi/delhi/india-gate</a></li><li><strong>S19 Incredible India Howrah Bridge</strong> - Kolkata bridge form and Hooghly River reference. <a href="https://www.incredibleindia.gov.in/en/west-bengal/kolkata/howrah-bridge">https://www.incredibleindia.gov.in/en/west-bengal/kolkata/howrah-bridge</a></li><li><strong>S20 Incredible India Marina Beach</strong> - Chennai coast and promenade reference. <a href="https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/marina-beach">https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/marina-beach</a></li><li><strong>S21 Incredible India Bengaluru</strong> - Cubbon Park and Vidhana Soudha city references. <a href="https://www.incredibleindia.gov.in/en/karnataka/bengaluru">https://www.incredibleindia.gov.in/en/karnataka/bengaluru</a></li><li><strong>S22 glTF Transform CLI</strong> - Inspection and optimization of GLB assets. <a href="https://gltf-transform.dev/cli">https://gltf-transform.dev/cli</a></li><li><strong>S23 MDN reduced motion</strong> - Motion preferences and accessibility. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion">https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion</a></li><li><strong>S24 Three.js license</strong> - MIT license and notice obligations. <a href="https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE">https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE</a></li><li><strong>S25 Meshoptimizer license</strong> - MIT license and notice obligations. <a href="https://raw.githubusercontent.com/zeux/meshoptimizer/master/LICENSE.md">https://raw.githubusercontent.com/zeux/meshoptimizer/master/LICENSE.md</a></li><li><strong>S26 MDN Web Share API</strong> - Native sharing constraints and fallback needs. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API">https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API</a></li></ul></main></div></body></html>

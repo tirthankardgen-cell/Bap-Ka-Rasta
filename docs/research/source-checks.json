@@ -1,0 +1,921 @@
+{
+  "checked_on": "2026-10-24",
+  "sources": [
+    {
+      "id": "S01",
+      "label": "Vite static deployment",
+      "url": "https://vite.dev/guide/static-deploy.html",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://vite.dev/guide/static-deploy.html",
+      "title": "Deploying a Static Site | Vite",
+      "evidence": [
+        {
+          "term": "Vercel",
+          "text": "ill generate Preview Deployments , and all changes made to the Production Branch (commonly “main”) will result in a Production Deployment . Vercel ​ Vercel CLI ​ Install the Vercel CLI via npm i -g vercel and run vercel to deploy. Vercel will detect that you are using Vite and will enable the correct settings for your deployment. Your application is deployed! (e.g. vite-vue-template.vercel.app ) Vercel with Git ​ Push your code to your git re"
+        },
+        {
+          "term": "Vercel",
+          "text": "ate Preview Deployments , and all changes made to the Production Branch (commonly “main”) will result in a Production Deployment . Vercel ​ Vercel CLI ​ Install the Vercel CLI via npm i -g vercel and run vercel to deploy. Vercel will detect that you are using Vite and will enable the correct settings for your deployment. Your application is deployed! (e.g. vite-vue-template.vercel.app ) Vercel with Git ​ Push your code to your git repository "
+        },
+        {
+          "term": "dist",
+          "text": "Deploying a Static Site ​ The following guides are based on some shared assumptions: You are using the default build output location ( dist ). This location can be changed using build.outDir , and you can extrapolate instructions from these guides in that case. You are using npm. You can use equivalent commands to run the scripts if you are using Yarn or other package managers. Vite is installed as a local dev dependency in your projec"
+        },
+        {
+          "term": "dist",
+          "text": " Building the App ​ You may run npm run build command to build the app. bash $ npm run build By default, the build output will be placed at dist . You may deploy this dist folder to any of your preferred platforms. Testing the App Locally ​ Once you've built the app, you may test it locally by running npm run preview command. bash $ npm run preview The vite preview command will boot up a local static web server that serves the files from di"
+        },
+        {
+          "term": "preview",
+          "text": "l dev dependency in your project, and you have setup the following npm scripts: package.json json { \"scripts\" : { \"build\" : \"vite build\" , \"preview\" : \"vite preview\" } } It is important to note that vite preview is intended for previewing the build locally and not meant as a production server. NOTE These guides provide instructions for performing a static deployment of your Vite site. Vite also supports Server-Side Rendering. SSR refers to fro"
+        },
+        {
+          "term": "preview",
+          "text": "in your project, and you have setup the following npm scripts: package.json json { \"scripts\" : { \"build\" : \"vite build\" , \"preview\" : \"vite preview\" } } It is important to note that vite preview is intended for previewing the build locally and not meant as a production server. NOTE These guides provide instructions for performing a static deployment of your Vite site. Vite also supports Server-Side Rendering. SSR refers to front-end frameworks"
+        }
+      ],
+      "text_characters": 13250,
+      "content_sha256": "be274bde3c2b6b0932e92f09e044d9dc7f24682ff443aef4a7bfc399302b4b80",
+      "retrieved_at_utc": "2026-10-24T14:31:08.904226+00:00"
+    },
+    {
+      "id": "S02",
+      "label": "Vite on Vercel",
+      "url": "https://vercel.com/docs/frameworks/frontend/vite",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://vercel.com/docs/frameworks/frontend/vite",
+      "title": "Vite on Vercel",
+      "evidence": [
+        {
+          "term": "rewrite",
+          "text": "o - /docs/cli summary: Deploy Vite projects to Vercel and configure environment variables, Vercel Functions, server-side rendering, and SPA rewrites. install_vercel_plugin: npx plugins add vercel/vercel-plugin --- # Vite on Vercel Vite is an opinionated build tool that aims to provide a faster and leaner development experience for modern web projects. Vite provides a dev server with rich feature enhancements such as pre-bundling NPM dependenci"
+        },
+        {
+          "term": "rewrite",
+          "text": "the root of your project, and add the following code: ```json filename=\"vercel.json\" { \"$schema\": \"https://openapi.vercel.sh/vercel.json\", \"rewrites\": [ { \"source\": \"/(.*)\", \"destination\": \"/index.html\" } ] } ``` > **💡 Note:** If [`cleanUrls`](/docs/project-configuration/vercel-json#cleanurls) is set to `true` in > your project's `vercel.json`, do not include the file extension in the source > or destination path. For example, `/index.html` wo"
+        },
+        {
+          "term": "Vite",
+          "text": "--- title: Vite on Vercel product: vercel url: /docs/frameworks/frontend/vite canonical_url: \"https://vercel.com/docs/frameworks/frontend/vite\" last_updated: 2026-08-26 type: conceptual prerequisites: - /docs/frameworks/frontend - /docs/frameworks related: - /docs/frameworks/full-stack/sveltekit - /docs/frameworks"
+        },
+        {
+          "term": "Vite",
+          "text": "--- title: Vite on Vercel product: vercel url: /docs/frameworks/frontend/vite canonical_url: \"https://vercel.com/docs/frameworks/frontend/vite\" last_updated: 2026-08-26 type: conceptual prerequisites: - /docs/frameworks/frontend - /docs/frameworks related: - /docs/frameworks/full-stack/sveltekit - /docs/frameworks/full-stack/nuxt - /docs/frameworks/frontend/create-react-app "
+        },
+        {
+          "term": "deployment",
+          "text": ".com/kb/guide/deploy-a-tanstack-start-app-to-vercel) — Deploy a TanStack Start app to Vercel with the Nitro Vite plugin. Covers Git and CLI deployment, Fluid compute defaults, - [What is the Nitro Vite plugin?](https://vercel.com/kb/guide/nitro-vite-plugin) — The Nitro Vite plugin \\\\(nitro/vite\\\\) adds SSR, API routes, and deploy-anywhere server builds to any Vite app. Learn what - [Nitro on Vercel](https://vercel.com/docs/frameworks/backend/nitr"
+        },
+        {
+          "term": "deployment",
+          "text": "pos to your favorite git provider and deploy it on Vercel with the button below: \\- Or, choose a template from Vercel's marketplace: Vercel deployments can \\[integrate with your git provider]\\(/docs/git) to \\[generate preview URLs]\\(/docs/deployments/environments#preview-environment-pre-production) for each pull request you make to your Vite project. ## Environment Variables Vercel provides a set of [System Environment Variables](/docs/environmen"
+        }
+      ],
+      "text_characters": 10041,
+      "content_sha256": "5f28b63df7ca4d4586c04a8c793df875880461b54571500440db30a42f0852da",
+      "retrieved_at_utc": "2026-10-24T14:31:09.293489+00:00"
+    },
+    {
+      "id": "S03",
+      "label": "Three.js WebGL renderer",
+      "url": "https://threejs.org/docs/pages/WebGLRenderer.html",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://threejs.org/docs/pages/WebGLRenderer.html",
+      "title": "WebGLRenderer - Three.js Docs",
+      "evidence": [
+        {
+          "term": "WebGL 2",
+          "text": "WebGLRenderer - Three.js Docs WebGLRenderer This renderer uses WebGL 2 to display scenes. WebGL 1 is not supported since r163 . Constructor new WebGLRenderer ( parameters : WebGLRenderer~Options ) Constructs a new WebGL renderer. parameters The configuration parameter. Properties . autoClear : boolean Whether the renderer should automatically clear its output before r"
+        },
+        {
+          "term": "WebGL 1",
+          "text": "WebGLRenderer - Three.js Docs WebGLRenderer This renderer uses WebGL 2 to display scenes. WebGL 1 is not supported since r163 . Constructor new WebGLRenderer ( parameters : WebGLRenderer~Options ) Constructs a new WebGL renderer. parameters The configuration parameter. Properties . autoClear : boolean Whether the renderer should automatically clear its output before rendering a frame or not. De"
+        },
+        {
+          "term": "pixel",
+          "text": "talling due to shader compilation. . copyFramebufferToTexture ( texture : FramebufferTexture , position : Vector2 , level : number ) Copies pixels from the current bound framebuffer into the given texture. texture The texture. position The start position of the copy operation. Default is null . level The mip level. The default represents the base mip. Default is 0 . . copyTextureToTexture ( srcTexture : Texture , dstTexture : Texture , srcRe"
+        },
+        {
+          "term": "pixel",
+          "text": "Returns: The current viewport definition. . getDrawingBufferSize ( target : Vector2 ) : Vector2 Returns the drawing buffer size in physical pixels. This method honors the pixel ratio. target The method writes the result in this target object. Returns: The drawing buffer size. . getPixelRatio () : number Returns the pixel ratio. Returns: The pixel ratio. . getRenderTarget () : WebGLRenderTarget Returns the active render target. Returns: The a"
+        }
+      ],
+      "text_characters": 22276,
+      "content_sha256": "0d6f74e9590ca30c45945fc9c3dbb315e64d8b0c8f662bbe7aaf39f46c119dc4",
+      "retrieved_at_utc": "2026-10-24T14:31:08.287033+00:00"
+    },
+    {
+      "id": "S04",
+      "label": "React Three Fiber performance pitfalls",
+      "url": "https://r3f.docs.pmnd.rs/advanced/pitfalls",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://r3f.docs.pmnd.rs/advanced/pitfalls",
+      "title": "Performance pitfalls - React Three Fiber",
+      "evidence": [
+        {
+          "term": "setState",
+          "text": "y = { geom } material = { mat } ... Try to use instancing as much as you can when you need to display many objects of a similar type! Avoid setState in loops TLDR, don't, mutate inside useFrame ! Threejs has a render-loop, it does not work like the DOM does. Fast updates are carried out in useFrame by mutation . useFrame is your per-component render-loop. It is not enough to set values in succession, you need frame deltas . Instead of position."
+        },
+        {
+          "term": "setState",
+          "text": "need to be paired with update flags ( .needsUpdate = true ), or imperative functions ( .updateProjectionMatrix() ). You might be tempted to setState inside useFrame but there is no reason to. You would only complicate something as simple as an update by routing it through React's scheduler, triggering component render etc. ❌ setState in loops is bad useEffect ( ( ) => { const interval = setInterval ( ( ) => setX ( ( x ) => x + 0.1 ) , 1 ) retur"
+        },
+        {
+          "term": "delta",
+          "text": "ried out in useFrame by mutation . useFrame is your per-component render-loop. It is not enough to set values in succession, you need frame deltas . Instead of position.x += 0.1 consider position.x += delta or your project will run at different speeds depending on the end-users system. Many updates in threejs need to be paired with update flags ( .needsUpdate = true ), or imperative functions ( .updateProjectionMatrix() ). You might be tempt"
+        },
+        {
+          "term": "delta",
+          "text": "nent render-loop. It is not enough to set values in succession, you need frame deltas . Instead of position.x += 0.1 consider position.x += delta or your project will run at different speeds depending on the end-users system. Many updates in threejs need to be paired with update flags ( .needsUpdate = true ), or imperative functions ( .updateProjectionMatrix() ). You might be tempted to setState inside useFrame but there is no reason to. You"
+        }
+      ],
+      "text_characters": 8256,
+      "content_sha256": "d81d5a7024683edad12bf3032fb4820c7c47167918e63961646f1ea48317322f",
+      "retrieved_at_utc": "2026-10-24T14:31:08.526317+00:00"
+    },
+    {
+      "id": "S05",
+      "label": "React Three Fiber scaling performance",
+      "url": "https://r3f.docs.pmnd.rs/advanced/scaling-performance",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://r3f.docs.pmnd.rs/advanced/scaling-performance",
+      "title": "Scaling performance - React Three Fiber",
+      "evidence": [
+        {
+          "term": "draw call",
+          "text": "erials . canvas } /> </ group > ) } < Shoe position = { [ 1 , 2 , 3 ] } /> < Shoe position = { [ 4 , 5 , 6 ] } /> Instancing Each mesh is a draw call, you should be mindful of how many of these you employ: no more than 1000 as the very maximum, and optimally a few hundred or less. You can win performance back by reducing draw calls, for example by instancing repeating objects. This way you can have hundreds of thousands of objects in a single dr"
+        },
+        {
+          "term": "draw call",
+          "text": "y of these you employ: no more than 1000 as the very maximum, and optimally a few hundred or less. You can win performance back by reducing draw calls, for example by instancing repeating objects. This way you can have hundreds of thousands of objects in a single draw call. Setting up instancing is not so hard, consult the three.js docs if you need help. function Instances ( { count = 100000 , temp = new THREE . Object3D ( ) } ) { const instance"
+        },
+        {
+          "term": "instanc",
+          "text": "frames One major caveat is that if anything in the tree mutates props, then React cannot be aware of it and the display would be stale. For instance, camera controls just grab into the camera and mutate its values. Here you can use React Three Fiber's invalidate function to trigger frames manually. function Controls ( ) { const orbitControlsRef = useRef ( ) const { invalidate , camera , gl } = useThree ( ) useEffect ( ( ) => { orbitControlsRef"
+        },
+        {
+          "term": "instanc",
+          "text": "eometry } material = { materials . canvas } /> </ group > ) } < Shoe position = { [ 1 , 2 , 3 ] } /> < Shoe position = { [ 4 , 5 , 6 ] } /> Instancing Each mesh is a draw call, you should be mindful of how many of these you employ: no more than 1000 as the very maximum, and optimally a few hundred or less. You can win performance back by reducing draw calls, for example by instancing repeating objects. This way you can have hundreds of thousan"
+        },
+        {
+          "term": "performance",
+          "text": "Scaling performance Copy Page This is a short primer on how to scale performance. Running WebGL can be quite expensive depending on how powerful your devices are. In order to mitigate this, especially if you want to make your application available to a broad variety of devices, including weaker options, you should loo"
+        },
+        {
+          "term": "performance",
+          "text": "Scaling performance Copy Page This is a short primer on how to scale performance. Running WebGL can be quite expensive depending on how powerful your devices are. In order to mitigate this, especially if you want to make your application available to a broad variety of devices, including weaker options, you should look into performance optimizations. This article goes through a"
+        }
+      ],
+      "text_characters": 14670,
+      "content_sha256": "0d8f69c8f9967fb3d1967b02316c62a9c4fe1c75164bc3ee70a2cef38238ba11",
+      "retrieved_at_utc": "2026-10-24T14:31:08.550319+00:00"
+    },
+    {
+      "id": "S06",
+      "label": "Three.js InstancedMesh",
+      "url": "https://threejs.org/docs/pages/InstancedMesh.html",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://threejs.org/docs/pages/InstancedMesh.html",
+      "title": "InstancedMesh - Three.js Docs",
+      "evidence": [
+        {
+          "term": "draw call",
+          "text": " same geometry and material(s) but with different world transformations. The usage of 'InstancedMesh' will help you to reduce the number of draw calls and thus improve the overall rendering performance in your application. Constructor new InstancedMesh ( geometry : BufferGeometry , material : Material | Array.< Material > , count : number ) Constructs a new instanced mesh. geometry The mesh geometry. material The mesh material. count The number "
+        },
+        {
+          "term": "same geometry",
+          "text": "dMesh A special version of a mesh with instanced rendering support. Use this class if you have to render a large number of objects with the same geometry and material(s) but with different world transformations. The usage of 'InstancedMesh' will help you to reduce the number of draw calls and thus improve the overall rendering performance in your application. Constructor new InstancedMesh ( geometry : BufferGeometry , material : Material | Array.< M"
+        },
+        {
+          "term": "instance",
+          "text": "InstancedMesh - Three.js Docs EventDispatcher → Object3D → Mesh → InstancedMesh A special version of a mesh with instanced rendering support. Use this class if you have to render a large number of objects with the same geometry and material(s) but with different world transformations. The usage of 'Instance"
+        },
+        {
+          "term": "instance",
+          "text": "InstancedMesh - Three.js Docs EventDispatcher → Object3D → Mesh → InstancedMesh A special version of a mesh with instanced rendering support. Use this class if you have to render a large number of objects with the same geometry and material(s) but with different world transformations. The usage of 'InstancedMesh' will help you to reduce the number of draw calls and thus i"
+        }
+      ],
+      "text_characters": 4429,
+      "content_sha256": "cdb07d158d78307687b83c3a5fea64490a14224eb1227f72b364e572f98f4474",
+      "retrieved_at_utc": "2026-10-24T14:31:16.185886+00:00"
+    },
+    {
+      "id": "S07",
+      "label": "Three.js GLTFLoader",
+      "url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "title": "GLTFLoader - Three.js Docs",
+      "evidence": [
+        {
+          "term": "Meshopt",
+          "text": "_materials_specular KHR_materials_transmission KHR_materials_iridescence KHR_materials_unlit KHR_materials_volume KHR_mesh_quantization KHR_meshopt_compression KHR_texture_basisu KHR_texture_transform EXT_materials_bump EXT_meshopt_compression EXT_mesh_gpu_instancing EXT_texture_avif EXT_texture_webp The following glTF 2.0 extensions are supported by separately registered plugins: KHR_gaussian_splatting KHR_materials_variants MSFT_texture_dds "
+        },
+        {
+          "term": "Meshopt",
+          "text": "ls_unlit KHR_materials_volume KHR_mesh_quantization KHR_meshopt_compression KHR_texture_basisu KHR_texture_transform EXT_materials_bump EXT_meshopt_compression EXT_mesh_gpu_instancing EXT_texture_avif EXT_texture_webp The following glTF 2.0 extensions are supported by separately registered plugins: KHR_gaussian_splatting KHR_materials_variants MSFT_texture_dds KHR_animation_pointer NEEDLE_progressive Code Example const loader = new GLTFLoader("
+        },
+        {
+          "term": "KTX2",
+          "text": "ts compressed with the KHR_draco_mesh_compression extension. dracoLoader The Draco loader to set. Returns: A reference to this loader. . setKTX2Loader ( ktx2Loader : KTX2Loader ) : GLTFLoader Sets the given KTX2 loader to this loader. Required for loading KTX2 compressed textures. ktx2Loader The KTX2 loader to set. Returns: A reference to this loader. . setMeshoptDecoder ( meshoptDecoder : Object ) : GLTFLoader Sets the given meshopt decode"
+        },
+        {
+          "term": "KTX2",
+          "text": " with the KHR_draco_mesh_compression extension. dracoLoader The Draco loader to set. Returns: A reference to this loader. . setKTX2Loader ( ktx2Loader : KTX2Loader ) : GLTFLoader Sets the given KTX2 loader to this loader. Required for loading KTX2 compressed textures. ktx2Loader The KTX2 loader to set. Returns: A reference to this loader. . setMeshoptDecoder ( meshoptDecoder : Object ) : GLTFLoader Sets the given meshopt decoder. Required f"
+        },
+        {
+          "term": "DRACO",
+          "text": "onger referenced, and they require special handling during the disposal process. GLTFLoader supports the following glTF 2.0 extensions: KHR_draco_mesh_compression KHR_lights_punctual KHR_materials_anisotropy KHR_materials_clearcoat KHR_materials_dispersion KHR_materials_emissive_strength KHR_materials_ior KHR_materials_specular KHR_materials_transmission KHR_materials_iridescence KHR_materials_unlit KHR_materials_volume KHR_mesh_quantization"
+        },
+        {
+          "term": "DRACO",
+          "text": "als_variants MSFT_texture_dds KHR_animation_pointer NEEDLE_progressive Code Example const loader = new GLTFLoader(); // Optional: Provide a DRACOLoader instance to decode compressed mesh data const dracoLoader = new DRACOLoader(); dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' ); loader.setDRACOLoader( dracoLoader ); const gltf = await loader.loadAsync( 'models/gltf/duck/duck.gltf' ); scene.add( gltf.scene ); Import GLTFLoader is an"
+        }
+      ],
+      "text_characters": 4377,
+      "content_sha256": "4ba8ea252731d5d6c7d63120bf313ebcb8efde38aec1fee2ac76a9f5ca6d4af2",
+      "retrieved_at_utc": "2026-10-24T14:31:16.168881+00:00"
+    },
+    {
+      "id": "S08",
+      "label": "Three.js texture resource disposal",
+      "url": "https://threejs.org/docs/pages/Texture.html",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://threejs.org/docs/pages/Texture.html",
+      "title": "Texture - Three.js Docs",
+      "evidence": [
+        {
+          "term": "dispose",
+          "text": "class for all textures. Note: After the initial use of a texture, its dimensions, format, and type cannot be changed. Instead, call Texture#dispose on the texture and instantiate a new one. Constructor new Texture ( image : Object , mapping : number , wrapS : number , wrapT : number , magFilter : number , minFilter : number , format : number , type : number , anisotropy : number , colorSpace : string ) Constructs a new texture. image The image"
+        },
+        {
+          "term": "dispose",
+          "text": "e ) : Texture Copies the values of the given texture to this instance. source The texture to copy. Returns: A reference to this instance. . dispose () Frees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app. Fires: Texture#event:dispose . setValues ( values : Object ) Sets this texture's properties based on values . values A container with texture parameters. . toJSON ( "
+        },
+        {
+          "term": "GPU",
+          "text": " The depth of the texture in pixels. . flipY : boolean If set to true , the texture is flipped along the vertical axis when uploaded to the GPU. Note that this property has no effect when using ImageBitmap . You need to configure the flip on bitmap creation instead. Default is true . . format : number The format of the texture. Default is RGBAFormat . . generateMipmaps : boolean Whether to generate mipmaps (if possible) for a texture. Set "
+        },
+        {
+          "term": "GPU",
+          "text": "g The default internal format is derived from Texture#format and Texture#type and defines how the texture data is going to be stored on the GPU. This property allows to overwrite the default format. Default is null . . isArrayTexture : boolean (readonly) Indicates if a texture should be handled like a texture array. Default is false . . isRenderTargetTexture : boolean (readonly) Indicates whether a texture belongs to a render target or not"
+        },
+        {
+          "term": "memory",
+          "text": "e texture. Default is UnsignedByteType . . unpackAlignment : number Specifies the alignment requirements for the start of each pixel row in memory. The allowable values are 1 (byte-alignment), 2 (rows aligned to even-numbered bytes), 4 (word-alignment), and 8 (rows start on double-word boundaries). Default is 4 . . updateRanges : Array.<Object> This can be used to only update a subregion or specific rows of the texture (for example, just the "
+        }
+      ],
+      "text_characters": 9729,
+      "content_sha256": "43dd556dc47bf876aabd1ca4c4b59b6138462283535b95136ebf1084b43ec99d",
+      "retrieved_at_utc": "2026-10-24T14:31:17.206942+00:00"
+    },
+    {
+      "id": "S09",
+      "label": "MDN pointer events",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+      "title": "Pointer events - Web APIs | MDN",
+      "evidence": [
+        {
+          "term": "pointercancel",
+          "text": " used if the change in pointer state cannot be reported by other events. pointerup Fired when a pointer is no longer active buttons state . pointercancel A browser fires this event if it concludes the pointer will no longer be able to generate events (for example, if the related device is deactivated, or the browser decided to interpret the interaction as a pan/zoom instead). For information on how to control this behavior, see the section on the to"
+        },
+        {
+          "term": "pointercancel",
+          "text": "e hit test boundaries of an element; firing the pointerup event for a device that does not support hover (see pointerup ); after firing the pointercancel event (see pointercancel ); when a pen stylus leaves the hover range detectable by the digitizer. pointerleave Fired when a pointer is moved out of the hit test boundaries of an element. For pen devices, this event is fired when the stylus leaves the hover range detectable by the digitizer. pointer"
+        },
+        {
+          "term": "capture",
+          "text": "ecific coordinate (or set of coordinates) on a screen. Examples of pointer input devices are mouse, pen/stylus, and touch contacts. pointer capture Pointer capture allows the events for a pointer to be retargeted to a particular element other than the normal hit test result of the pointer's location. See capturing the pointer for an example. Note: Pointer capture is different from pointer lock , which physically prevents the pointer from leavi"
+        },
+        {
+          "term": "capture",
+          "text": "e (or set of coordinates) on a screen. Examples of pointer input devices are mouse, pen/stylus, and touch contacts. pointer capture Pointer capture allows the events for a pointer to be retargeted to a particular element other than the normal hit test result of the pointer's location. See capturing the pointer for an example. Note: Pointer capture is different from pointer lock , which physically prevents the pointer from leaving a region. poi"
+        },
+        {
+          "term": "touch-action",
+          "text": "ter events. In this article Terminology Interfaces Examples Determining the Primary Pointer Determining button states Capturing the pointer touch-action CSS property Compatibility with mouse events Best practices Specifications Browser compatibility See also Terminology active buttons state The condition when a pointer has a non-zero value for the buttons property. For example, in the case of a pen, when the pen has physical contact with the digiti"
+        },
+        {
+          "term": "touch-action",
+          "text": "rowser decided to interpret the interaction as a pan/zoom instead). For information on how to control this behavior, see the section on the touch-action CSS property below. pointerout Fired for several reasons including: pointer is moved out of the hit test boundaries of an element; firing the pointerup event for a device that does not support hover (see pointerup ); after firing the pointercancel event (see pointercancel ); when a pen stylus leave"
+        }
+      ],
+      "text_characters": 22999,
+      "content_sha256": "822d615c6e5ede7029be1763b10840e59b2a10b09bf223654424c337aeb18d81",
+      "retrieved_at_utc": "2026-10-24T14:31:08.565317+00:00"
+    },
+    {
+      "id": "S10",
+      "label": "MDN Web Audio best practices",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices",
+      "title": "Web Audio API best practices - Web APIs | MDN",
+      "evidence": [
+        {
+          "term": "gesture",
+          "text": "y Browsers have started to implement an autoplay policy, which in general can be summed up as: \"Create or resume context from inside a user gesture\". But what does that mean in practice? A user gesture has been interpreted to mean a user-initiated event, normally a click event. Browser vendors decided that Web Audio contexts should not be allowed to automatically play audio; they should instead be started by a user. This is because autoplaying"
+        },
+        {
+          "term": "gesture",
+          "text": "y, which in general can be summed up as: \"Create or resume context from inside a user gesture\". But what does that mean in practice? A user gesture has been interpreted to mean a user-initiated event, normally a click event. Browser vendors decided that Web Audio contexts should not be allowed to automatically play audio; they should instead be started by a user. This is because autoplaying audio can be really annoying and obtrusive. But how d"
+        },
+        {
+          "term": "autoplay",
+          "text": "es â guidelines, tips, and tricks for working with the Web Audio API. In this article Loading sounds/files Cross browser & legacy support Autoplay policy User control Setting AudioParam values Loading sounds/files There are four main ways to load sound with the Web Audio API and it can be a little confusing as to which one you should use. When working with files, you are looking at either grabbing the file from an HTMLMediaElement (i.e., an <"
+        },
+        {
+          "term": "autoplay",
+          "text": "nents aiming to provide a \"more intuitive, declarative interface to Web Audio\". If you're used to writing JSX it might be worth looking at. Autoplay policy Browsers have started to implement an autoplay policy, which in general can be summed up as: \"Create or resume context from inside a user gesture\". But what does that mean in practice? A user gesture has been interpreted to mean a user-initiated event, normally a click event. Browser vendors"
+        },
+        {
+          "term": "resume",
+          "text": "e worth looking at. Autoplay policy Browsers have started to implement an autoplay policy, which in general can be summed up as: \"Create or resume context from inside a user gesture\". But what does that mean in practice? A user gesture has been interpreted to mean a user-initiated event, normally a click event. Browser vendors decided that Web Audio contexts should not be allowed to automatically play audio; they should instead be started by "
+        },
+        {
+          "term": "resume",
+          "text": "er interaction. We can use the same click event example here, test for the state of the context and start it, if it is suspended, using the resume() method. js const audioCtx = new AudioContext(); const button = document.querySelector(\"button\"); button.addEventListener(\"click\", () => { // check if context is in suspended state (autoplay policy) if (audioCtx.state === \"suspended\") { audioCtx.resume(); } }); You might instead be working with an"
+        }
+      ],
+      "text_characters": 10921,
+      "content_sha256": "e239947530b9bbcf21deb6fec808e1ff1023eb36575b0e0065e3cb3b72b8ed92",
+      "retrieved_at_utc": "2026-10-24T14:31:10.179340+00:00"
+    },
+    {
+      "id": "S11",
+      "label": "MDN localStorage",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "title": "Window: localStorage property - Web APIs | MDN",
+      "evidence": [
+        {
+          "term": "SecurityError",
+          "text": "ions Browser compatibility See also Value A Storage object which can be used to access the current origin's local storage space. Exceptions SecurityError DOMException Thrown in one of the following cases: The origin is not a valid scheme/host/port tuple . This can happen if the origin uses the file: or data: schemes, for example. The request violates a policy decision. For example, the user has configured the browsers to prevent the page from persis"
+        },
+        {
+          "term": "private",
+          "text": "nStorage data gets cleared when the page session ends â that is, when the page is closed. ( localStorage data for a document loaded in a \"private browsing\" or \"incognito\" session is cleared when the last \"private\" tab is closed.) In this article Value Description Examples Specifications Browser compatibility See also Value A Storage object which can be used to access the current origin's local storage space. Exceptions SecurityError DOMExcep"
+        },
+        {
+          "term": "private",
+          "text": "when the page is closed. ( localStorage data for a document loaded in a \"private browsing\" or \"incognito\" session is cleared when the last \"private\" tab is closed.) In this article Value Description Examples Specifications Browser compatibility See also Value A Storage object which can be used to access the current origin's local storage space. Exceptions SecurityError DOMException Thrown in one of the following cases: The origin is not a vali"
+        },
+        {
+          "term": "origin",
+          "text": "patibility Learn more The localStorage read-only property of the window interface allows you to access a Storage object for the Document 's origin ; the stored data is saved across browser sessions. localStorage is similar to sessionStorage , except that while localStorage data has no expiration time, sessionStorage data gets cleared when the page session ends â that is, when the page is closed. ( localStorage data for a document loaded in "
+        },
+        {
+          "term": "origin",
+          "text": "cle Value Description Examples Specifications Browser compatibility See also Value A Storage object which can be used to access the current origin's local storage space. Exceptions SecurityError DOMException Thrown in one of the following cases: The origin is not a valid scheme/host/port tuple . This can happen if the origin uses the file: or data: schemes, for example. The request violates a policy decision. For example, the user has configu"
+        }
+      ],
+      "text_characters": 8391,
+      "content_sha256": "aa02f1e93303696885f135058919b019bc9cd26d83ceb3e6f78eb21014d9deb5",
+      "retrieved_at_utc": "2026-10-24T14:31:08.793474+00:00"
+    },
+    {
+      "id": "S12",
+      "label": "MDN Page Visibility API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API",
+      "title": "Page Visibility API - Web APIs | MDN",
+      "evidence": [
+        {
+          "term": "background",
+          "text": " actions or behave differently. For example, if your web app is playing a video, it can pause the video when the user puts the tab into the background, and resume playback when the user returns to the tab. The user doesn't lose their place in the video, the video's soundtrack doesn't interfere with audio in the new foreground tab, and the user doesn't miss any of the video in the meantime. Visibility states of an <iframe> are the same as the pare"
+        },
+        {
+          "term": "background",
+          "text": "s hidden. Pages only become hidden when the user switches tabs or minimizes the browser window containing the tab. Policies in place to aid background page performance Separately from the Page Visibility API, user agents typically have a number of policies in place to mitigate the performance impact of background or hidden tabs. These may include: Most browsers stop sending requestAnimationFrame() callbacks to background tabs or hidden <iframe> s"
+        },
+        {
+          "term": "requestAnimationFrame",
+          "text": " number of policies in place to mitigate the performance impact of background or hidden tabs. These may include: Most browsers stop sending requestAnimationFrame() callbacks to background tabs or hidden <iframe> s in order to improve performance and battery life. Timers such as setTimeout() are throttled in background/inactive tabs to help improve performance. See Reasons for longer delays than specified for more details. Browsers implement budget-based bac"
+        },
+        {
+          "term": "visibilitychange",
+          "text": " usage When the user minimizes the window, switches to another tab, or the document is entirely obscured by another window, the API sends a visibilitychange event to let listeners know the state of the page has changed. You can detect the event and perform some actions or behave differently. For example, if your web app is playing a video, it can pause the video when the user puts the tab into the background, and resume playback when the user returns t"
+        },
+        {
+          "term": "visibilitychange",
+          "text": "at is minimized, or because the device's screen is off. Events The Page Visibility API adds the following events to the Document interface: visibilitychange Fired when the content of a tab has become visible or has been hidden. Examples Pausing audio on page hide This example pauses playing audio when the page is hidden and resumes playing when the page becomes visible again. The <audio> element controls allow the user to toggle between playing and pau"
+        }
+      ],
+      "text_characters": 9236,
+      "content_sha256": "278724ce2ffc27a75fd97b6eed8761fae253d3f8564764d6311e8315b2fba7ba",
+      "retrieved_at_utc": "2026-10-24T14:31:17.084598+00:00"
+    },
+    {
+      "id": "S13",
+      "label": "MDN WebGL best practices",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices",
+      "title": "WebGL best practices - Web APIs | MDN",
+      "evidence": [
+        {
+          "term": "memory",
+          "text": " into float textures Some formats (e.g., RGB) may be emulated Avoid alpha:false, which can be expensive Consider compressed texture formats Memory usage of depth and stencil formats texImage/texSubImage uploads (esp. videos) can cause pipeline flushes Use texStorage to create textures Use invalidateFramebuffer Use non-blocking async data readback devicePixelRatio and high-dpi rendering ResizeObserver and 'device-pixel-content-box' Use WEBGL_p"
+        },
+        {
+          "term": "memory",
+          "text": "efox), WebGL stops generating descriptive messages, which really hinders debugging. The only errors a well-formed page generates are OUT_OF_MEMORY and CONTEXT_LOST . Understand extension availability The availability of most WebGL extensions depends on the client system. When using WebGL extensions, if possible, try to make them optional by gracefully adapting to the case there they are not supported. These WebGL 1 extensions are universally "
+        },
+        {
+          "term": "draw call",
+          "text": " in production Always enable vertex attrib 0 as an array Estimate a per-pixel VRAM Budget Consider rendering to a smaller back buffer Batch draw calls Avoid \"#ifdef GL_ES\" Prefer doing work in the vertex shader Compile Shaders and Link Programs in parallel Prefer KHR_parallel_shader_compile Don't check shader compile status unless linking fails Be precise with GLSL precision annotations Prefer builtins instead of building your own Use mipmaps fo"
+        },
+        {
+          "term": "draw call",
+          "text": " (vertexAttribPointer, disable/enableVertexAttribArray) Drawing from static, unchanging VAOs is faster than mutating the same VAO for every draw call. For unchanged VAOs, browsers can cache the fetch limits, whereas when VAOs change, browsers must revalidate and recalculate limits. The overhead for this is relatively low, but re-using VAOs means fewer vertexAttribPointer calls too, so it's worth doing wherever it's easy. Delete objects eagerly D"
+        },
+        {
+          "term": "context",
+          "text": "GL errors Understand extension availability Understand system limits Avoid invalidating FBO attachment bindings Delete objects eagerly Lose contexts eagerly Flush when expecting results Avoid blocking API calls in production Always enable vertex attrib 0 as an array Estimate a per-pixel VRAM Budget Consider rendering to a smaller back buffer Batch draw calls Avoid \"#ifdef GL_ES\" Prefer doing work in the vertex shader Compile Shaders and Link P"
+        },
+        {
+          "term": "context",
+          "text": "L stops generating descriptive messages, which really hinders debugging. The only errors a well-formed page generates are OUT_OF_MEMORY and CONTEXT_LOST . Understand extension availability The availability of most WebGL extensions depends on the client system. When using WebGL extensions, if possible, try to make them optional by gracefully adapting to the case there they are not supported. These WebGL 1 extensions are universally supported, a"
+        }
+      ],
+      "text_characters": 35432,
+      "content_sha256": "af6dbc0017739006c672c0ee911f6f7f13481da6ceac664928a7e70a69eb406e",
+      "retrieved_at_utc": "2026-10-24T14:31:08.995404+00:00"
+    },
+    {
+      "id": "S14",
+      "label": "Vercel Hobby plan",
+      "url": "https://vercel.com/docs/plans/hobby",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://vercel.com/docs/plans/hobby",
+      "title": "Vercel Hobby plan",
+      "evidence": [
+        {
+          "term": "non-commercial",
+          "text": "e after 7 days As stated in the [fair use guidelines](/docs/limits/fair-use-guidelines#commercial-usage), the Hobby plan restricts users to non-commercial, personal use only. When your personal account gets converted to a Hobby team, your usage and activity log will be reset. To learn more about this change, read the [changelog](/changelog/2024-01-account-changes). ## Comparing Hobby and Pro plans The Pro plan offers more resources and advanced featu"
+        },
+        {
+          "term": "personal",
+          "text": "install_vercel_plugin: npx plugins add vercel/vercel-plugin --- # Vercel Hobby Plan The Hobby plan is **free** and aimed at developers with personal projects, and small-scale applications. It offers a generous set of features for individual users on a **per month** basis: ## Related pages > **For AI agents:** Follow these links to understand how this page connects to the rest of the Vercel ecosystem. For the full cross-link map (inbound, outbou"
+        },
+        {
+          "term": "personal",
+          "text": "s stated in the [fair use guidelines](/docs/limits/fair-use-guidelines#commercial-usage), the Hobby plan restricts users to non-commercial, personal use only. When your personal account gets converted to a Hobby team, your usage and activity log will be reset. To learn more about this change, read the [changelog](/changelog/2024-01-account-changes). ## Comparing Hobby and Pro plans The Pro plan offers more resources and advanced features compar"
+        },
+        {
+          "term": "limit",
+          "text": "s - /docs/global-config/using-global-config - /docs/pricing/regional-pricing - /docs/functions/usage-and-pricing - /docs/image-optimization/limits-and-pricing summary: Learn about the Hobby plan and how it compares to the Pro plan. install_vercel_plugin: npx plugins add vercel/vercel-plugin --- # Vercel Hobby Plan The Hobby plan is **free** and aimed at developers with personal projects, and small-scale applications. It offers a generous set"
+        },
+        {
+          "term": "limit",
+          "text": "s://vercel.com/kb/guide/why-is-my-account-deployment-blocked) — Learn why a Vercel account or deployment gets paused, from budget and usage limits to policy violations, and how to resu - [A more flexible Pro plan for modern teams](https://vercel.com/blog/new-pro-pricing-plan) - [Improved infrastructure pricing](https://vercel.com/blog/improved-infrastructure-pricing) - [Pricing on Vercel](https://vercel.com/docs/pricing) — Learn about Vercel"
+        }
+      ],
+      "text_characters": 10400,
+      "content_sha256": "a7a0003a1aaaa7e82c6e90165f7f5023b1069d448a8bbc0b7e5b068df8edc14e",
+      "retrieved_at_utc": "2026-10-24T14:31:09.363225+00:00"
+    },
+    {
+      "id": "S15",
+      "label": "Godot web export",
+      "url": "https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html",
+      "title": "Exporting for the Web — Godot Engine (stable) documentation in English",
+      "evidence": [
+        {
+          "term": "SharedArrayBuffer",
+          "text": "t actually captures the input. You can still open the developer console by accessing the browser's menu. Note Due to security concerns with SharedArrayBuffer due to various exploits, the use of multiple threads for the Web platform has multiple drawbacks, including requiring specific server-side headers and complete cross-origin isolation (meaning no ads, nor third-party integrations on the website hosting your game). Since Godot 4.3, Godot supports exp"
+        },
+        {
+          "term": "SharedArrayBuffer",
+          "text": "ng Only when exporting with Use Threads , to ensure low audio latency and the ability to use Thread in web exports, Godot 4 web exports use SharedArrayBuffer . This requires a secure context , while also requiring the following CORS headers to be set when serving the files: Cross - Origin - Opener - Policy : same - origin Cross - Origin - Embedder - Policy : require - corp If you don't control the web server or are unable to add response headers, check "
+        },
+        {
+          "term": "WebGL 2",
+          "text": "Compiling for the Web . HTML5 export allows publishing games made in Godot Engine to the browser. This requires support for WebAssembly and WebGL 2.0 in the user's browser. Attention Projects written in C# using Godot 4 currently cannot be exported to the web. See this blog post for more information. To use C# on web platforms, use Godot 3 instead. Tip Use the browser-integrated developer console, usually opened with F12 or Ctrl + Shift + I ( "
+        },
+        {
+          "term": "WebGL 2",
+          "text": "l export. Some issues could occur if some exported files are renamed, including the main HTML file. WebGL version  Godot 4 can only target WebGL 2.0 (using the Compatibility rendering method). Forward+/Mobile are not supported on the web platform, as these rendering methods are designed around modern low-level graphics APIs. Godot currently does not support WebGPU, which is a prerequisite for allowing Forward+/Mobile to run on the web platfor"
+        },
+        {
+          "term": "thread",
+          "text": "User Interface (UI) New pages since version 3.1 Project workflow 2D Audio Math Inputs Internationalization Shading Networking Plugins Multi-threading Creating content Optimization Legal New pages since version 3.0 Step by step Scripting Project workflow 2D 3D Physics Animation GUI Viewports Shading Plugins Platform-specific Multi-threading Creating content Miscellaneous Compiling Engine development Getting started Introduction Introduction to"
+        },
+        {
+          "term": "thread",
+          "text": "ges since version 3.0 Step by step Scripting Project workflow 2D 3D Physics Animation GUI Viewports Shading Plugins Platform-specific Multi-threading Creating content Miscellaneous Compiling Engine development Getting started Introduction Introduction to Godot What is Godot? What can the engine do? How does it work and look? Programming languages What do I need to know to use Godot? Learn to code with GDScript Learn in your browser with the G"
+        }
+      ],
+      "text_characters": 178683,
+      "content_sha256": "744684d34fde9d4e97a582056bb97f32ac193b71d07fc6a31a7615752a08d3a4",
+      "retrieved_at_utc": "2026-10-24T14:31:09.873467+00:00"
+    },
+    {
+      "id": "S16",
+      "label": "Babylon.js engine capabilities",
+      "url": "https://www.babylonjs.com/specifications/",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://www.babylonjs.com/specifications/",
+      "title": "Babylon.js Specifications",
+      "evidence": [
+        {
+          "term": "WebGPU",
+          "text": " AUTHORING DIGITAL TWIN AND IOT METAVERSE DOCUMENTATION VIDEOS BLOG ENGINE SPECIFICATIONS MAIN FEATURES Transparent WebGL 1.0 / WebGL 2.0 / WebGPU support Complete scene graph with lights, cameras, materials, meshes, animations, audio & actions Node Render Graph for advanced control over every aspect of the render pipeline Frame Graph A user-friendly, feature-rich, and lightweight viewer Native host (iOS, Android, MacOS, Win32, UWP) Native co"
+        },
+        {
+          "term": "WebGL",
+          "text": "S ECOMMERCE CREATION AND AUTHORING DIGITAL TWIN AND IOT METAVERSE DOCUMENTATION VIDEOS BLOG ENGINE SPECIFICATIONS MAIN FEATURES Transparent WebGL 1.0 / WebGL 2.0 / WebGPU support Complete scene graph with lights, cameras, materials, meshes, animations, audio & actions Node Render Graph for advanced control over every aspect of the render pipeline Frame Graph A user-friendly, feature-rich, and lightweight viewer Native host (iOS, Android, Mac"
+        },
+        {
+          "term": "WebGL",
+          "text": "CREATION AND AUTHORING DIGITAL TWIN AND IOT METAVERSE DOCUMENTATION VIDEOS BLOG ENGINE SPECIFICATIONS MAIN FEATURES Transparent WebGL 1.0 / WebGL 2.0 / WebGPU support Complete scene graph with lights, cameras, materials, meshes, animations, audio & actions Node Render Graph for advanced control over every aspect of the render pipeline Frame Graph A user-friendly, feature-rich, and lightweight viewer Native host (iOS, Android, MacOS, Win32, U"
+        },
+        {
+          "term": "physics",
+          "text": "ne Frame Graph A user-friendly, feature-rich, and lightweight viewer Native host (iOS, Android, MacOS, Win32, UWP) Native collisions engine Physics engine thanks to Havok for the web Havok Character Controller Ragdoll Physics Scene picking GPU Mesh Picking GPU Bounding Box Support left and right handed systems Anti-aliasing Animations engine Animation Retargeting Particles (both CPU and GPU) and Solid particles Systems Particle Flow Maps Parti"
+        },
+        {
+          "term": "physics",
+          "text": "st (iOS, Android, MacOS, Win32, UWP) Native collisions engine Physics engine thanks to Havok for the web Havok Character Controller Ragdoll Physics Scene picking GPU Mesh Picking GPU Bounding Box Support left and right handed systems Anti-aliasing Animations engine Animation Retargeting Particles (both CPU and GPU) and Solid particles Systems Particle Flow Maps Particle Attractors Sprites and 2D layers Complete audio engine based on Web Audio "
+        }
+      ],
+      "text_characters": 4521,
+      "content_sha256": "d79fa01d99358ee031653055f2a8e1ce033dc2c2a47877b999922aae0acd3179",
+      "retrieved_at_utc": "2026-10-24T14:31:51.632151+00:00"
+    },
+    {
+      "id": "S17",
+      "label": "Marine Drive city reference",
+      "url": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai/marine-drive",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://www.incredibleindia.gov.in/en/maharashtra/mumbai/marine-drive",
+      "title": "Marine Drive- Mumbai's Iconic Promenade by the Sea | Incredible India",
+      "evidence": [
+        {
+          "term": "Arabian",
+          "text": "' Situated in South Mumbai, Marine Drive stretches along a 3.6-kilometre-long C-shaped boulevard, offering a stunning panoramic view of the Arabian Sea. Known affectionately as the Queen’s Necklace, this promenade lights up in the evening to resemble a string of pearls from an elevated position, creating a breathtaking sight against the backdrop of the bustling city. Marine Drive is not just a scenic location but a pulsating part of Mumbai, th"
+        },
+        {
+          "term": "Queen",
+          "text": ": Chhatrapati Shivaji Maharaj International Airport (BOM), Mumbai Share Share on Facebook Share on Twitter Share on Whatsapp Copy Link 'The Queen’s Necklace' Situated in South Mumbai, Marine Drive stretches along a 3.6-kilometre-long C-shaped boulevard, offering a stunning panoramic view of the Arabian Sea. Known affectionately as the Queen’s Necklace, this promenade lights up in the evening to resemble a string of pearls from an elevated po"
+        },
+        {
+          "term": "Queen",
+          "text": "stretches along a 3.6-kilometre-long C-shaped boulevard, offering a stunning panoramic view of the Arabian Sea. Known affectionately as the Queen’s Necklace, this promenade lights up in the evening to resemble a string of pearls from an elevated position, creating a breathtaking sight against the backdrop of the bustling city. Marine Drive is not just a scenic location but a pulsating part of Mumbai, the vibrant 'City of Dreams', where thous"
+        },
+        {
+          "term": "Marine Drive",
+          "text": "Maharashtra Marine Drive Video Description Today Monthly January 12.6 - 35.2 °C February 13.9 - 36.8 °C March 17.1 - 38.6 °C April 21 - 37.2 °C May 24.5 - 35.7 °C June 23.2 - 35.4 °C July 23.4 - 32.6 °C August 23.4 - 31.8 °C September 23 - 33.5 °C October 20.3 - 36.4 °C November 17.8 - 36 °C December 14.3 - 35.2 °C Nearest"
+        },
+        {
+          "term": "Marine Drive",
+          "text": "Airport (BOM), Mumbai Share Share on Facebook Share on Twitter Share on Whatsapp Copy Link 'The Queen’s Necklace' Situated in South Mumbai, Marine Drive stretches along a 3.6-kilometre-long C-shaped boulevard, offering a stunning panoramic view of the Arabian Sea. Known affectionately as the Queen’s Necklace, this promenade lights up in the evening to resemble a string of pearls from an elevated position, creating a breathtaking sight against the b"
+        }
+      ],
+      "text_characters": 18193,
+      "content_sha256": "b5add80b3b6f7c385d3c5a1a045d2382c3eca847f0e1a365c4b02e3f1a228263",
+      "retrieved_at_utc": "2026-10-24T14:31:10.387084+00:00"
+    },
+    {
+      "id": "S18",
+      "label": "India Gate city reference",
+      "url": "https://www.incredibleindia.gov.in/en/delhi/delhi/india-gate",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://www.incredibleindia.gov.in/en/delhi/delhi/india-gate",
+      "title": "Explore the India Gate in Delhi | Incredible India",
+      "evidence": [
+        {
+          "term": "arch",
+          "text": "nvisioned India Gate as a structure that would blend Western architectural elements with Indian cultural motifs. The result was a triumphal arch reminiscent of the Arc de Triomphe in Paris. The grand archway, adorned with intricate carvings and decorative motifs, stands as a testament to Lutyens' architectural genius. The entire arch stands on a low base of red Bharatpur stone and rises in stages to a huge moulding. The cornice is inscribed"
+        },
+        {
+          "term": "arch",
+          "text": "he grand archway, adorned with intricate carvings and decorative motifs, stands as a testament to Lutyens' architectural genius. The entire arch stands on a low base of red Bharatpur stone and rises in stages to a huge moulding. The cornice is inscribed with the Imperial suns while both sides of the arch have INDIA, flanked by the dates MCMXIV (1914 left) and MCMXIX (1919 right). It is said that the construction of India Gate posed numerous"
+        },
+        {
+          "term": "India Gate",
+          "text": "Delhi India Gate Video Description Today Monthly January 3.6 - 25.2 °C February 6.8 - 29.4 °C March 10.5 - 36.2 °C April 16.3 - 42.8 °C May 19.7 - 45.9 °C June 20.6 - 45.6 °C July 22.8 - 41.5 °C August 23.1 - 38.3 °C September 21.5 - 37.2 °C October 14.5 - 36.2 °C November 9.8 - 32.2 °C December 3.2 - 27.7 °C Major"
+        },
+        {
+          "term": "India Gate",
+          "text": "Link Homage to the brave In the heart of New Delhi stands a monument that captures the spirit of a nation and the sacrifices of its heroes. India Gate, an awe-inspiring 42-meter-high archway of sandstone, rises majestically against the backdrop of Rashtrapati Bhawan, inviting you to step into a realm where past and present intertwine. Designed by Sir Edwin Lutyens, this iconic landmark is more than just a stunning feat of architecture—it's a poig"
+        },
+        {
+          "term": "Rajpath",
+          "text": ", when India Gate becomes the focal point of national pride. Every January 26, a grand parade is held along Kartavya Path (earlier known as Rajpath), and you can see contingents, tanks, vibrant floats, weapons all being conducted in a neat file. School children and folk dancers join the parade and add a cultural touch to the whole affair. India Gate after the sunset As the sun dips below the horizon, India Gate undergoes a magical transformati"
+        }
+      ],
+      "text_characters": 21036,
+      "content_sha256": "543ddce686409a1cc8063b44489c72e873534a100d498920ec74a8cc9dd17c65",
+      "retrieved_at_utc": "2026-10-24T14:31:10.444081+00:00"
+    },
+    {
+      "id": "S19",
+      "label": "Howrah Bridge city reference",
+      "url": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/howrah-bridge",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://www.incredibleindia.gov.in/en/west-bengal/kolkata/howrah-bridge",
+      "title": "Howrah Bridge in Kolkata: An Iconic Landmark of India | Incredible India",
+      "evidence": [
+        {
+          "term": "Hooghly",
+          "text": "f Kolkata, where the city's pulse throbs with a relentless energy, stands the majestic Howrah Bridge. More than just a connector across the Hooghly River, it's an architectural marvel that embodies the spirit of Kolkata itself. Its history is as rich as the river it spans, dating back to the 19th century when it replaced an earlier pontoon bridge. The design, a stunning cantilever bridge without a single nut or bolt, was a feat of engineering "
+        },
+        {
+          "term": "Hooghly",
+          "text": "ld War II, when the need for a sturdy river crossing became imperative. Proposed in 1862 by the Bengal government, the idea was to span the Hooghly River, connecting the bustling cities of Howrah and Kolkata. However, it wasn't until 1936 that construction commenced under the guidance of Mr. Walton, a visionary engineer. Finally, on February 3rd, 1943, the Howrah Bridge, a testament to human ingenuity, was inaugurated, forever altering the cit"
+        },
+        {
+          "term": "cantilever",
+          "text": "istory is as rich as the river it spans, dating back to the 19th century when it replaced an earlier pontoon bridge. The design, a stunning cantilever bridge without a single nut or bolt, was a feat of engineering genius in its time. Today, the bridge remains a marvel, its steel frame a silhouette against the sky, bearing the weight of not just vehicles but the city's vibrant lifeblood. The sight of the Howrah Bridge, bathed in the golden hues of"
+        },
+        {
+          "term": "cantilever",
+          "text": "rah Bridge's architectural brilliance lies in its design and construction. Spanning a length of 468 feet between pillars, it is the busiest cantilever bridge in the world. Unlike traditional bridges, the Howrah Bridge's steel structure was assembled using rivets, a testament to its sturdy construction and resilience. Its innovative design, a fusion of cantilever and suspension bridge elements, ensures stability and endurance, even in the face of "
+        },
+        {
+          "term": "Howrah",
+          "text": "West Bengal Howrah Bridge Video Description Today Monthly January 10.9 - 29.8 °C February 12.4 - 33.9 °C March 18.2 - 37.5 °C April 21.1 - 38.8 °C May 21.8 - 39.0 °C June 23.9 - 37.8 °C July 24.3 - 36.0 °C August 24.6 - 35.3 °C September 23.9 - 35.5 °C October 20.9 - 35.2 °C November 16.0 - 33.1 °C December 11.9 - 30"
+        },
+        {
+          "term": "Howrah",
+          "text": "ember 16.0 - 33.1 °C December 11.9 - 30.0 °C Nearest Airport : Netaji Subhash Chandra Bose Airport (CCU), Kolkata Nearest Railway Station : Howrah Railway Station (HWH) Sealdah Railway Station (SDAH) Share Share on Facebook Share on Twitter Share on Whatsapp Copy Link State/UT : Kolkata Share Share on Facebook Share on Twitter Share on Whatsapp Copy Link Nearest Airport : Netaji Subhash Chandra Bose Airport (CCU), Kolkata Share Share on Faceb"
+        }
+      ],
+      "text_characters": 18465,
+      "content_sha256": "09f91fc1694b26e79371635a0a38d824c0e38c272f804f4bb5d75d49a3823518",
+      "retrieved_at_utc": "2026-10-24T14:31:10.620518+00:00"
+    },
+    {
+      "id": "S20",
+      "label": "Marina Beach city reference",
+      "url": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/marina-beach",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://www.incredibleindia.gov.in/en/tamil-nadu/chennai/marina-beach",
+      "title": "Marina Beach - Chennai's Iconic Seaside Destination | Incredible India",
+      "evidence": [
+        {
+          "term": "Bay of Bengal",
+          "text": "adise collide Get ready to dive into the extraordinary expense of one of the world's longest urban beaches! Spanning around 13 km along the Bay of Bengal, Marina Beach is known for its golden sand and shimmering water. A symphony of rhythmic waves beckons, lulling you into a state of calmness and encouraging you to bask in the peaceful surroundings. Whether you're seeking relaxation, recreation, or cultural immersion, Marina Beach has something for "
+        },
+        {
+          "term": "Marina",
+          "text": "Tamil Nadu Marina Beach Video Description Today Monthly January 18.9 - 31.6 °C February 19.8 - 33.5 °C March 21.8 - 35.8 °C April 24.1 - 37.7 °C May 24.7 - 41.7 °C June 23.9 - 40.3 °C July 23.4 - 38.7 °C August 23.1 - 37.6 °C September 22.8 - 37.0 °C October 22.6 - 35.9 °C November 20.8 - 33.0 °C December 19.6 - 31."
+        },
+        {
+          "term": "Marina",
+          "text": "et ready to dive into the extraordinary expense of one of the world's longest urban beaches! Spanning around 13 km along the Bay of Bengal, Marina Beach is known for its golden sand and shimmering water. A symphony of rhythmic waves beckons, lulling you into a state of calmness and encouraging you to bask in the peaceful surroundings. Whether you're seeking relaxation, recreation, or cultural immersion, Marina Beach has something for everyone"
+        },
+        {
+          "term": "promenade",
+          "text": " the story of Chennai's rich past. In the 1880s, enthralled by the beach's charm, Governor Mountstuart Grant Duff oversaw the creation of a promenade along its shores and named it Madaras Marina. This served as a meeting place for many freedom fighters before the independence. The Triumph of Labour, sculpted by Debi Prasad Roy Chowdhury, depicts four men struggling to move a rock and was installed on Republic Day in 1959. Later in 1968, the stat"
+        }
+      ],
+      "text_characters": 20856,
+      "content_sha256": "4523164c6bac4163277725252f05a7bc795728798eecf39584256b45d1226324",
+      "retrieved_at_utc": "2026-10-24T14:31:10.887326+00:00"
+    },
+    {
+      "id": "S21",
+      "label": "Bengaluru city reference",
+      "url": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://www.incredibleindia.gov.in/en/karnataka/bengaluru",
+      "title": "Bengaluru Tourist Places | Best Places To Visit | Incredible India",
+      "evidence": [
+        {
+          "term": "Cubbon",
+          "text": "h parks to serene lakes and ancient temples to bustling markets. Whether exploring the majestic Bangalore Palace, enjoying a stroll through Cubbon Park, or indulging in the city's legendary coffee culture, Bengaluru has something to captivate your heart and inspire your soul! Bengaluru, a major research centre, stands at the forefront of India’s technological revolution. It has a trendy, high-speed self-image unlike anywhere else in South Ind"
+        },
+        {
+          "term": "Cubbon",
+          "text": "living chronicle of India's past. Blooming parks and museums A welcome green space in the city's heart, shaded by massive clumps of bamboo, Cubbon Park is entered from the western end of MG Road, presided over by a statue of Queen Victoria. On Kasturba Road, which runs along its southern edge, the Government Museum features prehistoric artifacts, Vijayanagar, Hoysala, and Chalukya sculptures, musical instruments, Thanjavur paintings, and Decc"
+        },
+        {
+          "term": "Vidhana",
+          "text": "llery, which exhibits 20th-century landscapes, portraits, abstract art, wood sculpture, and occasional temporary art shows. The spectacular Vidhana Soudha Built in 1956, Bengaluru’s vast State Secretariat, Vidhana Soudha, northwest of Cubbon Park, is the largest civic structure of its kind in the country. K. Hanumanthaiah, chief minister at the time, wanted a “people’s palace” that, following the transfer of power from the royal Wadiyar dynast"
+        },
+        {
+          "term": "Vidhana",
+          "text": " art, wood sculpture, and occasional temporary art shows. The spectacular Vidhana Soudha Built in 1956, Bengaluru’s vast State Secretariat, Vidhana Soudha, northwest of Cubbon Park, is the largest civic structure of its kind in the country. K. Hanumanthaiah, chief minister at the time, wanted a “people’s palace” that, following the transfer of power from the royal Wadiyar dynasty to a legislature, would “reflect the power and dignity of the pe"
+        },
+        {
+          "term": "Garden",
+          "text": "izing the city's rapid progress and potential. In the 1800s, Bengaluru’s gentle climate, broad streets, and green public parks made it the “Garden City.” However, Bengaluru has undergone a massive transformation for well over a decade. Many foreigners pass through to see Satya Sai Baba at his ashram in Puttaparthy in Andhra Pradesh or his temporary residence at the Whitefield ashram on the city's outskirts. That said. Bengaluru is a Westerniz"
+        },
+        {
+          "term": "Garden",
+          "text": "mbining local models from Bengaluru, Mysore, and Somnathpur with features from Rajasthan and the rest of India. A walk in Lalbagh Botanical Gardens Inspired by the splendid gardens of the Moghuls and the French botanical gardens at Pondicherry in Tamil Nadu, Sultan Haider Ali set to work in 1760 laying out the Lalbagh Botanical Gardens, 4km south of the centre. Originally covering 40 acres, just beyond his fort - where one of Kempe Gowda’s or"
+        }
+      ],
+      "text_characters": 27086,
+      "content_sha256": "68a3171c24844bbd4a2c30f3ce840368d4e0f5b647f1eccb03e482bb45c97e4e",
+      "retrieved_at_utc": "2026-10-24T14:31:10.847791+00:00"
+    },
+    {
+      "id": "S22",
+      "label": "glTF Transform asset optimization",
+      "url": "https://gltf-transform.dev/cli",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://gltf-transform.dev/cli",
+      "title": "glTF Transform",
+      "evidence": [
+        {
+          "term": "meshopt",
+          "text": "KHRMeshQuantization KHRNodeVisibility KHRTextureBasisu KHRTextureTransform KHRXMP Vendor Extensions EXTMeshFeatures EXTMeshGPUInstancing EXTMeshoptCompression EXTStructuralMetadata EXTTextureAVIF EXTTextureWebP @gltf-transform/functions Transforms center dedup dequantize draco flatten instance join meshopt metalRough normals palette partition prune quantize reorder resample sequence simplify sparse tangents textureCompress uninstance unlit unp"
+        },
+        {
+          "term": "meshopt",
+          "text": "XTStructuralMetadata EXTTextureAVIF EXTTextureWebP @gltf-transform/functions Transforms center dedup dequantize draco flatten instance join meshopt metalRough normals palette partition prune quantize reorder resample sequence simplify sparse tangents textureCompress uninstance unlit unpartition unweld unwrap vertexColorSpace weld Functions clearNodeParent clearNodeTransform cloneDocument compactPrimitive compressTexture convertPrimitiveToLines"
+        },
+        {
+          "term": "optimize",
+          "text": "nd packing/unpacking glTF or GLB files. Installation: npm install --global @gltf-transform/cli Troubleshooting glTF Transform uses Sharp to optimize images. If you encounter errors during installation related to Sharp, consult the Sharp installation page. When installing the glTF Transform CLI in China, a mirror site provided by Alibaba may be required: npm config set sharp_binary_host \"https://npmmirror.com/mirrors/sharp\" npm config set sharp_"
+        },
+        {
+          "term": "optimize",
+          "text": "pmmirror.com/mirrors/sharp-libvips\" npm install --global @gltf-transform/cli To run the most common optimizations in one easy step, use the optimize command: gltf-transform optimize input.glb output.glb --compress draco --texture-compress webp Defaults in the optimize command may not be ideal for all scenes. Some of its features can be configured ( optimize -h ), or more advanced users may wish to inspect their scenes then pick and choose optim"
+        },
+        {
+          "term": "texture",
+          "text": "l AnimationSampler Buffer Camera ExtensibleProperty ExtensionProperty Material Mesh Node Primitive PrimitiveTarget Property Root Scene Skin Texture TextureInfo Utilities BufferUtils ColorUtils FileUtils HTTPUtils ImageUtils Logger @gltf-transform/extensions Khronos Extensions KHRAccessorFloat16 KHRAccessorFloat64 KHRDracoMeshCompression KHRLightsPunctual KHRMaterialsAnisotropy KHRMaterialsClearcoat KHRMaterialsDiffuseTransmission KHRMaterialsD"
+        },
+        {
+          "term": "texture",
+          "text": "ionSampler Buffer Camera ExtensibleProperty ExtensionProperty Material Mesh Node Primitive PrimitiveTarget Property Root Scene Skin Texture TextureInfo Utilities BufferUtils ColorUtils FileUtils HTTPUtils ImageUtils Logger @gltf-transform/extensions Khronos Extensions KHRAccessorFloat16 KHRAccessorFloat64 KHRDracoMeshCompression KHRLightsPunctual KHRMaterialsAnisotropy KHRMaterialsClearcoat KHRMaterialsDiffuseTransmission KHRMaterialsDispersio"
+        }
+      ],
+      "text_characters": 6593,
+      "content_sha256": "4f4e1603d8225d74e2e99b03ded8af88ab712110aa467c9e0ce3ce3e0738271f",
+      "retrieved_at_utc": "2026-10-24T14:31:10.969428+00:00"
+    },
+    {
+      "id": "S23",
+      "label": "MDN prefers reduced motion",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion",
+      "title": "prefers-reduced-motion CSS media feature - CSS | MDN",
+      "evidence": [
+        {
+          "term": "reduce",
+          "text": "prefers-reduced-motion CSS media feature Baseline Widely available This feature is well established and works across many devices and browser versions. Itâs been available across browsers since January 2020. See full compatibility Learn more Warning: An embedded example at the bottom of this page has a scaling "
+        },
+        {
+          "term": "reduce",
+          "text": " this page has a scaling movement that may be problematic for some readers. Readers with vestibular motion disorders may wish to enable the reduce motion feature on their device before viewing the animation. The prefers-reduced-motion CSS media feature is used to detect if a user has enabled a setting on their device to minimize the amount of non-essential motion. The setting is used to convey to the browser on the device that the user prefer"
+        },
+        {
+          "term": "vestibular",
+          "text": " more Warning: An embedded example at the bottom of this page has a scaling movement that may be problematic for some readers. Readers with vestibular motion disorders may wish to enable the reduce motion feature on their device before viewing the animation. The prefers-reduced-motion CSS media feature is used to detect if a user has enabled a setting on their device to minimize the amount of non-essential motion. The setting is used to convey to"
+        },
+        {
+          "term": "vestibular",
+          "text": "user prefers an interface that removes, reduces, or replaces motion-based animations. Such animations can trigger discomfort for those with vestibular motion disorders . Animations such as scaling or panning large objects can be vestibular motion triggers. In this article Syntax User preferences Examples Specifications Browser compatibility See also Syntax no-preference Indicates that a user has made no preference known on the device. This keywor"
+        },
+        {
+          "term": "animation",
+          "text": " for some readers. Readers with vestibular motion disorders may wish to enable the reduce motion feature on their device before viewing the animation. The prefers-reduced-motion CSS media feature is used to detect if a user has enabled a setting on their device to minimize the amount of non-essential motion. The setting is used to convey to the browser on the device that the user prefers an interface that removes, reduces, or replaces motion-bas"
+        },
+        {
+          "term": "animation",
+          "text": "e setting is used to convey to the browser on the device that the user prefers an interface that removes, reduces, or replaces motion-based animations. Such animations can trigger discomfort for those with vestibular motion disorders . Animations such as scaling or panning large objects can be vestibular motion triggers. In this article Syntax User preferences Examples Specifications Browser compatibility See also Syntax no-preference Indicates "
+        }
+      ],
+      "text_characters": 28531,
+      "content_sha256": "313479b5cb89366221d695631193173a075011186a7b5794bb8dc895a2aaa143",
+      "retrieved_at_utc": "2026-10-24T14:31:11.077941+00:00"
+    },
+    {
+      "id": "S24",
+      "label": "Three.js license",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE",
+      "title": "Three.js license",
+      "evidence": [
+        {
+          "term": "MIT",
+          "text": "The MIT License Copyright © 2010-2026 three.js authors Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify"
+        },
+        {
+          "term": "MIT",
+          "text": "copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all cop"
+        },
+        {
+          "term": "copyright",
+          "text": "The MIT License Copyright © 2010-2026 three.js authors Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, "
+        },
+        {
+          "term": "copyright",
+          "text": "ll copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFR"
+        },
+        {
+          "term": "permission",
+          "text": "The MIT License Copyright © 2010-2026 three.js authors Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copi"
+        },
+        {
+          "term": "permission",
+          "text": " and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL"
+        }
+      ],
+      "text_characters": 1075,
+      "content_sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+      "retrieved_at_utc": "2026-10-24T14:31:12.264351+00:00"
+    },
+    {
+      "id": "S25",
+      "label": "Meshoptimizer license",
+      "url": "https://raw.githubusercontent.com/zeux/meshoptimizer/master/LICENSE.md",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/zeux/meshoptimizer/master/LICENSE.md",
+      "title": "Meshoptimizer license",
+      "evidence": [
+        {
+          "term": "MIT",
+          "text": "MIT License Copyright (c) 2016-2026 Arseny Kapoulkine Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, mod"
+        },
+        {
+          "term": "MIT",
+          "text": "copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all cop"
+        },
+        {
+          "term": "copyright",
+          "text": "MIT License Copyright (c) 2016-2026 Arseny Kapoulkine Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publis"
+        },
+        {
+          "term": "copyright",
+          "text": "ll copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFR"
+        },
+        {
+          "term": "permission",
+          "text": "MIT License Copyright (c) 2016-2026 Arseny Kapoulkine Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copi"
+        },
+        {
+          "term": "permission",
+          "text": " and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL"
+        }
+      ],
+      "text_characters": 1074,
+      "content_sha256": "f03037ca7bad1e3eb7f4a63fa6084a8baabd5ba30d3c239a9a7f35705d873e26",
+      "retrieved_at_utc": "2026-10-24T14:31:11.283192+00:00"
+    },
+    {
+      "id": "S26",
+      "label": "MDN Web Share API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API",
+      "checked_on": "2026-10-24",
+      "status": 200,
+      "final_url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API",
+      "title": "Web Share API - Web APIs | MDN",
+      "evidence": [
+        {
+          "term": "secure",
+          "text": "t work in some of the most widely-used browsers. Want more browser support for this feature? Tell us why. See full compatibility Learn more Secure context: This feature is available only in secure contexts (HTTPS), in some or all supporting browsers . The Web Share API provides a mechanism for sharing text, links, files, and other content to an arbitrary share target selected by the user. Note: This API is not available in Web Workers (not ex"
+        },
+        {
+          "term": "secure",
+          "text": "ant more browser support for this feature? Tell us why. See full compatibility Learn more Secure context: This feature is available only in secure contexts (HTTPS), in some or all supporting browsers . The Web Share API provides a mechanism for sharing text, links, files, and other content to an arbitrary share target selected by the user. Note: This API is not available in Web Workers (not exposed via WorkerNavigator ). Note: This API should"
+        },
+        {
+          "term": "permission",
+          "text": " the method must specify valid data that is supported for sharing by the native implementation. The Web Share API is gated by the web-share Permissions Policy. If the policy is supported but has not been granted, both methods will indicate that the data is not shareable. Interfaces Extensions to other interfaces navigator.canShare() Returns a boolean indicating whether the specified data is shareable. navigator.share() Returns a Promise that reso"
+        }
+      ],
+      "text_characters": 5778,
+      "content_sha256": "0841f270710762b28e822a6bbbaaa22b1fc2cdb971aeff2a9cf853d9b7693aae",
+      "retrieved_at_utc": "2026-10-24T14:31:12.039058+00:00"
+    }
+  ]
+}
