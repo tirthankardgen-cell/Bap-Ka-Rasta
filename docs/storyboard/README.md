@@ -20,6 +20,8 @@ The vehicle-to-city pairings are illustrative. All five vehicles remain selectab
 
 ### Shared art direction
 
+- Mumbai auto driver uniform: warm tan khaki collared button-up shirt with a chest pocket and rolled sleeves, plus matching full-length khaki trousers, based on the supplied clothing reference. The landing-page hero reflects this updated wardrobe; use it for future driver assets. Earlier storyboard panels retain their original clothing.
+
 - Original blocky characters: square heads, simple friendly faces, chunky limbs, readable clothes, and a consistent human scale. Use the Roblox-like proportions as a stylistic reference while building original meshes and textures.
 - NPC roles: chai seller, commuter, kurta-wearing pedestrian, traffic officer, and delivery rider. Vary clothing, skin tone, hair, and accessories. Keep pedestrians on pavements in the first version.
 - Vehicles: compact three-wheeled auto, upright off-road SUV, longer large SUV, turquoise scooter, and orange sport motorcycle. Use original silhouettes and omit manufacturer badges. Riders wear helmets.
