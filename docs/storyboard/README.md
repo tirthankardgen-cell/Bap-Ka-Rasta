@@ -1,6 +1,6 @@
-# Bap ka Road visual storyboard
+# Bap ka Rasta visual storyboard
 
-These two generated concept boards are the primary visual reference for the first game implementation. Read them alongside the [game specification](../Bap-ka-Road-Game-Plan.md). They establish atmosphere, silhouettes, landmarks, and screen composition; they are not screenshots of an implemented game.
+These two generated concept boards are the primary visual reference for the first game implementation. Read them alongside the [game specification](../Bap-ka-Rasta-Game-Plan.md). They establish atmosphere, silhouettes, landmarks, and screen composition; they are not screenshots of an implemented game.
 
 ## 1. Cities, cast, and vehicles
 
@@ -30,7 +30,7 @@ The vehicle-to-city pairings are illustrative. All five vehicles remain selectab
 
 ![Six screen storyboard from landing to results](images/02-player-journey.png)
 
-1. **Landing:** city illustration, original driver character, and **Mera Baap Ka Road** action.
+1. **Landing:** city illustration, original driver character, and **Mera Bap Ka Rasta** action.
 2. **Choose city:** five equally available city cards; Mumbai initially selected. Use **Yahin Chalao** as the implementation label (the generated image varies this wording).
 3. **Choose ride:** five vehicle cards, auto initially selected, **Chal Chala** to load the selected combination.
 4. **Drive:** rear chase camera, speed, distance, pause, and large touch steering/brake/accelerator controls. Add horn and reset controls from the specification; retain a clear view of the road. The loading state occurs before this frame and is specified in the game plan.

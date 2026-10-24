@@ -1,11 +1,11 @@
-# Bap ka Road Game Design and Architecture
+# Bap ka Rasta Game Design and Architecture
 
 Product specification and implementation plan  
 Version 1 revision 1 | 24 October 2026
 
 ## 1 Project decision
 
-Bap ka Road will be a lightweight, single-player, 3D arcade driving website with an Indian street setting. A visitor opens the website, presses **Mera Baap Ka Road**, chooses a city, chooses a vehicle, and starts driving. Every launch city and vehicle is available immediately. The game runs in the browser and requires no account, download, payment, or installation.
+Bap ka Rasta will be a lightweight, single-player, 3D arcade driving website with an Indian street setting. A visitor opens the website, presses **Mera Bap Ka Rasta**, chooses a city, chooses a vehicle, and starts driving. Every launch city and vehicle is available immediately. The game runs in the browser and requires no account, download, payment, or installation.
 
 The recommended implementation is **React, TypeScript, Vite, and Three.js through React Three Fiber**, hosted as a static application on **Vercel**. Driving uses a small arcade simulation rather than a full vehicle physics engine. Reusable road pieces and scenery create five recognisable city circuits while keeping the active download and rendering workload small.
 
@@ -13,8 +13,8 @@ This document defines the product, player experience, city and vehicle content, 
 
 | Item | Version 1 decision |
 | --- | --- |
-| Working game name | Bap ka Road |
-| Main landing button | Mera Baap Ka Road |
+| Working game name | Bap ka Rasta |
+| Main landing button | Mera Bap Ka Rasta |
 | Launch cities | Mumbai, Delhi, Kolkata, Chennai, Bangalore |
 | Launch vehicles | Auto rickshaw, Thar, Fortuner, scooty, KTM |
 | Main mode | Relaxed free driving around a city circuit |
@@ -81,7 +81,7 @@ The following features belong after the first release: a timed challenge, online
 
 ```mermaid
 flowchart LR
-    A[Landing] -->|Mera Baap Ka Road| B[Choose city]
+    A[Landing] -->|Mera Bap Ka Rasta| B[Choose city]
     B --> C[Choose vehicle]
     C -->|Chal Chala| D[Load selected assets]
     D --> E[Drive]
@@ -99,7 +99,7 @@ flowchart LR
 
 Show the game name, a small original street illustration, one clear primary button, and a brief explanation: **Apna sheher. Apni sawaari. Bas chalao.** Include a compact sound toggle and a How to Play link. The first screen uses HTML, CSS, and a static illustration; it should not download or continuously render all five 3D worlds.
 
-The primary action is **Mera Baap Ka Road**. It opens the location screen immediately. A non-blocking WebGL 2 check can run after that gesture. If graphics are unavailable, retain the normal page and show a browser-support message with a retry action.
+The primary action is **Mera Bap Ka Rasta**. It opens the location screen immediately. A non-blocking WebGL 2 check can run after that gesture. If graphics are unavailable, retain the normal page and show a browser-support message with a retry action.
 
 ### Choose city
 
@@ -127,7 +127,7 @@ Results show distance, completed laps, top speed, and the local best distance fo
 
 ## 5 Name and visual identity
 
-Use **Bap ka Road** as the working display name and keep its spelling consistent across the header, browser title, social preview, and results screen. The CTA can use **Mera Baap Ka Road** as requested. These are branding choices; domain availability and trademark clearance have not been established by this technical research.
+Use **Bap ka Rasta** as the working display name and keep its spelling consistent across the header, browser title, social preview, and results screen. The CTA can use **Mera Bap Ka Rasta** as requested. These are branding choices; domain availability and trademark clearance have not been established by this technical research.
 
 The personality should come from familiar street details and original Hinglish writing: an auto's rear message, chai stalls, petrol pumps, painted shop signs, speed breakers, bus stops, and a slightly dramatic horn. The graphics should look like a designed arcade world rather than a collection of borrowed film clips or meme images.
 
@@ -725,7 +725,7 @@ Confirm two-finger steering and braking, pointer cancellation, key release after
 
 ### Release checklist
 
-- The landing button reads Mera Baap Ka Road and opens location selection.
+- The landing button reads Mera Bap Ka Rasta and opens location selection.
 - Mumbai, Delhi, Kolkata, Chennai, and Bangalore are selectable without locks.
 - Auto rickshaw, Thar, Fortuner, scooty, and KTM are selectable without locks.
 - All 25 combinations reach a playable scene without a broken asset request.

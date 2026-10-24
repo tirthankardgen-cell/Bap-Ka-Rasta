@@ -20,9 +20,9 @@ from reportlab.platypus.tableofcontents import TableOfContents
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "docs" / "Bap-ka-Road-Game-Plan.md"
-PDF = ROOT / "output" / "pdf" / "Bap-ka-Road-Game-Plan.pdf"
-HTML = ROOT / "output" / "Bap-ka-Road-Game-Plan.html"
+SOURCE = ROOT / "docs" / "Bap-ka-Rasta-Game-Plan.md"
+PDF = ROOT / "output" / "pdf" / "Bap-ka-Rasta-Game-Plan.pdf"
+HTML = ROOT / "output" / "Bap-ka-Rasta-Game-Plan.html"
 QA = ROOT / "tmp" / "pdfs"
 PAGE_W, PAGE_H = A4
 MARGIN = 48
@@ -211,7 +211,7 @@ class Diagram(Flowable):
             gap = 18
             w = (WIDTH - gap * 3) / 4
             for i, (label, detail) in enumerate([
-                ("Landing", "Mera Baap Ka Road"),
+                ("Landing", "Mera Bap Ka Rasta"),
                 ("Choose city", "Five locations"),
                 ("Choose vehicle", "Five vehicles"),
                 ("Load and drive", "Selected assets only"),
@@ -258,13 +258,13 @@ class PlanDocTemplate(BaseDocTemplate):
 
     def decorate(self, canvas, doc):
         canvas.saveState()
-        canvas.setTitle("Bap ka Road Game Design and Architecture")
-        canvas.setAuthor("Bap ka Road Project")
+        canvas.setTitle("Bap ka Rasta Game Design and Architecture")
+        canvas.setAuthor("Bap ka Rasta Project")
         canvas.setSubject("Researched product specification and architecture for a lightweight Indian 3D browser driving game")
         canvas.setFont("PlanSans", 8)
         canvas.setFillColor(INK)
         if doc.page > 1:
-            canvas.drawString(MARGIN, PAGE_H - 29, "Bap ka Road Game Design and Architecture")
+            canvas.drawString(MARGIN, PAGE_H - 29, "Bap ka Rasta Game Design and Architecture")
         canvas.drawString(MARGIN, 27, "Version 1 revision 1   |   24 October 2026")
         canvas.drawRightString(PAGE_W - MARGIN, 27, str(doc.page))
         canvas.restoreState()
@@ -389,14 +389,14 @@ def build_html(blocks):
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{body{background:white;font-size:11pt}.layout{display:block;margin:0;padding:0}nav{display:none}main{border:0;padding:0}h2,h3{break-after:avoid}tr,pre,.flow,.architecture{break-inside:avoid}a{color:inherit;text-decoration:none}}
     """
     HTML.parent.mkdir(parents=True, exist_ok=True)
-    HTML.write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bap ka Road Game Design and Architecture</title><style>' + css + '</style></head><body><div class="layout"><nav aria-label="Document contents">' + "".join(nav) + '</nav><main>' + "\n".join(parts) + '</main></div></body></html>', encoding="utf-8")
+    HTML.write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bap ka Rasta Game Design and Architecture</title><style>' + css + '</style></head><body><div class="layout"><nav aria-label="Document contents">' + "".join(nav) + '</nav><main>' + "\n".join(parts) + '</main></div></body></html>', encoding="utf-8")
 
 
 def verify_content():
     from pypdf import PdfReader
     reader = PdfReader(str(PDF))
     extracted = re.sub(r"\s+", " ", "\n".join(page.extract_text() or "" for page in reader.pages))
-    required = ["Mera Baap Ka Road", "Mumbai", "Delhi", "Kolkata", "Chennai", "Bangalore", "Thar", "Fortuner", "Scooty", "KTM", "Vercel", "Fixed-step", "25 city and vehicle", "S26"]
+    required = ["Mera Bap Ka Rasta", "Mumbai", "Delhi", "Kolkata", "Chennai", "Bangalore", "Thar", "Fortuner", "Scooty", "KTM", "Vercel", "Fixed-step", "25 city and vehicle", "S26"]
     missing = [value for value in required if value.lower() not in extracted.lower()]
     assert not missing, f"Missing required content: {missing}"
     assert len(reader.pages) >= 10, "Unexpectedly incomplete PDF"

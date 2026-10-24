@@ -1,16 +1,16 @@
-# Bap ka Road
+# Bap ka Rasta
 
 A planned lightweight 3D Indian driving game for desktop and mobile browsers, hosted on Vercel with no login.
 
 The first-stage research and architecture specification is complete:
 
-- [Game design and architecture](docs/Bap-ka-Road-Game-Plan.md)
-- [Readable PDF](output/pdf/Bap-ka-Road-Game-Plan.pdf)
-- [Browser document](output/Bap-ka-Road-Game-Plan.html)
+- [Game design and architecture](docs/Bap-ka-Rasta-Game-Plan.md)
+- [Readable PDF](output/pdf/Bap-ka-Rasta-Game-Plan.pdf)
+- [Browser document](output/Bap-ka-Rasta-Game-Plan.html)
 - [Primary source verification record](docs/research/source-checks.json)
 - [Visual storyboard: cities, characters, vehicles, and player journey](docs/storyboard/README.md)
 
-The plan covers Mumbai, Delhi, Kolkata, Chennai, and Bangalore, with auto rickshaw, Thar, Fortuner, scooty, and KTM available at launch. The intended flow is landing page, Mera Baap Ka Road, city selection, vehicle selection, then driving. Revision 1 adds original street humour, explicit controller axes, local chunk activation, first playable build tasks, and a generated content manifest contract.
+The plan covers Mumbai, Delhi, Kolkata, Chennai, and Bangalore, with auto rickshaw, Thar, Fortuner, scooty, and KTM available at launch. The intended flow is landing page, Mera Bap Ka Rasta, city selection, vehicle selection, then driving. Revision 1 adds original street humour, explicit controller axes, local chunk activation, first playable build tasks, and a generated content manifest contract.
 
 The game application has not been scaffolded yet. The next milestone is a playable Mumbai and auto rickshaw slice using React, TypeScript, Vite, Three.js, and React Three Fiber, followed by the rest of the launch roster.
 

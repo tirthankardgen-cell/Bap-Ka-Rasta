@@ -1,7 +1,7 @@
 {
-  "pages": 26,
+  "pages": 28,
   "words": 9885,
-  "pdf_bytes": 153720,
+  "pdf_bytes": 153966,
   "references": 26,
   "links": 70,
   "required_content": "present",
@@ -37,11 +37,11 @@
     },
     {
       "heading": "8 Initial vehicle roster",
-      "page": 9
+      "page": 10
     },
     {
       "heading": "9 Controls and accessibility",
-      "page": 10
+      "page": 11
     },
     {
       "heading": "10 Application architecture",
@@ -69,31 +69,31 @@
     },
     {
       "heading": "16 Performance budgets and measurement",
-      "page": 19
+      "page": 20
     },
     {
       "heading": "17 Storage privacy and resilience",
-      "page": 20
+      "page": 21
     },
     {
       "heading": "18 Vercel deployment and operating cost",
-      "page": 20
-    },
-    {
-      "heading": "19 Implementation milestones and effort",
       "page": 22
     },
     {
-      "heading": "20 Test plan and launch acceptance",
+      "heading": "19 Implementation milestones and effort",
       "page": 23
     },
     {
+      "heading": "20 Test plan and launch acceptance",
+      "page": 25
+    },
+    {
       "heading": "21 Main risks and design responses",
-      "page": 24
+      "page": 26
     },
     {
       "heading": "22 Primary research sources",
-      "page": 25
+      "page": 26
     }
   ]
 }
