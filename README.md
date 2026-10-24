@@ -8,6 +8,7 @@ The first-stage research and architecture specification is complete:
 - [Readable PDF](output/pdf/Bap-ka-Road-Game-Plan.pdf)
 - [Browser document](output/Bap-ka-Road-Game-Plan.html)
 - [Primary source verification record](docs/research/source-checks.json)
+- [Visual storyboard: cities, characters, vehicles, and player journey](docs/storyboard/README.md)
 
 The plan covers Mumbai, Delhi, Kolkata, Chennai, and Bangalore, with auto rickshaw, Thar, Fortuner, scooty, and KTM available at launch. The intended flow is landing page, Mera Baap Ka Road, city selection, vehicle selection, then driving. Revision 1 adds original street humour, explicit controller axes, local chunk activation, first playable build tasks, and a generated content manifest contract.
 
