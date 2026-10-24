@@ -1,0 +1,533 @@
+.game {
+  position: fixed;
+  inset: 0;
+  background: #bfd6d3;
+  color: #26372e;
+  isolation: isolate;
+  font-family: "DM Sans", sans-serif;
+  overflow: hidden;
+}
+.game-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.game-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.game button {
+  cursor: pointer;
+}
+.game button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.game-top {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  top: max(20px, env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.game-top > * {
+  pointer-events: auto;
+}
+.location-pill {
+  background: #faf8f0ed;
+  padding: 13px 17px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 12px #233d3720;
+}
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #69905d;
+  border-radius: 50%;
+  margin-right: 7px;
+}
+.location-pill small {
+  font-size: 8px;
+  display: block;
+  letter-spacing: 1.6px;
+  margin: 5px 0 0 17px;
+  color: #7a8372;
+}
+.game-actions {
+  display: flex;
+  gap: 8px;
+}
+.game-actions button,
+.utility button {
+  display: grid;
+  place-items: center;
+  background: #faf8f0ed;
+  border: 1px solid #fff8;
+  border-radius: 8px;
+  width: 46px;
+  height: 46px;
+  color: #293e36;
+  box-shadow: 0 3px 12px #263f3820;
+}
+.speedometer {
+  position: absolute;
+  left: 25px;
+  top: 110px;
+  color: #243c35;
+  background: #faf8f0ed;
+  padding: 14px 18px 10px;
+  border-radius: 8px;
+  min-width: 130px;
+  border-bottom: 3px solid #ffcc37;
+}
+.speedometer > strong {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 60px;
+  line-height: 0.9;
+  display: block;
+}
+.speedometer > span {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+.speedometer > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 1px solid #d6ddcc;
+  font-size: 9px;
+  font-weight: 600;
+}
+.mini-map {
+  position: absolute;
+  right: 25px;
+  top: 90px;
+  width: 130px;
+  background: #f7f3e8d9;
+  border-radius: 9px;
+  padding: 5px 8px 10px;
+  text-align: center;
+}
+.mini-map svg {
+  width: 100%;
+  display: block;
+}
+.mini-map > span {
+  font-size: 7px;
+  letter-spacing: 1.4px;
+  font-weight: 800;
+}
+.drive-buttons {
+  position: absolute;
+  bottom: max(25px, env(safe-area-inset-bottom));
+  left: 25px;
+  right: 25px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 15px;
+  pointer-events: none;
+}
+.drive-buttons > * {
+  pointer-events: auto;
+}
+.steering,
+.pedals,
+.utility {
+  display: flex;
+  gap: 10px;
+}
+.drive-control {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-width: 78px;
+  height: 78px;
+  border: 2px solid #fffc;
+  background: #f8f4e4d9;
+  color: #2b4037;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 #263d3860;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.drive-control svg {
+  width: 28px;
+  height: 28px;
+}
+.drive-control span {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.drive-control.throttle {
+  background: #ffcc37ed;
+  height: 95px;
+  min-width: 90px;
+}
+.drive-control:active {
+  background: #c9dfbd;
+  transform: translateY(3px);
+  box-shadow: none;
+}
+.utility {
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+.utility button {
+  touch-action: manipulation;
+}
+.keyboard-hint {
+  position: absolute;
+  bottom: 29px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  color: #283e35;
+  background: #fff6d8d9;
+  padding: 8px 12px;
+  border-radius: 5px;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+.keyboard-hint i {
+  margin: 0 7px;
+  color: #9d9e85;
+}
+.utility {
+  margin-bottom: 50px;
+}
+.driving-message {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 800;
+  text-shadow: 0 1px 6px #fff;
+  white-space: nowrap;
+}
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #213a374f;
+  backdrop-filter: blur(3px);
+}
+.drive-panel {
+  width: min(480px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  border-radius: 15px;
+  background: #faf8f0;
+  padding: 34px;
+  box-shadow: 0 20px 70px #19332c40;
+  border: 1px solid #fffa;
+}
+.panel-kicker {
+  font-size: 9px;
+  letter-spacing: 1.7px;
+  font-weight: 800;
+  color: #78836e;
+}
+.drive-panel h1 {
+  font-size: 58px;
+  margin: 20px 0 16px;
+  letter-spacing: -1px;
+  line-height: 0.95;
+}
+.drive-panel h1 em {
+  color: #c88429;
+  font-style: normal;
+}
+.drive-panel p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #737e6e;
+  margin-bottom: 20px;
+}
+.ride-spec {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  background: #ecebdc;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.control-guide {
+  margin: 20px 0 24px;
+  display: grid;
+  gap: 14px;
+}
+.control-guide > div {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.control-guide strong {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 10px;
+  padding-top: 2px;
+}
+.control-guide span {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #78836e;
+}
+.game-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: #ffcc37;
+  color: #273c32;
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #253d33;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 2px 3px 0 #253d33;
+}
+.game-primary:hover {
+  background: #ffda6c;
+}
+.game-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  color: #727f6e;
+  width: 100%;
+  margin-top: 14px;
+  border: 0;
+  padding: 8px;
+  font-size: 11px;
+}
+.pause-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+.pause-grid button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #e9ecdf;
+  border: 1px solid #d6ddc9;
+  border-radius: 5px;
+  padding: 13px 8px;
+  font-size: 11px;
+}
+.results-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 25px 0;
+}
+.results-stats span {
+  display: block;
+  color: #78836e;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+.results-stats strong {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 30px;
+}
+.game-launch {
+  margin-top: 15px;
+  width: 100%;
+  justify-content: space-between;
+}
+.availability {
+  font-size: 10px;
+  color: #647c58;
+  font-weight: 800;
+  display: block;
+  margin-top: 10px;
+}
+.game-loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background: #fff5dc;
+  font-weight: 800;
+  gap: 12px;
+  text-align: center;
+}
+.game-loading small {
+  font-weight: 400;
+}
+@media (max-width: 700px) {
+  .game-top {
+    left: 14px;
+    right: 14px;
+    top: max(14px, env(safe-area-inset-top));
+  }
+  .location-pill {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+  .location-pill small {
+    font-size: 7px;
+  }
+  .game-actions button {
+    width: 39px;
+    height: 39px;
+  }
+  .speedometer {
+    left: 14px;
+    top: 86px;
+    padding: 10px 13px;
+    min-width: 108px;
+  }
+  .speedometer > strong {
+    font-size: 44px;
+  }
+  .speedometer > div {
+    font-size: 8px;
+    gap: 10px;
+  }
+  .mini-map {
+    right: 14px;
+    top: 80px;
+    width: 100px;
+  }
+  .drive-buttons {
+    left: 14px;
+    right: 14px;
+    bottom: max(25px, env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+  .steering,
+  .pedals {
+    gap: 7px;
+  }
+  .drive-control {
+    min-width: 53px;
+    height: 62px;
+    border-radius: 10px;
+  }
+  .drive-control svg {
+    width: 25px;
+    height: 25px;
+  }
+  .drive-control span {
+    font-size: 6px;
+    max-width: 50px;
+    text-align: center;
+  }
+  .drive-control.throttle {
+    min-width: 61px;
+    height: 78px;
+  }
+  .utility {
+    position: absolute;
+    bottom: 87px;
+    right: 0;
+    margin: 0;
+    gap: 7px;
+  }
+  .utility button {
+    width: 39px;
+    height: 39px;
+  }
+  .keyboard-hint {
+    display: none;
+  }
+  .drive-panel {
+    padding: 25px;
+  }
+  .drive-panel h1 {
+    font-size: 48px;
+  }
+  .control-guide {
+    gap: 12px;
+  }
+  .control-guide strong {
+    width: 77px;
+  }
+  .control-guide span {
+    font-size: 9px;
+  }
+  .driving-message {
+    top: 30%;
+    font-size: 12px;
+  }
+  .game-overlay {
+    padding: 14px;
+  }
+  .drive-panel {
+    max-height: calc(100dvh - 28px);
+  }
+}
+@media (max-height: 500px) {
+  .speedometer {
+    top: 78px;
+  }
+  .speedometer > strong {
+    font-size: 34px;
+  }
+  .mini-map {
+    width: 90px;
+    top: 76px;
+  }
+  .drive-panel h1 {
+    font-size: 38px;
+  }
+  .game-top {
+    top: 10px;
+  }
+  .drive-panel {
+    padding: 22px;
+  }
+  .drive-buttons {
+    bottom: 14px;
+  }
+  .drive-control {
+    height: 55px;
+    min-width: 60px;
+  }
+  .drive-control.throttle {
+    height: 65px;
+    min-width: 65px;
+  }
+  .utility {
+    margin-bottom: 0;
+  }
+  .keyboard-hint {
+    display: none;
+  }
+  .drive-panel .control-guide {
+    margin: 13px 0;
+  }
+  .drive-panel p {
+    margin-bottom: 12px;
+  }
+}

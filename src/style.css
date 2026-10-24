@@ -453,3 +453,28 @@ h3 {
     transition: none !important;
   }
 }
+.game-launch {
+  margin-top: 15px;
+  width: 100%;
+  justify-content: space-between;
+}
+.availability {
+  font-size: 10px;
+  color: #647c58;
+  font-weight: 800;
+  display: block;
+  margin-top: 10px;
+}
+.game-loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background: #fff5dc;
+  font-weight: 800;
+  gap: 12px;
+  text-align: center;
+}
+.game-loading small {
+  font-weight: 400;
+}

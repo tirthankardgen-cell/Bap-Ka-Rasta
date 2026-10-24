@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowUpRight, X, MapPin } from "lucide-react";
 import "@fontsource/barlow-condensed/latin-700.css";
@@ -7,6 +7,8 @@ import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/dm-sans/latin-800.css";
 import "./style.css";
+
+const Game = lazy(() => import("./game/Game"));
 
 const cities = [
   { name: "Mumbai", route: "Samundar Loop", x: 8, y: 85 },
@@ -18,6 +20,7 @@ const cities = [
 
 function App() {
   const [open, setOpen] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const city = cities[selected];
@@ -25,6 +28,20 @@ function App() {
     if (open) dialog.current?.showModal();
     else dialog.current?.close();
   }, [open]);
+
+  if (playing)
+    return (
+      <Suspense
+        fallback={
+          <div className="game-loading">
+            Road taiyaar ho raha hai…
+            <small>Getting your Mumbai auto ready</small>
+          </div>
+        }
+      >
+        <Game onExit={() => setPlaying(false)} />
+      </Suspense>
+    );
 
   return (
     <>
@@ -121,10 +138,29 @@ function App() {
           <h3>{city.name}</h3>
           <span>{city.route}</span>
         </div>
-        <p className="coming-soon">
-          Your road is taking shape. Playable driving starts with Mumbai and the
-          auto rickshaw in the next build.
-        </p>
+        {selected === 0 ? (
+          <>
+            <span className="availability">AVAILABLE NOW · AUTO RICKSHAW</span>
+            <button
+              className="primary game-launch"
+              onClick={() => {
+                setOpen(false);
+                setPlaying(true);
+              }}
+            >
+              Drive Mumbai <ArrowUpRight size={20} />
+            </button>
+            <p className="coming-soon">
+              A seaside circuit, a khaki-clad driver, and your own
+              black-and-yellow auto. Keyboard and touch controls.
+            </p>
+          </>
+        ) : (
+          <p className="coming-soon">
+            {city.name} is coming soon. Select Mumbai to drive the auto rickshaw
+            now.
+          </p>
+        )}
       </dialog>
     </>
   );
