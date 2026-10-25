@@ -1,0 +1,18 @@
+{
+  "user_duration_seconds": 231.096,
+  "original_duration_seconds": 231.025,
+  "comparison_sample_rate_hz": 1000,
+  "correlation": 0.9958699048392742,
+  "lag_milliseconds": 46.0,
+  "checked_on": "2026-10-25",
+  "local_filename": "auto sound 1.mp3",
+  "local_sha256": "3bb772e84d67451e29a7340ddd7843e10b82a01dda97f55d4866115f36674c4d",
+  "download_referrer": "https://pixabay.com/",
+  "download_url": "https://cdn.pixabay.com/download/audio/2022/03/12/audio_acbb05ac7b.mp3?filename=freesound_community-inside-an-auto-rickshaw-in-mumbai-50615.mp3",
+  "original_source": "https://freesound.org/people/ambar%20das/sounds/203177/",
+  "original_license": "CC0-1.0",
+  "included_file": "assets/audio/mumbai/auto-rickshaw/inside-auto-mumbai-203177.mp3",
+  "conclusion": "Strong same-content match; local file is re-encoded relative to original Freesound HQ preview",
+  "method": "Decode both full recordings, convert to mono and a common 1 kHz comparison rate, search +/-100 ms delay, compare aligned complete waveforms using Pearson correlation",
+  "local_download_preserved": true
+}

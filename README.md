@@ -67,6 +67,10 @@ Twelve simulation tests and five production-browser flows cover the connected ro
 
 `public/images/landing-hero.webp` is original generated concept art based on the approved blocky city/character storyboard. `public/images/world-board.webp` is the approved world storyboard, displayed through proportional SVG panel windows for the city previews. Both were encoded as WebP for delivery. The hero was generated on 24 October 2026; the images are promotional concept art, not screenshots of working gameplay. Font packages include their upstream licenses in `node_modules/@fontsource/`.
 
+## Street sound research
+
+[Mumbai street audio research](docs/research/mumbai/audio/README.md) contains real Mumbai and Indian recordings of auto-rickshaws, horns, BEST and other buses, vendors, traffic, crowds, trains and street ambience. Downloaded audio, source/license credits, a checksum manifest and a local listening catalogue live in [`assets/audio/mumbai/`](assets/audio/mumbai/README.md). These assets are outside the website's public directory and are not connected to the game yet.
+
 ## Document tools
 
 `scripts/research_sources.py` retrieves the primary references and writes the verification record. Its recorded research date is 24 October 2026; change that constant when performing a later research refresh.
