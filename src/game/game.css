@@ -531,3 +531,51 @@
     margin-bottom: 12px;
   }
 }
+.network-map {
+  width: 112px;
+  padding: 6px;
+}
+.network-map svg {
+  height: 170px;
+  width: 100%;
+}
+.network-map > span {
+  font-size: 6px;
+  letter-spacing: 1px;
+}
+.driving-message {
+  background: #faf8f0e6;
+  border-radius: 5px;
+  padding: 6px 10px;
+  text-shadow: none;
+  max-width: 70vw;
+  text-align: center;
+  white-space: normal;
+}
+.driving-message:empty {
+  display: none;
+}
+@media (max-width: 700px) {
+  .network-map {
+    width: 83px;
+  }
+  .network-map svg {
+    height: 125px;
+  }
+  .driving-message {
+    font-size: 10px;
+    top: 32%;
+  }
+}
+@media (max-height: 500px) {
+  .network-map {
+    width: 65px;
+  }
+  .network-map svg {
+    height: 95px;
+  }
+  .driving-message {
+    top: 24%;
+    font-size: 10px;
+  }
+}

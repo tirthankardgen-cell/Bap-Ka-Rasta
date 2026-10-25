@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { makeWorld, autoRickshaw, trafficCar } from "./world";
+import { makeWorld, autoRickshaw, trafficVisuals } from "./world";
 import {
   emptyInput,
   newDrive,
@@ -13,7 +13,10 @@ export type Stats = {
   speed: number;
   distance: number;
   topSpeed: number;
-  laps: number;
+  explored: number;
+  street: string;
+  signal: string;
+  time: number;
   x: number;
   z: number;
   yaw: number;
@@ -47,15 +50,12 @@ export function createEngine(
   const sun = new THREE.DirectionalLight("#ffdfa0", 2.6);
   sun.position.set(180, 240, -60);
   scene.add(sun);
-  makeWorld(scene);
+  const world = makeWorld(scene);
   const player = autoRickshaw();
   scene.add(player.root);
-  const traffic = newTraffic(),
-    cars = traffic.map((t) => {
-      const car = trafficCar(t.kind);
-      scene.add(car);
-      return car;
-    });
+  const traffic = newTraffic();
+  const placeTraffic = trafficVisuals(scene, traffic);
+  renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = newDrive();
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
   const input = emptyInput();
@@ -82,7 +82,10 @@ export function createEngine(
       speed: state.speed * 3.6,
       distance: state.distance,
       topSpeed: state.topSpeed,
-      laps: state.laps,
+      explored: state.explored,
+      street: state.street,
+      signal: state.signal,
+      time: state.time,
       x: state.x,
       z: state.z,
       yaw: state.yaw,
@@ -107,10 +110,8 @@ export function createEngine(
       state.z + Math.cos(state.yaw) * 5,
     );
     camera.lookAt(lookTarget);
-    cars.forEach((car, i) => {
-      car.position.set(traffic[i].x, 0, traffic[i].z);
-      car.rotation.y = traffic[i].yaw;
-    });
+    placeTraffic();
+    world.update(state.time);
   }
   function resize() {
     const w = host.clientWidth,

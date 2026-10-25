@@ -11,10 +11,10 @@ import "./selection.css";
 export const cities = [
   {
     name: "Mumbai",
-    subtitle: "Samundar Loop",
+    subtitle: "South Mumbai Streets",
     description:
-      "Sea breeze, yellow taxis, and a road with a view. Take your auto for a spin along the Marine Drive-inspired coast.",
-    detail: "SEASIDE CIRCUIT · FREE DRIVE",
+      "Sea breeze, yellow taxis, and a road with a view. Explore Marine Drive, city junctions, and the Colaba waterfront.",
+    detail: "CONNECTED STREETS · FREE DRIVE",
     x: 8,
     y: 85,
   },
@@ -244,8 +244,18 @@ export default function Selection({
                     role="img"
                     aria-label={`${item.name} ${kind === "city" ? "city" : "vehicle"} concept art`}
                   >
-                    <defs><clipPath id={`preview-${kind}-${i}`}><rect x={item.x} y={item.y} width={kind === "city" ? 498 : 512} height={kind === "city" ? 447 : 512} /></clipPath></defs>
-                    <image clipPath={`url(#preview-${kind}-${i})`}
+                    <defs>
+                      <clipPath id={`preview-${kind}-${i}`}>
+                        <rect
+                          x={item.x}
+                          y={item.y}
+                          width={kind === "city" ? 498 : 512}
+                          height={kind === "city" ? 447 : 512}
+                        />
+                      </clipPath>
+                    </defs>
+                    <image
+                      clipPath={`url(#preview-${kind}-${i})`}
                       href={
                         kind === "city"
                           ? "/images/world-board.webp"

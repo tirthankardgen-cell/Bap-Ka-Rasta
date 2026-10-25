@@ -27,6 +27,16 @@ test("Mumbai drive: motion, steering, pause, reset, results, replay and home", a
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
   await page.getByRole("button", { name: "Chal Chala", exact: true }).click();
   const game = page.locator(".game");
+  await expect(
+    page.getByRole("img", {
+      name: "Your position on the South Mumbai street network",
+    }),
+  ).toBeVisible();
+  expect(
+    Number(await page.locator("canvas").getAttribute("data-traffic-count")),
+  ).toBeGreaterThanOrEqual(55);
+  expect(await page.locator(".network-map line").count()).toBeGreaterThan(60);
+
   await page.keyboard.down("w");
   await expect
     .poll(async () => Number(await game.getAttribute("data-distance")))

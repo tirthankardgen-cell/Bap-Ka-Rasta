@@ -17,14 +17,18 @@ import {
 import { createEngine, type Engine, type Stats } from "./engine";
 import type { Input } from "./simulation";
 import "./game.css";
+import { streets, junctions, districts, lightFor } from "./network";
 const initial: Stats = {
   speed: 0,
   distance: 0,
   topSpeed: 0,
-  laps: 0,
-  x: 404,
-  z: 0,
-  yaw: 0,
+  explored: 1,
+  street: "Marine Drive",
+  signal: "",
+  time: 0,
+  x: -266,
+  z: 325,
+  yaw: Math.PI,
   impact: false,
   fps: 0,
 };
@@ -126,7 +130,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
     engine.current?.horn();
     setHornActive(true);
     if (hornTimer.current) clearTimeout(hornTimer.current);
-    hornTimer.current = setTimeout(() => setHornActive(false), 300);
+    hornTimer.current = setTimeout(() => setHornActive(false), 1200);
   }
   function pedal(action: keyof Input, label: string, icon: React.ReactNode) {
     return (
@@ -162,7 +166,8 @@ export default function Game({ onExit }: { onExit: () => void }) {
       <div className="game-canvas" ref={host} />
       <header className="game-top">
         <div className="location-pill">
-          <span className="live-dot" /> MUMBAI <small>SAMUNDAR LOOP</small>
+          <span className="live-dot" /> MUMBAI{" "}
+          <small>{stats.street.toUpperCase()}</small>
         </div>
         <div className="game-actions">
           <button
@@ -186,43 +191,64 @@ export default function Game({ onExit }: { onExit: () => void }) {
         <span>KM/H {stats.speed < -0.1 ? "· R" : ""}</span>
         <div>
           <span>{distance(stats.distance)}</span>
-          <span>{stats.laps} LAPS</span>
+          <span>{stats.explored}/7 AREAS</span>
         </div>
       </div>
-      <aside className="mini-map" aria-label="Circuit map">
+      <aside className="mini-map network-map" aria-label="Mumbai street map">
         <svg
-          viewBox="0 0 120 90"
+          viewBox="-335 -530 720 1220"
           role="img"
-          aria-label="Your position on the Mumbai circuit"
+          aria-label="Your position on the South Mumbai street network"
         >
-          <ellipse
-            cx="60"
-            cy="45"
-            rx="49"
-            ry="32"
-            fill="#a7b88e"
-            stroke="#e7dcc3"
-            strokeWidth="9"
-          />
-          <ellipse
-            cx="60"
-            cy="45"
-            rx="49"
-            ry="32"
-            fill="none"
-            stroke="#58666b"
-            strokeWidth="5"
-          />
-          <circle cx="109" cy="45" r="3" fill="#fff5cd" />
+          <rect x="-335" y="-530" width="720" height="1220" fill="#afc4ac" />
+          <rect x="-335" y="-530" width="36" height="1220" fill="#73b0b4" />
+          {streets.map((e) => (
+            <line
+              key={e.id}
+              x1={junctions[e.a].x}
+              y1={junctions[e.a].z}
+              x2={junctions[e.b].x}
+              y2={junctions[e.b].z}
+              stroke="#faf0cf"
+              strokeWidth={e.width + 4}
+            />
+          ))}
+          {streets.map((e) => (
+            <line
+              key={e.id}
+              x1={junctions[e.a].x}
+              y1={junctions[e.a].z}
+              x2={junctions[e.b].x}
+              y2={junctions[e.b].z}
+              stroke="#5a6966"
+              strokeWidth={e.width - 4}
+            />
+          ))}
+          {junctions
+            .filter((n) => n.signal)
+            .map((n) => (
+              <circle
+                key={n.id}
+                cx={n.x}
+                cy={n.z}
+                r="8"
+                fill={
+                  lightFor(n.id, 0, 1, stats.time) === "green"
+                    ? "#74d586"
+                    : "#de8e5c"
+                }
+              />
+            ))}
+          <circle cx="110" cy="180" r="21" fill="#738c5d" />
           <path
-            d="M 0 -5 L -3 4 L 3 4 Z"
+            d="M 0 -24 L -16 18 L 0 10 L 16 18 Z"
             fill="#ffcc37"
             stroke="#26352e"
-            strokeWidth="1"
-            transform={`translate(${60 + (stats.x / 400) * 49},${45 + (stats.z / 280) * 32}) rotate(${180 - (stats.yaw * 180) / Math.PI})`}
+            strokeWidth="4"
+            transform={`translate(${stats.x},${stats.z}) rotate(${180 - (stats.yaw * 180) / Math.PI})`}
           />
         </svg>
-        <span>MARINE DRIVE</span>
+        <span>SOUTH MUMBAI</span>
       </aside>
       {status === "driving" && (
         <>
@@ -231,7 +257,13 @@ export default function Game({ onExit }: { onExit: () => void }) {
               ? "Arre bhai! Take it easy."
               : hornActive
                 ? "Horn OK please!"
-                : ""}
+                : stats.signal === "red"
+                  ? "Red signal — stop before the crossing."
+                  : stats.signal === "amber"
+                    ? "Amber signal — slow down."
+                    : stats.signal === "pedestrian"
+                      ? "Pedestrians crossing — give them way."
+                      : ""}
           </div>
           <div className="keyboard-hint">
             WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE
@@ -285,8 +317,9 @@ export default function Game({ onExit }: { onExit: () => void }) {
                   <em>Tension down.</em>
                 </h1>
                 <p>
-                  Your black-and-yellow auto is ready. Cruise the seaside, meet
-                  the traffic, and make the road your own.
+                  Your black-and-yellow auto is ready. Explore connected
+                  streets, stop at signals, and take a turn toward the
+                  waterfront.
                 </p>
                 <div className="ride-spec">
                   <span>AUTO RICKSHAW</span>
@@ -379,8 +412,10 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     <strong>{Math.round(stats.topSpeed)} km/h</strong>
                   </div>
                   <div>
-                    <span>LAPS</span>
-                    <strong>{stats.laps}</strong>
+                    <span>AREAS EXPLORED</span>
+                    <strong>
+                      {stats.explored} / {districts.length}
+                    </strong>
                   </div>
                   <div>
                     <span>LOCAL BEST</span>

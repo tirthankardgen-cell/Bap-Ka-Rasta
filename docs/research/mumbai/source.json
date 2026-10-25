@@ -1,0 +1,12 @@
+{
+  "source": "https://github.com/datameet/Municipal_Spatial_Data/blob/master/Mumbai/BMC_Wards.geojson",
+  "commit": "9b4d1c2ece54cdeb6f5e8bad9ccad7844f783b17",
+  "downloaded": "2026-10-25",
+  "sha256": "f8472efd6bfd6c845a9d8c540c675ea41c173c03de61e8475353cd0dc8242f10",
+  "license": "CC BY-SA 2.5 India",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.5/in/",
+  "creator": "DataMeet Trust, Pune chapter",
+  "features": 24,
+  "use": "Municipal peninsula/coast reference. Roads and landmarks in the game are independently authored, compressed fictional arrangements, not extracted street data.",
+  "unavailable_source": "Live Overpass street query rejected by network proxy (403 Forbidden)."
+}

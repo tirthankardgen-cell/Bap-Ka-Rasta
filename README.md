@@ -1,6 +1,6 @@
 # Bap ka Rasta
 
-A lightweight Indian driving game in development. The single-screen React landing page and the first playable Mumbai/auto-rickshaw drive are ready to deploy to Vercel.
+A lightweight Indian driving game in development. The single-screen React landing page and the playable Mumbai street network and auto-rickshaw drive are ready to deploy to Vercel.
 
 The first-stage research and architecture specification is complete:
 
@@ -45,6 +45,10 @@ Future pushes to the connected production branch can deploy automatically. This 
 
 The production build and TypeScript checks pass. Chromium checks cover six desktop/mobile viewport sizes, single-screen height without page overflow, all five city selections, proportional preview rendering, and Escape/close dismissal. The Mumbai drive uses Three.js for rendering and React for the HUD. See the [playable build guide](docs/Mumbai-Playable.md) for controls, architecture, testing, and current limitations.
 
+## Mumbai streets
+
+Drive a simplified South Mumbai-inspired network with 42 road segments, 16 signalized intersections, a roundabout, 64 moving vehicles, and 202 pedestrians. Turn freely between the coastal avenue, city blocks, station area and Colaba waterfront. The minimap shows the actual street graph, and seven discoverable areas replace lap counting. See [map sources and attribution](docs/research/mumbai/README.md) and the [current playable guide](docs/Mumbai-Playable.md).
+
 ## Playable game checks
 
 ```sh
@@ -54,7 +58,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Six simulation tests and five production-browser flows cover driving, collisions, reverse, lap progression, touch controls, pause/reset, replay/results, and graphics recovery. Browser checks use software WebGL and touch emulation; real-phone frame-rate validation is still pending. No new Vercel settings or secrets are needed.
+Twelve simulation tests and five production-browser flows cover the connected road graph, signals, traffic, pedestrian crossings, driving, collisions, reverse, district exploration, touch controls, pause/reset, replay/results, and graphics recovery. Browser checks use software WebGL and touch emulation; real-phone frame-rate validation is still pending. No new Vercel settings or secrets are needed.
 
 ## Website artwork
 
