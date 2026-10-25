@@ -3,7 +3,7 @@
   "collection": "Mumbai and Indian street audio research",
   "researched_on": "2026-10-25",
   "paths_relative_to": "assets/audio/mumbai/",
-  "game_integration": "None. Assets are outside public/ and src/ and are not served by Vite.",
+  "game_integration": "Four edited derivatives (121886 engine, 451321 horn, 221639 traffic, 453005 market) are served from public/audio/mumbai/. Original research recordings and checksums here are unchanged. See public/audio/credits.html for derivative credits.",
   "quality_note": "Real recordings downloaded as lossy Freesound HQ MP3 previews. Original lossless files can be obtained from the credited sound pages with a Freesound account.",
   "summary": {
     "recordings": 57,

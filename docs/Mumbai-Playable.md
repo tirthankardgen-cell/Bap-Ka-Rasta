@@ -12,7 +12,8 @@ The old oval circuit has been replaced by an independently authored South Mumbai
 - 29 graph junctions, including eight nodes around a clockwise Fort-inspired roundabout; 16 intersections have working traffic signals.
 - Marine Drive's west-coast promenade, inland Churchgate/Fort streets, a station-inspired landmark, a central maidan, Colaba market connections, and a Gateway-inspired waterfront.
 - 112 moving vehicles: taxis, cars, red buses, autos and scooters. Vehicles choose routes at intersections, queue behind traffic/player vehicles, and obey red/amber signals. Intersection reservations keep competing NPC turns from entering simultaneously.
-- 202 moving pedestrians: pavement walkers and signal-controlled crossings. Pedestrians cross during an all-red phase; the auto slows when approaching a pedestrian crossing its path.
+- 372 moving pedestrians: pavement walkers and signal-controlled crossings. Pedestrians cross during an all-red phase; the auto slows when approaching a pedestrian crossing its path.
+- Regular footpaths narrowed to 3.3 m per side, closer-set taller buildings, and kerbside chai, vada-pav, fruit and bhel carts with sellers/customers. Cart footprints stay outside driving lanes and junction crossings.
 - Zebra crossings, stop lines, lane markings, lights, street signs, shopfronts, balconies, chai/vada-pav stalls, bus shelters, benches, palms, parked vehicles, and cones.
 
 The [map-reference notes](research/mumbai/README.md) document the real Mumbai municipal data fetched for geographic context and its attribution. Municipal polygons are not a road map: the runtime streets are authored gameplay geometry and are not an exact recreation of Mumbai. The detailed generated storyboard remains an art-direction reference; the scene uses procedural geometry and is not an exact reproduction of that artwork. Vehicles now have curved bodywork, rounded canopies, detailed wheels, glass, chrome and paint materials. Asphalt and walls have procedural surface grain, water has animated ripples, and warm sunlight casts local shadows with sky reflections. NPC people retain their blocky style.
@@ -29,7 +30,9 @@ The [map-reference notes](research/mumbai/README.md) document the real Mumbai mu
 | Reset to a safe road point | R | Reset button |
 | Pause | Escape / P | Pause button |
 
-Controls support simultaneous steering/acceleration. Touch cancellation, focus loss and pausing clear held inputs. Returning to a tab requires explicitly resuming. Reverse waits 0.4 seconds after stopping. Sound starts muted and is synthesized locally when enabled.
+Controls support simultaneous steering/acceleration. Touch cancellation, focus loss and pausing clear held inputs. Returning to a tab requires explicitly resuming. Reverse waits 0.4 seconds after stopping. Sound is enabled by default and starts on the Chal Chala gesture. Starting it fetches four edited field recordings (about 690 KB total): an auto engine, a real Indian auto horn, Mumbai street traffic and a CSMT-area market. Engine pitch/gain respond to driving, traffic gets louder near vehicles, and market sound fades in near carts. Loops have crossfaded seams. Pause/mute suspends audio; exiting closes the audio context. Loading/failure messages appear in the HUD; toggling sound retries a failed download. Audio credits are linked from the pause panel.
+
+The landing page, city/vehicle descriptions and driving messages use playful Roman-script Hinglish. Sound is on by default for each new drive; the first start gesture unlocks browser audio, and the speaker button can mute it.
 
 ## Run features
 
@@ -44,7 +47,8 @@ The simulation uses metres/seconds with a 60 Hz fixed step and a catch-up cap. F
 - `src/game/world.ts`: instanced road/scenery geometry, lights, moving pedestrians, landmarks and traffic batching.
 - `src/game/vehicles.ts`: curved vehicle bodies, wheels, trim and blocky drivers.
 - `src/game/atmosphere.ts`: sky, reflections, fog and local sunlight shadows.
-- `src/game/engine.ts`: Three.js renderer, timing, input, synthesized audio, camera and resource cleanup.
+- `src/game/audio.ts`: lazy-loaded field-recorded loops, horn one-shot, spatial ambience mixing and audio cleanup.
+- `src/game/engine.ts`: Three.js renderer, timing, input, camera and resource cleanup.
 - `src/game/Game.tsx`: React HUD, pause/start overlays and touch controls.
 
 React owns the interface; Three.js owns rendering. HUD updates run at approximately 10 Hz, pedestrian poses at 12 Hz and signal colours at 4 Hz. Scenery and traffic meshes are instanced/shared by material. Game code is loaded after vehicle selection. No backend, live maps, secrets, database or external game assets are required.
@@ -63,9 +67,9 @@ npm run test:e2e
 
 Twelve simulation checks cover graph connectivity, multiple lanes, the roundabout, braking/reverse, steering, barriers, vehicle contacts, safe resets, non-conflicting signals, red-light stops and green releases, pedestrian phases/continuity/yielding, three simulated minutes of dense traffic, and a five-minute drive through multiple streets/districts.
 
-Production-browser checks cover selection galleries, driving, steering, pause/focus loss, reset, sound/horn controls, exit/fresh drives, multi-touch controls, orientation changes, absence of map/objectives, dense traffic presence and renderer console errors and WebGL context-loss recovery. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select an already installed browser.
+Production-browser checks cover selection galleries, driving, steering, pause/focus loss, reset, recorded-audio decoding, mute/pause/exit audio-context lifecycle, sound/horn controls, exit/fresh drives, multi-touch controls, orientation changes, absence of map/objectives, dense traffic presence and renderer console errors and WebGL context-loss recovery. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select an already installed browser.
 
-Validation here used Chromium with software WebGL and simulated touch input. The extended desktop control flow uses Low graphics; mobile layout/touch and graphics recovery run in Standard. Standard rendering is slow under software WebGL; these checks establish functionality, not a hardware frame-rate target. Real Android/iOS device frame rates, Safari, extended manual drives and final asset fidelity remain to be checked. Low graphics reduces pixel ratio and fog distance and disables shadows. Traffic rendering is limited to vehicles within 280 metres; all vehicles continue simulating. Graphics loss displays an explicit retry screen.
+Validation here used Chromium with software WebGL and simulated touch input. The extended desktop control flow uses Low graphics; mobile layout/touch and graphics recovery run in Standard. Standard rendering is slow under software WebGL; these checks establish functionality, not a hardware frame-rate target. Real Android/iOS device frame rates, Safari, extended manual drives and final asset fidelity remain to be checked. Low graphics renders at 0.65 pixel ratio and reduces fog distance and disables shadows. Traffic rendering is limited to vehicles within 280 metres; all vehicles continue simulating. Graphics loss displays an explicit retry screen.
 
 ## Vercel
 

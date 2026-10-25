@@ -47,7 +47,7 @@ The production build and TypeScript checks pass. Chromium checks cover six deskt
 
 ## Mumbai streets
 
-Drive a simplified South Mumbai-inspired network with 42 road segments, 16 signalized intersections, a roundabout, 112 moving vehicles, and 202 pedestrians. Turn freely between the coastal avenue, city blocks, station area and Colaba waterfront. Free roaming has no minimap, lap counter, area objectives or score screen. Vehicles have curved bodies, detailed wheels and reflective finishes; warm shadows, surface textures and water ripples improve the city environment while NPC people stay boxy. See [map sources and attribution](docs/research/mumbai/README.md) and the [current playable guide](docs/Mumbai-Playable.md).
+Drive a simplified South Mumbai-inspired network with 42 road segments, 16 signalized intersections, a roundabout, 112 moving vehicles, and 372 moving pedestrians plus cart sellers/customers. Turn freely between the coastal avenue, city blocks, station area and Colaba waterfront. Free roaming has no minimap, lap counter, area objectives or score screen. Vehicles have curved bodies, detailed wheels and reflective finishes; warm shadows, surface textures and water ripples improve the city environment while NPC people stay boxy. See [map sources and attribution](docs/research/mumbai/README.md) and the [current playable guide](docs/Mumbai-Playable.md).
 
 ## Playable game checks
 
@@ -69,7 +69,7 @@ Twelve simulation tests and five production-browser flows cover the connected ro
 
 ## Street sound research
 
-[Mumbai street audio research](docs/research/mumbai/audio/README.md) contains real Mumbai and Indian recordings of auto-rickshaws, horns, BEST and other buses, vendors, traffic, crowds, trains and street ambience. Downloaded audio, source/license credits, a checksum manifest and a local listening catalogue live in [`assets/audio/mumbai/`](assets/audio/mumbai/README.md). These assets are outside the website's public directory and are not connected to the game yet.
+[Mumbai street audio research](docs/research/mumbai/audio/README.md) contains real Mumbai and Indian recordings of auto-rickshaws, horns, BEST and other buses, vendors, traffic, crowds, trains and street ambience. Downloaded audio, source/license credits, a checksum manifest and a local listening catalogue live in [`assets/audio/mumbai/`](assets/audio/mumbai/README.md). Four edited excerpts now power the engine, horn, traffic and nearby markets. They are served from `public/audio/mumbai/`, with deployed credits at `/audio/credits.html`; the full research library stays outside the deployment.
 
 ## Document tools
 

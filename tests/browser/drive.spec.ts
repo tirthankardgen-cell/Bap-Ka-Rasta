@@ -11,10 +11,36 @@ async function enter(page: Page) {
 test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home", async ({
   page,
 }) => {
+  // Software WebGL advances the fixed-step simulation more slowly in this dense scene.
+  test.setTimeout(150_000);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (msg) => {
     if (msg.type() === "error") errors.push(msg.text());
+  });
+  await page.addInitScript(() => {
+    const Native = window.AudioContext;
+    (window as unknown as { audioStarts: number }).audioStarts = 0;
+    (window as unknown as { audioContexts: AudioContext[] }).audioContexts = [];
+    window.AudioContext = class extends Native {
+      createBufferSource() {
+        const source = super.createBufferSource(),
+          start = source.start.bind(source);
+        source.start = (
+          ...args: Parameters<AudioBufferSourceNode["start"]>
+        ) => {
+          (window as unknown as { audioStarts: number }).audioStarts++;
+          start(...args);
+        };
+        return source;
+      }
+      constructor(options?: AudioContextOptions) {
+        super(options);
+        (
+          window as unknown as { audioContexts: AudioContext[] }
+        ).audioContexts.push(this);
+      }
+    };
   });
   await page.goto("/");
   await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
@@ -46,7 +72,9 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
   await page.getByRole("button", { name: "Resume drive" }).click();
   await page.keyboard.down("w");
   await expect
-    .poll(async () => Number(await game.getAttribute("data-distance")))
+    .poll(async () => Number(await game.getAttribute("data-distance")), {
+      timeout: 40_000,
+    })
     .toBeGreaterThan(5);
   await page.keyboard.up("w");
   const before = await game.getAttribute("data-position");
@@ -66,13 +94,67 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
   await expect
     .poll(async () => Number(await game.getAttribute("data-speed")))
     .toBe(0);
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { audioContexts: AudioContext[] }).audioContexts
+          .length,
+    ),
+  ).toBe(1);
+  await expect(page.locator("canvas")).toHaveAttribute(
+    "data-audio-status",
+    "ready",
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { audioContexts: AudioContext[] })
+            .audioContexts[0].state,
+      ),
+    )
+    .toBe("running");
+  await page.getByRole("button", { name: "Mute sound" }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { audioContexts: AudioContext[] })
+            .audioContexts[0].state,
+      ),
+    )
+    .toBe("suspended");
   await page.getByRole("button", { name: "Enable sound" }).click();
   await expect(page.getByRole("button", { name: "Mute sound" })).toBeVisible();
   await page.getByRole("button", { name: "Horn", exact: true }).click();
-  await expect(page.getByText("Horn OK please!")).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as unknown as { audioStarts: number }).audioStarts,
+      ),
+    )
+    .toBe(4);
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   await expect(game).toHaveAttribute("data-status", "paused");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { audioContexts: AudioContext[] })
+            .audioContexts[0].state,
+      ),
+    )
+    .toBe("suspended");
   await page.getByRole("button", { name: "End drive" }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { audioContexts: AudioContext[] })
+            .audioContexts[0].state,
+      ),
+    )
+    .toBe("closed");
   await expect(
     page.getByRole("button", { name: "Mera Bap Ka Rasta" }),
   ).toBeVisible();
@@ -157,7 +239,7 @@ test("graphics context loss pauses and can restart the drive", async ({
     gl?.getExtension("WEBGL_lose_context")?.loseContext();
   });
   await expect(
-    page.getByRole("heading", { name: "A little roadblock." }),
+    page.getByRole("heading", { name: "Arre, chhota sa panga!" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Retry drive" }).click();
   await expect(

@@ -1,3 +1,4 @@
+import { createStreetAudio } from "./audio";
 import * as THREE from "three";
 import { atmosphere } from "./atmosphere";
 import { makeWorld, autoRickshaw, trafficVisuals } from "./world";
@@ -11,6 +12,7 @@ import {
   type Input,
 } from "./simulation";
 export type Stats = {
+  audioStatus: string;
   speed: number;
   distance: number;
   topSpeed: number;
@@ -65,15 +67,18 @@ export function createEngine(
     frames = 0,
     lastFps = performance.now(),
     fps = 60;
-  let audio: AudioContext | null = null,
-    osc: OscillatorNode | null = null,
-    gain: GainNode | null = null,
-    sound = false,
+  let audioStatus = "idle";
+  let sound = false,
     lastHorn = 0;
+  const streetAudio = createStreetAudio((status) => {
+    audioStatus = status;
+    renderer.domElement.dataset.audioStatus = status;
+  });
   const cameraTarget = new THREE.Vector3(),
     lookTarget = new THREE.Vector3();
   function publish() {
     onStats({
+      audioStatus,
       speed: state.speed * 3.6,
       distance: state.distance,
       topSpeed: state.topSpeed,
@@ -133,39 +138,17 @@ export function createEngine(
     touch.clear();
     Object.assign(input, emptyInput());
   }
-  function audioResume() {
-    if (sound && audio) void audio.resume().catch(() => {});
-  }
   function setPaused(value: boolean) {
     paused = value;
     clear();
     accumulator = 0;
     last = performance.now();
-    if (paused) {
-      if (audio) void audio.suspend().catch(() => {});
-    } else audioResume();
+    streetAudio.pause(value);
   }
   function horn() {
     if (paused) return;
     lastHorn = performance.now();
-    if (!sound || !audio) return;
-    audioResume();
-    for (const f of [330, 440]) {
-      const note = audio.createOscillator(),
-        volume = audio.createGain();
-      note.type = "sawtooth";
-      note.frequency.value = f;
-      volume.gain.setValueAtTime(0.04, audio.currentTime);
-      volume.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.22);
-      note.connect(volume);
-      volume.connect(audio.destination);
-      note.start();
-      note.stop(audio.currentTime + 0.24);
-      note.onended = () => {
-        note.disconnect();
-        volume.disconnect();
-      };
-    }
+    streetAudio.horn();
   }
   const motionKeys = new Set([
     "KeyW",
@@ -220,9 +203,7 @@ export function createEngine(
   function lost(e: Event) {
     e.preventDefault();
     setPaused(true);
-    onError(
-      "The graphics connection was interrupted. Restart the drive to recover.",
-    );
+    onError("Graphics ne chai break le liya. Retry dabaao, phir nikalte hain.");
   }
   window.addEventListener("keydown", down);
   window.addEventListener("keyup", up);
@@ -256,18 +237,13 @@ export function createEngine(
       player.wheels.forEach((w) => {
         w.rotation.x += (state.speed * dt) / 0.34;
       });
-      if (osc && gain && audio && sound) {
-        osc.frequency.setTargetAtTime(
-          42 + Math.abs(state.speed) * 4,
-          audio.currentTime,
-          0.12,
-        );
-        gain.gain.setTargetAtTime(
-          input.throttle ? 0.035 : 0.018,
-          audio.currentTime,
-          0.1,
-        );
-      }
+      streetAudio.update(
+        state.speed,
+        input.throttle,
+        traffic.filter((t) => Math.hypot(t.x - state.x, t.z - state.z) < 65)
+          .length,
+        world.marketIntensity(state.x, state.z),
+      );
       renderer.render(scene, camera);
     }
     frames++;
@@ -296,29 +272,11 @@ export function createEngine(
     },
     horn,
     sound(enabled: boolean) {
-      sound = enabled;
-      if (enabled) {
-        try {
-          if (!audio) {
-            audio = new AudioContext();
-            osc = audio.createOscillator();
-            gain = audio.createGain();
-            osc.type = "triangle";
-            gain.gain.value = 0.025;
-            osc.connect(gain);
-            gain.connect(audio.destination);
-            osc.start();
-          }
-          if (!paused) audioResume();
-        } catch {
-          sound = false;
-          return false;
-        }
-      } else if (audio) void audio.suspend().catch(() => {});
+      sound = streetAudio.enable(enabled);
       return sound;
     },
     quality(low: boolean) {
-      renderer.setPixelRatio(low ? 1 : Math.min(devicePixelRatio, 1.5));
+      renderer.setPixelRatio(low ? 0.65 : Math.min(devicePixelRatio, 1.5));
       lighting.quality(low);
       resize();
     },
@@ -332,7 +290,7 @@ export function createEngine(
       document.removeEventListener("visibilitychange", visibility);
       renderer.domElement.removeEventListener("webglcontextlost", lost);
       clear();
-      if (audio) void audio.close().catch(() => {});
+      streetAudio.dispose();
       const geometries = new Set<THREE.BufferGeometry>(),
         materials = new Set<THREE.Material>(),
         textures = new Set<THREE.Texture>();

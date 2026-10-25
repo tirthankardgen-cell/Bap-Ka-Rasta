@@ -24,7 +24,7 @@ function App() {
         fallback={
           <div className="game-loading">
             Road taiyaar ho raha hai…
-            <small>Getting your Mumbai auto ready</small>
+            <small>Mumbai ki kaali-peeli aa rahi hai, bhidu</small>
           </div>
         }
       >
@@ -75,7 +75,7 @@ function App() {
         </a>
         <div className="hero-copy">
           <div className="eyebrow">
-            <span /> INDIAN STREETS. ENDLESS GOOD VIBES.
+            <span /> DESI SADKEIN. FULL FILMY VIBES.
           </div>
           <h1 id="hero-title">
             APNA SHEHER.
@@ -85,8 +85,9 @@ function App() {
             <span>APNA RASTA.</span>
           </h1>
           <p>
-            Five iconic cities. Five legendary rides.
-            <br />A whole lot of <strong>“bhai, side de!”</strong>
+            Paanch sheher ka plan. Pehla stop, Mumbai.
+            <br />
+            Aur full-on <strong>“bhai, side de!”</strong>
           </p>
           <button className="primary" onClick={() => setScreen("city")}>
             Mera Bap Ka Rasta{" "}
@@ -94,7 +95,9 @@ function App() {
               <ArrowUpRight size={24} />
             </span>
           </button>
-          <span className="hero-note">NO LOGIN. JUST GOOD TIMES.</span>
+          <span className="hero-note">
+            LOGIN KA CHAKKAR NAHI. BAS CHAL PAD.
+          </span>
         </div>
         <div className="scene-label">
           <MapPin size={16} />

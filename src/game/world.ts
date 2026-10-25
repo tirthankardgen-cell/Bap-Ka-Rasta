@@ -148,17 +148,17 @@ export function makeWorld(scene: THREE.Scene) {
   ) => add("box", c, x, y, z, w, h, d, 0, ry);
   // Narrow coastal land with inland city blocks, not a circular island.
   box("#4b9da5", 0, -1.1, 0, 2400, 1, 2500);
-  box("#c9c5a6", 35, -0.25, 60, 690, 0.5, 1260);
-  box("#decba6", -289, 0.08, 10, 34, 0.18, 1120);
+  box("#c9c5a6", 43, -0.25, 60, 674, 0.5, 1260);
+  box("#decba6", -283, 0.08, 10, 22, 0.18, 1120);
   for (let z = -535; z < 572; z += 5) {
-    box("#aaa890", -305, 0.65, z, 1.2, 1.3, 5);
-    add("sphere", "#546d6c", -311, -0.1, z, 2, 1, 2);
+    box("#aaa890", -294, 0.65, z, 1.2, 1.3, 5);
+    add("sphere", "#546d6c", -300, -0.1, z, 2, 1, 2);
   }
   for (const e of streets) {
     const g = geometry(e.id),
       mid = lanePosition(e.id, e.a, g.length / 2, 0),
       yaw = mid.yaw;
-    box("#dbd0b5", mid.x, 0, mid.z, e.width + 11, 0.06, g.length + 1, yaw);
+    box("#dbd0b5", mid.x, 0, mid.z, e.width + 6.6, 0.06, g.length + 1, yaw);
     box("#525f65", mid.x, 0.04, mid.z, e.width, 0.06, g.length + 0.2, yaw);
     if (e.oneWay) continue;
     for (let d = 23; d < g.length - 23; d += 4) {
@@ -303,9 +303,9 @@ export function makeWorld(scene: THREE.Scene) {
   for (const e of streets) {
     if (e.oneWay) continue;
     const g = geometry(e.id);
-    for (let d = 45; d < g.length - 36; d += 31)
+    for (let d = 45; d < g.length - 36; d += 23)
       for (const side of [-1, 1]) {
-        const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 18));
+        const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 13));
         if (
           p.x < -242 ||
           p.x > 328 ||
@@ -319,7 +319,7 @@ export function makeWorld(scene: THREE.Scene) {
           continue;
         buildingPositions.push(p);
         const seed = e.id * 13 + Math.floor(d) + side,
-          h = 9 + (Math.abs(seed) % 6) * 4,
+          h = 13 + (Math.abs(seed) % 6) * 4,
           c = facades[Math.abs(seed) % 6];
         box(c, p.x, h / 2, p.z, 17, h, 20, p.yaw);
         box("#eee1bf", p.x, h + 0.25, p.z, 18, 0.5, 21, p.yaw);
@@ -365,7 +365,7 @@ export function makeWorld(scene: THREE.Scene) {
               p.yaw,
             );
           }
-        const shop = lanePosition(e.id, e.a, d, side * (e.width / 2 + 7));
+        const shop = lanePosition(e.id, e.a, d, side * (e.width / 2 + 4));
         box(
           seed % 2 ? "#be713c" : "#437e70",
           shop.x,
@@ -489,6 +489,108 @@ export function makeWorld(scene: THREE.Scene) {
       scene.add(taxi);
     }
   }
+  // Kerbside carts leave through lanes and pedestrian crossings open.
+  const vendors: { x: number; z: number }[] = [];
+  for (const e of streets) {
+    if (e.oneWay) continue;
+    const g = geometry(e.id);
+    for (let d = 58; d < g.length - 45; d += 72) {
+      const side = (e.id + Math.floor(d)) % 2 ? 1 : -1;
+      const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 0.95));
+      vendors.push(p);
+      const style = vendors.length % 4;
+      const local = (forward: number, lateral: number) => ({
+        x: p.x + g.dx * forward - g.dz * lateral,
+        z: p.z + g.dz * forward + g.dx * lateral,
+      });
+      box(
+        ["#267e74", "#b5482f", "#b89a44", "#4c7796"][style],
+        p.x,
+        0.85,
+        p.z,
+        1.25,
+        0.9,
+        2.7,
+        p.yaw,
+      );
+      box("#b9b6a4", p.x, 1.35, p.z, 1.45, 0.12, 2.9, p.yaw);
+      for (const f of [-1.1, 1.1]) {
+        const q = local(f, 0);
+        add(
+          "cylinder",
+          "#273332",
+          q.x,
+          0.3,
+          q.z,
+          0.3,
+          0.18,
+          0.3,
+          0,
+          0,
+          Math.PI / 2,
+        );
+        add("cylinder", "#49544b", q.x, 1.95, q.z, 0.035, 1.3, 0.035);
+      }
+      box(
+        style % 2 ? "#e39d3d" : "#396e6a",
+        p.x,
+        2.65,
+        p.z,
+        1.8,
+        0.12,
+        3.2,
+        p.yaw,
+      );
+      for (const f of [-0.9, -0.3, 0.3, 0.9]) {
+        const q = local(f, 0);
+        if (style === 0) {
+          add("cylinder", "#a4aaa4", q.x, 1.58, q.z, 0.18, 0.35, 0.18);
+        } else {
+          for (const l of [-0.3, 0, 0.3]) {
+            const fruit = local(f, l);
+            add(
+              "sphere",
+              style === 1 ? "#eab63f" : style === 2 ? "#87a447" : "#c9643b",
+              fruit.x,
+              1.5,
+              fruit.z,
+              0.14,
+              0.14,
+              0.14,
+            );
+          }
+        }
+      }
+      sign(
+        ["CHAI · CUTTING", "VADA PAV", "TAZE PHAL", "BHEL PURI"][style],
+        p.x,
+        2.35,
+        p.z,
+        Math.atan2(-g.dz * side, g.dx * side),
+        3.2,
+        "#79472d",
+      );
+      // Boxy sellers and customers, sharing the city's instanced geometry.
+      for (const f of [-2.1, 2.1]) {
+        const q = local(f, 0);
+        box(
+          style % 2 ? "#d3b779" : "#89a2a0",
+          q.x,
+          1.25,
+          q.z,
+          0.55,
+          0.75,
+          0.35,
+          p.yaw,
+        );
+        box("#b67e51", q.x, 1.88, q.z, 0.4, 0.42, 0.4, p.yaw);
+        for (const l of [-0.16, 0.16]) {
+          const leg = local(f, l);
+          box("#3e4b53", leg.x, 0.58, leg.z, 0.2, 0.6, 0.23, p.yaw);
+        }
+      }
+    }
+  }
   // Gateway-inspired waterfront arch in the south-east, plus a station silhouette inland.
   const gx = 335,
     gz = 585;
@@ -551,11 +653,11 @@ export function makeWorld(scene: THREE.Scene) {
   }[] = [];
   for (const e of streets)
     if (!e.oneWay && geometry(e.id).length > 90)
-      for (let i = 0; i < 5; i++)
+      for (let i = 0; i < 10; i++)
         walkers.push({
           edge: e.id,
           side: i % 2 ? 1 : -1,
-          phase: i * 0.2,
+          phase: i * 0.1,
           cross: -1,
         });
   for (const n of junctions)
@@ -597,6 +699,12 @@ export function makeWorld(scene: THREE.Scene) {
   let lastPeople = -1,
     lastLights = -1;
   return {
+    marketIntensity(x: number, z: number) {
+      let nearest = Infinity;
+      for (const vendor of vendors)
+        nearest = Math.min(nearest, Math.hypot(x - vendor.x, z - vendor.z));
+      return Math.max(0, 1 - nearest / 38);
+    },
     update(time: number) {
       cityTime.value = time;
       if (Math.floor(time * 4) !== lastLights) {
@@ -639,7 +747,7 @@ export function makeWorld(scene: THREE.Scene) {
               e.id,
               e.a,
               32 + u * span,
-              w.side * (e.width / 2 + 3.6),
+              w.side * (e.width / 2 + 2.1 + (i % 3) * 0.3),
             );
           x = p.x;
           z = p.z;

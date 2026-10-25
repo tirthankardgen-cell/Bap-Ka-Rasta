@@ -11,10 +11,10 @@ import "./selection.css";
 export const cities = [
   {
     name: "Mumbai",
-    subtitle: "South Mumbai Streets",
+    subtitle: "South Mumbai ki galiyan",
     description:
-      "Sea breeze, yellow taxis, and a road with a view. Explore Marine Drive, city junctions, and the Colaba waterfront.",
-    detail: "CONNECTED STREETS · FREE DRIVE",
+      "Samundar ki hawa, kaali-peeli ka swag. Marine Drive se Colaba tak, apna Mumbai apne andaaz mein ghoom.",
+    detail: "GALI SE GALI · BINDASS GHUMO",
     x: 8,
     y: 85,
   },
@@ -22,7 +22,7 @@ export const cities = [
     name: "Delhi",
     subtitle: "Dilli Boulevard",
     description:
-      "Wide avenues. Sandstone landmarks. Big-city attitude. Your next drive through the capital is on its way.",
+      "Badi sadkein, bade landmarks, full Dilli wala swag. Rajdhani ki ride ki taiyaari chal rahi hai.",
     detail: "INDIA GATE · BROAD BOULEVARDS",
     x: 514,
     y: 85,
@@ -31,7 +31,7 @@ export const cities = [
     name: "Kolkata",
     subtitle: "Hooghly Hop",
     description:
-      "Yellow taxis, riverside turns, and that unmistakable steel skyline. A city with an old soul and a new adventure.",
+      "Peeli taxi, Hooghly ki hawa aur Howrah ka nazara. Purane sheher mein nayi kahaani banegi.",
     detail: "HOWRAH BRIDGE · RIVERSIDE STREETS",
     x: 1027,
     y: 85,
@@ -40,7 +40,7 @@ export const cities = [
     name: "Chennai",
     subtitle: "Marina Cruise",
     description:
-      "Follow the palms along a sun-soaked coast. Open skies, filter coffee stops, and a little sea breeze.",
+      "Marina ki hawa aur filter coffee ka break. Coast pe cruise karne ka scene jaldi banega.",
     detail: "MARINA BEACH · COASTAL CRUISE",
     x: 8,
     y: 539,
@@ -49,7 +49,7 @@ export const cities = [
     name: "Bangalore",
     subtitle: "Garden City Run",
     description:
-      "Leafy avenues, flowering trees, and coffee around the corner. Take the scenic route through the garden city.",
+      "Pedon ki chhaanv, corner ki coffee aur Garden City ka chill scene. Ride ki taiyaari on hai.",
     detail: "CUBBON PARK · GREEN AVENUES",
     x: 514,
     y: 539,
@@ -58,45 +58,45 @@ export const cities = [
 export const vehicles = [
   {
     name: "Auto rickshaw",
-    subtitle: "The original street legend",
+    subtitle: "Galiyon ka asli hero",
     description:
-      "Three wheels. Endless character. Your black-and-yellow auto, complete with a khaki-clad driver, is ready for Mumbai.",
+      "Teen pahiye, full Mumbai swag. Khaki mein apna driver aur kaali-peeli auto — meter down, tension down!",
     detail: "65 KM/H · NIMBLE HANDLING",
     x: 0,
     y: 0,
   },
   {
     name: "Thar",
-    subtitle: "Big wheels. Bigger energy.",
+    subtitle: "Bade tyre. Full tashan.",
     description:
-      "A chunky off-road ride with a whole lot of road presence. This SUV joins the garage in a future build.",
+      "Dhaakad look, full road presence. Thar ki entry garage mein abhi baaki hai, mere dost.",
     detail: "OFF-ROAD SUV · COMING SOON",
     x: 512,
     y: 0,
   },
   {
     name: "Fortuner",
-    subtitle: "Cruise like you own the road.",
+    subtitle: "Entry ho toh aisi.",
     description:
-      "A tall, roomy SUV for taking the long way home. The large SUV is still getting ready for its first drive.",
+      "Badi gaadi, lambi ride ka mood. Fortuner abhi backstage hai — entry ki taiyaari chal rahi hai.",
     detail: "LARGE SUV · COMING SOON",
     x: 1024,
     y: 0,
   },
   {
     name: "Scooty",
-    subtitle: "Small ride. Full freedom.",
+    subtitle: "Chhoti sawaari, full azaadi.",
     description:
-      "Light, bright, and made for easy city cruising. Your turquoise two-wheeler is on its way.",
+      "Halki-phulki ride, poora sheher apna. Apni turquoise scooty raaste mein hai.",
     detail: "CITY SCOOTER · COMING SOON",
     x: 0,
     y: 512,
   },
   {
     name: "KTM",
-    subtitle: "A little extra adrenaline.",
+    subtitle: "Orange wala josh.",
     description:
-      "A sporty orange motorcycle with a lively silhouette. Two-wheel adventures are coming in a future build.",
+      "Sporty orange look, full filmy entry. Do pahiyon wali kahaani agle update mein aayegi.",
     detail: "SPORT MOTORCYCLE · COMING SOON",
     x: 512,
     y: 512,
@@ -182,7 +182,7 @@ export default function Selection({
           ) : (
             <>
               <MapPin size={14} />
-              {city} <span> / </span> Choose your ride
+              {city} <span> / </span> Apni sawaari chun
             </>
           )}
         </p>
@@ -308,11 +308,11 @@ export default function Selection({
                   <span className="gallery-footnote">
                     {kind === "city"
                       ? i === 0
-                        ? "Next: choose your vehicle."
+                        ? "Ab apni sawaari chun, bhidu."
                         : `${item.name} is coming soon. Mumbai is playable now.`
                       : i === 0
                         ? "Mumbai + auto rickshaw. Bas chalao."
-                        : "The auto rickshaw is ready to drive now."}
+                        : "Auto ready hai. Bas tu aa ja, bhidu."}
                   </span>
                 </div>
               </article>

@@ -17,6 +17,7 @@ import { createEngine, type Engine, type Stats } from "./engine";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
+  audioStatus: "idle",
   speed: 0,
   distance: 0,
   topSpeed: 0,
@@ -37,7 +38,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
   const [error, setError] = useState(""),
     [loaded, setLoaded] = useState(false),
     [session, setSession] = useState(0),
-    [sound, setSound] = useState(false),
+    [sound, setSound] = useState(true),
     [low, setLow] = useState(false),
     [hornActive, setHornActive] = useState(false);
   const hornTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,7 +46,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
     let active = true;
     setLoaded(false);
     setError("");
-    setSound(false);
+    setSound(true);
     setLow(false);
     setStats(initial);
     try {
@@ -64,7 +65,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
       setLoaded(true);
     } catch (e) {
       setError(
-        "This browser could not start the 3D scene. Try a browser with WebGL 2 and hardware acceleration enabled.",
+        "Scene load nahi hua, bhidu. WebGL 2 aur hardware acceleration wala browser try karo.",
       );
       console.error(e);
     }
@@ -78,6 +79,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
   function start() {
     setStatus("driving");
     engine.current?.setPaused(false);
+    setSound(engine.current?.sound(sound) ?? false);
     (document.activeElement as HTMLElement)?.blur();
   }
   function pause() {
@@ -99,7 +101,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
     engine.current?.horn();
     setHornActive(true);
     if (hornTimer.current) clearTimeout(hornTimer.current);
-    hornTimer.current = setTimeout(() => setHornActive(false), 1200);
+    hornTimer.current = setTimeout(() => setHornActive(false), 2500);
   }
   function pedal(action: keyof Input, label: string, icon: React.ReactNode) {
     return (
@@ -119,7 +121,17 @@ export default function Game({ onExit }: { onExit: () => void }) {
         onContextMenu={(e) => e.preventDefault()}
       >
         {icon}
-        <span>{label}</span>
+        <span>
+          {
+            {
+              left: "Baayein",
+              right: "Daayein",
+              throttle: "Chalao",
+              brake: "Ruko / reverse",
+              handbrake: "Brake",
+            }[action]
+          }
+        </span>
       </button>
     );
   }
@@ -162,17 +174,21 @@ export default function Game({ onExit }: { onExit: () => void }) {
       {status === "driving" && (
         <>
           <div className="driving-message" aria-live="polite">
-            {stats.impact
-              ? "Arre bhai! Take it easy."
-              : hornActive
-                ? "Horn OK please!"
-                : stats.signal === "red"
-                  ? "Red signal — stop before the crossing."
-                  : stats.signal === "amber"
-                    ? "Amber signal — slow down."
-                    : stats.signal === "pedestrian"
-                      ? "Pedestrians crossing — give them way."
-                      : ""}
+            {sound && stats.audioStatus === "loading"
+              ? "Mumbai ka soundcheck chal raha hai…"
+              : sound && stats.audioStatus === "unavailable"
+                ? "Sound ne nakhra kiya. Off-on karke dekho."
+                : stats.impact
+                  ? "Arre bhidu, thoda aaram se!"
+                  : hornActive
+                    ? "Horn OK please, bhidu!"
+                    : stats.signal === "red"
+                      ? "Laal batti, bhidu! Crossing se pehle ruk."
+                      : stats.signal === "amber"
+                        ? "Peeli batti! Hero, zara slow ho ja."
+                        : stats.signal === "pedestrian"
+                          ? "Public cross kar rahi hai, pehle unko jaane de."
+                          : ""}
           </div>
           <div className="keyboard-hint">
             WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE
@@ -206,49 +222,59 @@ export default function Game({ onExit }: { onExit: () => void }) {
             {error ? (
               <>
                 <span className="panel-kicker">
-                  LET’S GET YOU BACK ON THE ROAD
+                  PICTURE ABHI BAAKI HAI, BHIDU
                 </span>
-                <h1 id="drive-panel-title">A little roadblock.</h1>
+                <h1 id="drive-panel-title">Arre, chhota sa panga!</h1>
                 <p>{error}</p>
-                <button className="game-primary" onClick={restart}>
-                  Retry drive <RotateCcw size={18} />
+                <button
+                  className="game-primary"
+                  onClick={restart}
+                  aria-label="Retry drive"
+                >
+                  Phir try karein <RotateCcw size={18} />
                 </button>
-                <button className="game-secondary" onClick={exit}>
-                  Back to home
+                <button
+                  className="game-secondary"
+                  onClick={exit}
+                  aria-label="Back to home"
+                >
+                  Ghar chalo
                 </button>
               </>
             ) : status === "ready" ? (
               <>
-                <span className="panel-kicker">MUMBAI · FIRST PLAYABLE</span>
+                <span className="panel-kicker">
+                  MUMBAI · APNA SHEHER, APNI RIDE
+                </span>
                 <h1 id="drive-panel-title">
                   Meter down.
                   <br />
                   <em>Tension down.</em>
                 </h1>
                 <p>
-                  Your black-and-yellow auto is ready. Explore connected
-                  streets, stop at signals, and take a turn toward the
-                  waterfront.
+                  Kaali-peeli ready hai, bhidu! Galiyon mein ghoom, signal pe
+                  ruk, phir samundar ki hawa kha. Na race, na deadline — bas
+                  apni ride.
                 </p>
                 <div className="ride-spec">
                   <span>AUTO RICKSHAW</span>
                   <span>65 KM/H</span>
-                  <span>FREE DRIVE</span>
+                  <span>BINDASS GHUMO</span>
                 </div>
                 <div className="control-guide">
                   <div>
                     <strong>Keyboard</strong>
                     <span>
-                      WASD or arrows to drive · Space to brake
+                      WASD / arrows se chalao · Space se brake
                       <br />H horn · R reset · Esc pause
                     </span>
                   </div>
                   <div>
                     <strong>Phone / tablet</strong>
                     <span>
-                      Hold the on-screen steering and pedals.
+                      Steering aur pedal daba ke rakho.
                       <br />
-                      Hold brake at a stop to reverse.
+                      Reverse ke liye ruk ke brake dabaao.
                     </span>
                   </div>
                 </div>
@@ -257,33 +283,45 @@ export default function Game({ onExit }: { onExit: () => void }) {
                   disabled={!loaded}
                   onClick={start}
                 >
-                  {loaded ? "Chal Chala" : "Preparing your road…"}{" "}
+                  {loaded ? "Chal Chala" : "Rasta taiyaar ho raha hai…"}{" "}
                   <ArrowRight size={20} />
                 </button>
-                <button className="game-secondary" onClick={exit}>
-                  Back to home
+                <button
+                  className="game-secondary"
+                  onClick={exit}
+                  aria-label="Back to home"
+                >
+                  Ghar chalo
                 </button>
               </>
             ) : (
               <>
                 <span className="panel-kicker">EK CHAI BREAK?</span>
                 <h1 id="drive-panel-title">
-                  Parked for
+                  Zara chai
                   <br />
-                  <em>a moment.</em>
+                  <em>ho jaaye?</em>
                 </h1>
-                <p>Your drive is paused. Take your time.</p>
-                <button className="game-primary" onClick={start}>
-                  <Play size={18} /> Resume drive
+                <p>Auto side mein hai. Chai pee, phir scene banate hain.</p>
+                <a href="/audio/credits.html" target="_blank" rel="noreferrer">
+                  Sound ke asli kalakaar
+                </a>
+                <button
+                  className="game-primary"
+                  onClick={start}
+                  aria-label="Resume drive"
+                >
+                  <Play size={18} /> Chal, phir niklein
                 </button>
                 <div className="pause-grid">
                   <button
+                    aria-label="Reset vehicle"
                     onClick={() => {
                       engine.current?.reset();
                       start();
                     }}
                   >
-                    <RotateCcw size={18} /> Reset vehicle
+                    <RotateCcw size={18} /> Auto seedha karo
                   </button>
                   <button onClick={toggleSound}>
                     {sound ? <Volume2 size={18} /> : <VolumeX size={18} />}Sound{" "}
@@ -298,12 +336,16 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     <Gauge size={18} />
                     {low ? "Low" : "Standard"} graphics
                   </button>
-                  <button onClick={exit}>
-                    <Home size={18} /> End drive
+                  <button onClick={exit} aria-label="End drive">
+                    <Home size={18} /> Aaj ka ho gaya
                   </button>
                 </div>
-                <button className="game-secondary" onClick={exit}>
-                  <Home size={16} /> Back to home
+                <button
+                  className="game-secondary"
+                  onClick={exit}
+                  aria-label="Back to home"
+                >
+                  <Home size={16} /> Ghar chalo
                 </button>
               </>
             )}
