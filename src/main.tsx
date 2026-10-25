@@ -1,35 +1,24 @@
-import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { ArrowUpRight, X, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import "@fontsource/barlow-condensed/latin-700.css";
 import "@fontsource/barlow-condensed/latin-800.css";
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/dm-sans/latin-800.css";
 import "./style.css";
+import Selection, { cities } from "./selection/Selection";
 
 const Game = lazy(() => import("./game/Game"));
 
-const cities = [
-  { name: "Mumbai", route: "Samundar Loop", x: 8, y: 85 },
-  { name: "Delhi", route: "Dilli Boulevard", x: 514, y: 85 },
-  { name: "Kolkata", route: "Hooghly Hop", x: 1027, y: 85 },
-  { name: "Chennai", route: "Marina Cruise", x: 8, y: 539 },
-  { name: "Bangalore", route: "Garden City Run", x: 514, y: 539 },
-];
-
 function App() {
-  const [open, setOpen] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [selected, setSelected] = useState(0);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const city = cities[selected];
-  useEffect(() => {
-    if (open) dialog.current?.showModal();
-    else dialog.current?.close();
-  }, [open]);
+  const [screen, setScreen] = useState<"home" | "city" | "vehicle" | "game">(
+    "home",
+  );
+  const [selectedCity, setSelectedCity] = useState(0);
+  const [selectedVehicle, setSelectedVehicle] = useState(0);
 
-  if (playing)
+  if (screen === "game")
     return (
       <Suspense
         fallback={
@@ -39,8 +28,31 @@ function App() {
           </div>
         }
       >
-        <Game onExit={() => setPlaying(false)} />
+        <Game onExit={() => setScreen("home")} />
       </Suspense>
+    );
+
+  if (screen === "city" || screen === "vehicle")
+    return (
+      <Selection
+        key={screen}
+        kind={screen}
+        selected={screen === "city" ? selectedCity : selectedVehicle}
+        onSelect={screen === "city" ? setSelectedCity : setSelectedVehicle}
+        city={cities[selectedCity].name}
+        onBack={() => setScreen(screen === "city" ? "home" : "city")}
+        onConfirm={() => {
+          if (screen === "city" && selectedCity === 0) {
+            setSelectedVehicle(0);
+            setScreen("vehicle");
+          } else if (
+            screen === "vehicle" &&
+            selectedCity === 0 &&
+            selectedVehicle === 0
+          )
+            setScreen("game");
+        }}
+      />
     );
 
   return (
@@ -76,7 +88,7 @@ function App() {
             Five iconic cities. Five legendary rides.
             <br />A whole lot of <strong>“bhai, side de!”</strong>
           </p>
-          <button className="primary" onClick={() => setOpen(true)}>
+          <button className="primary" onClick={() => setScreen("city")}>
             Mera Bap Ka Rasta{" "}
             <span>
               <ArrowUpRight size={24} />
@@ -91,77 +103,6 @@ function App() {
           </span>
         </div>
       </main>
-      <dialog
-        ref={dialog}
-        aria-labelledby="dialog-title"
-        onCancel={() => setOpen(false)}
-        onClick={(e) => {
-          if (e.target === dialog.current) setOpen(false);
-        }}
-      >
-        <button
-          className="close-dialog"
-          aria-label="Close dialog"
-          onClick={() => setOpen(false)}
-        >
-          <X />
-        </button>
-        <div className="eyebrow">YOUR NEXT ADVENTURE</div>
-        <h2 id="dialog-title">
-          Sawaari se pehle,
-          <br />
-          <span>sheher chun.</span>
-        </h2>
-        <div className="city-tabs" role="group" aria-label="Choose a city">
-          {cities.map((item, i) => (
-            <button
-              key={item.name}
-              aria-pressed={selected === i}
-              onClick={() => setSelected(i)}
-            >
-              {item.name}
-            </button>
-          ))}
-        </div>
-        <div className="city-preview">
-          <svg
-            className="city-art"
-            viewBox={`${city.x} ${city.y} 498 447`}
-            preserveAspectRatio="xMidYMid meet"
-            role="img"
-            aria-label={`${city.name} concept art`}
-          >
-            <image href="/images/world-board.webp" width="1536" height="1024" />
-          </svg>
-        </div>
-        <div className="city-caption">
-          <h3>{city.name}</h3>
-          <span>{city.route}</span>
-        </div>
-        {selected === 0 ? (
-          <>
-            <span className="availability">AVAILABLE NOW · AUTO RICKSHAW</span>
-            <button
-              className="primary game-launch"
-              onClick={() => {
-                setOpen(false);
-                setPlaying(true);
-              }}
-            >
-              Drive Mumbai <ArrowUpRight size={20} />
-            </button>
-            <p className="coming-soon">
-              A seaside circuit, a khaki-clad driver, and your own
-              black-and-yellow auto. Keyboard and touch controls.
-            </p>
-          </>
-        ) : (
-          <p className="coming-soon">
-            {city.name} is coming soon. Select Mumbai to drive the auto rickshaw
-            now.
-          </p>
-        )}
-      </dialog>
     </>
   );
 }

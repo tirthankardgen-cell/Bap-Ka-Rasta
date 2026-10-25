@@ -14,7 +14,7 @@ The plan covers Mumbai, Delhi, Kolkata, Chennai, and Bangalore, with auto ricksh
 
 ## Website development
 
-The landing page uses React, TypeScript, and Vite. It is a single-screen hero with original Mumbai artwork, game branding, and one main button opening five city previews. Select Mumbai and press **Drive Mumbai**, then **Chal Chala**, to play. The other cities remain concept previews marked coming soon. No credentials or backend are required.
+The landing page uses React, TypeScript, and Vite. It is a single-screen hero with original Mumbai artwork, game branding, and one main button opening a full-screen city gallery. Choose Mumbai, press **Yahin Chalao**, choose the auto rickshaw in the full-screen vehicle gallery, then press **Drive Mumbai** and **Chal Chala** to play. Both galleries support left/right arrows, keyboard navigation, swipe gestures, and direct selection dots. The other cities remain concept previews marked coming soon. No credentials or backend are required.
 
 Use Node.js 22.18+ or 24:
 
@@ -30,7 +30,7 @@ npm run build
 npm run preview
 ```
 
-The build runs TypeScript checks and outputs the static site to `dist/`. Fonts and images are served locally. The two WebP images together are approximately 690 KB. The hero fills the viewport on desktop and mobile. City preview artwork preserves its original proportions through SVG viewboxes.
+The build runs TypeScript checks and outputs the static site to `dist/`. Fonts and images are served locally. Artwork is delivered as optimized WebP images. The hero fills the viewport on desktop and mobile. City preview artwork preserves its original proportions through SVG viewboxes.
 
 ## Deploy to Vercel
 
@@ -54,9 +54,12 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Six simulation tests and three production-browser flows cover driving, collisions, reverse, lap progression, touch controls, pause/reset, replay/results, and graphics recovery. Browser checks use software WebGL and touch emulation; real-phone frame-rate validation is still pending. No new Vercel settings or secrets are needed.
+Six simulation tests and five production-browser flows cover driving, collisions, reverse, lap progression, touch controls, pause/reset, replay/results, and graphics recovery. Browser checks use software WebGL and touch emulation; real-phone frame-rate validation is still pending. No new Vercel settings or secrets are needed.
 
 ## Website artwork
+
+`public/images/vehicle-gallery.webp` contains original generated vehicle previews matching the approved art direction. The gallery uses proportional SVG windows, with the auto available and the other four vehicles marked coming soon.
+
 
 `public/images/landing-hero.webp` is original generated concept art based on the approved blocky city/character storyboard. `public/images/world-board.webp` is the approved world storyboard, displayed through proportional SVG panel windows for the city previews. Both were encoded as WebP for delivery. The hero was generated on 24 October 2026; the images are promotional concept art, not screenshots of working gameplay. Font packages include their upstream licenses in `node_modules/@fontsource/`.
 

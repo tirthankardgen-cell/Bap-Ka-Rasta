@@ -2,7 +2,7 @@
 
 ## Play
 
-From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai**, then **Drive Mumbai** and **Chal Chala**. Mumbai and the auto are the only playable selection in this build. Other city cards show their concept art and a coming-soon message.
+From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai** in the full-screen city gallery, press **Yahin Chalao**, choose **Auto rickshaw** in the full-screen vehicle gallery, then **Drive Mumbai** and **Chal Chala**. Use the left/right arrows, keyboard arrow keys, or swipe to browse; the selection dots jump directly to a choice. Mumbai and the auto are the only playable selection in this build. Other city cards show their concept art and a coming-soon message.
 
 The fictional Marine Drive-inspired circuit is approximately 2.15 km, with a seafront promenade, palms, buildings, street stalls, pedestrians, a Gateway-inspired arch, and moving traffic. It is a compact closed circuit, not a geographically accurate map. All geometry is authored procedurally in this repository. The auto has three wheels, black/yellow bodywork, a khaki driver, and a rear “Horn OK Please” sign. Current visuals are an initial low-poly implementation of the storyboard direction.
 
