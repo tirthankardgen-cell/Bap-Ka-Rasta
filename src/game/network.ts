@@ -80,6 +80,55 @@ const southWest = node(-80, 620, "Colaba Market"),
 link(grid.get("1,4")!, southWest, "Colaba Market Road", 20);
 link(southWest, southEast, "Gateway Road", 24);
 link(southEast, grid.get("3,4")!, "Harbour Avenue");
+// Two-way neighbourhood lanes expand the city east and north.
+const neighbourhood = new Map<string, number>();
+for (const x of [450, 610])
+  for (const z of [-680, -480, -260, -40, 180, 400, 620])
+    neighbourhood.set(`${x},${z}`, node(x, z, "Bhendi Bazaar Lanes"));
+for (const x of [450, 610]) {
+  const rows = [-680, -480, -260, -40, 180, 400, 620];
+  for (let i = 0; i < rows.length - 1; i++)
+    link(
+      neighbourhood.get(`${x},${rows[i]}`)!,
+      neighbourhood.get(`${x},${rows[i + 1]}`)!,
+      x === 450 ? "Bazaar Galli" : "Chawl Lane",
+      10,
+    );
+}
+for (const z of [-680, -480, -260, -40, 180, 400, 620]) {
+  link(
+    neighbourhood.get(`450,${z}`)!,
+    neighbourhood.get(`610,${z}`)!,
+    "Dukaan Lane",
+    10,
+  );
+  if (z !== -680) {
+    const west = junctions.find((n) => n.x === 290 && n.z === z)!;
+    link(west.id, neighbourhood.get(`450,${z}`)!, "Market Cross Lane", 10);
+  }
+}
+let previous: number | undefined;
+for (const x of [-260, -80, 110, 290]) {
+  const north = node(x, -680, "Chowpatty Extension");
+  link(
+    north,
+    junctions.find((n) => n.x === x && n.z === -480)!.id,
+    "North Mumbai Link",
+    18,
+  );
+  if (previous !== undefined) link(previous, north, "Chowpatty Backstreet", 10);
+  previous = north;
+}
+link(previous!, neighbourhood.get("450,-680")!, "Bazaar Approach", 10);
+export const WORLD_BOUNDS = { minX: -294, maxX: 648, minZ: -718, maxZ: 658 };
+export function trafficLane(edge: number, preferred = 3) {
+  const e = streets[edge];
+  return e.oneWay
+    ? 0
+    : e.width <= 12
+      ? e.width / 4
+      : Math.min(preferred, e.width / 2 - 2);
+}
 export const connections = (id: number) =>
   streets
     .filter((e) => e.a === id || (!e.oneWay && e.b === id))
@@ -163,6 +212,13 @@ export function nearestStreet(x: number, z: number) {
 }
 // Union of road corridors and intersection aprons: turning is free, no spline constraint.
 export function roadContains(x: number, z: number, r = 1) {
+  if (
+    x < WORLD_BOUNDS.minX + r ||
+    x > WORLD_BOUNDS.maxX - r ||
+    z < WORLD_BOUNDS.minZ + r ||
+    z > WORLD_BOUNDS.maxZ - r
+  )
+    return false;
   if (Math.hypot(x - 110, z - 180) < 22 + r) return false;
   for (const n of junctions)
     if (!n.ring && Math.abs(x - n.x) <= 18 - r && Math.abs(z - n.z) <= 18 - r)
@@ -236,13 +292,19 @@ export function crossingPosition(
         (e.a === id && junctions[e.b].z < n.z) ||
         (e.b === id && junctions[e.a].z < n.z),
     ),
+    crossingRoad = streets.find(
+      (e) =>
+        (e.a === id || e.b === id) &&
+        Math.abs(junctions[e.a].z - junctions[e.b].z) > 1,
+    ),
+    span = (crossingRoad?.width ?? 24) + 6,
     shifted = time + (id % 4) * 4,
     p = shifted % 46,
     cycle = Math.floor(shifted / 46),
     direction = side * (cycle % 2 ? -1 : 1),
     u = p >= 30 ? Math.min(1, (p - 30) / 15) : 0;
   return {
-    x: n.x + (u * 30 - 15) * direction,
+    x: n.x + (u * span - span / 2) * direction,
     z: n.z + (north ? -21 : 21) + offset,
     yaw: direction > 0 ? Math.PI / 2 : -Math.PI / 2,
     moving: p >= 30 && p < 45,

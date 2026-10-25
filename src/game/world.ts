@@ -2,6 +2,7 @@ import { pavementLayout, PAVEMENT_TOP } from "./pavements";
 import * as THREE from "three";
 import {
   streets,
+  WORLD_BOUNDS,
   junctions,
   geometry,
   lanePosition,
@@ -37,8 +38,37 @@ function palmFrond() {
   g.computeVertexNormals();
   return g;
 }
+function archWindow() {
+  const profile = new THREE.Shape();
+  profile.moveTo(-0.5, 0);
+  profile.lineTo(0.5, 0);
+  profile.lineTo(0.5, 0.65);
+  profile.quadraticCurveTo(0.5, 1, 0, 1);
+  profile.quadraticCurveTo(-0.5, 1, -0.5, 0.65);
+  profile.closePath();
+  const geo = new THREE.ExtrudeGeometry(profile, {
+    depth: 1,
+    bevelEnabled: false,
+    curveSegments: 8,
+  });
+  geo.rotateY(Math.PI / 2);
+  return geo;
+}
+function pitchedRoof() {
+  const shape = new THREE.Shape();
+  shape.moveTo(-0.5, 0);
+  shape.lineTo(0.5, 0);
+  shape.lineTo(0, 1);
+  shape.closePath();
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: 1,
+    bevelEnabled: false,
+  });
+  geo.translate(0, 0, -0.5);
+  return geo;
+}
 const cityTime = { value: 0 };
-function surfaceMaterial(color: string) {
+function surfaceMaterial(color: string, grain: THREE.Texture) {
   const glass = color === "#4d7480",
     sea = color === "#4b9da5",
     road = color === "#525f65";
@@ -51,7 +81,9 @@ function surfaceMaterial(color: string) {
       ? THREE.DoubleSide
       : THREE.FrontSide,
   });
+  material.userData.grain = grain;
   material.onBeforeCompile = (shader) => {
+    shader.uniforms.uCityGrain = { value: grain };
     shader.uniforms.uCityTime = cityTime;
     shader.vertexShader = shader.vertexShader.replace(
       "#include <common>",
@@ -69,13 +101,13 @@ vSurfaceWorld=(modelMatrix*cityPosition).xyz;`,
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <common>",
       `#include <common>
-varying vec3 vSurfaceWorld;uniform float uCityTime;
+varying vec3 vSurfaceWorld;uniform float uCityTime;uniform sampler2D uCityGrain;
 float cityNoise(vec3 p){return fract(sin(dot(p,vec3(12.9898,78.233,37.719)))*43758.5453);}`,
     );
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <color_fragment>",
       `#include <color_fragment>
-${glass ? "" : sea ? "diffuseColor.rgb*=.96+.04*sin(vSurfaceWorld.x*.3+sin(vSurfaceWorld.z*.2)+uCityTime*.6);" : `float grit=cityNoise(floor(vSurfaceWorld*${road ? "36.0" : "9.0"}));diffuseColor.rgb*=.94+.12*grit;`}`,
+${glass ? "" : sea ? "diffuseColor.rgb*=.96+.04*sin(vSurfaceWorld.x*.3+sin(vSurfaceWorld.z*.2)+uCityTime*.6);" : `float grit=texture2D(uCityGrain,${road ? "vSurfaceWorld.xz*.2" : "vec2(vSurfaceWorld.x+vSurfaceWorld.z,vSurfaceWorld.y)*.15"}).r;diffuseColor.rgb*=.94+.08*grit;`}`,
     );
     if (sea)
       shader.fragmentShader = shader.fragmentShader.replace(
@@ -95,6 +127,24 @@ ${glass ? "" : sea ? "diffuseColor.rgb*=.96+.04*sin(vSurfaceWorld.x*.3+sin(vSurf
 }
 
 export function makeWorld(scene: THREE.Scene) {
+  const grainCanvas = document.createElement("canvas");
+  grainCanvas.width = 128;
+  grainCanvas.height = 128;
+  const grainCtx = grainCanvas.getContext("2d")!,
+    pixels = grainCtx.createImageData(128, 128);
+  let seed = 527;
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    const value = 70 + (seed >>> 24) * 0.6;
+    pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = value;
+    pixels.data[i + 3] = 255;
+  }
+  grainCtx.putImageData(pixels, 0, 0);
+  const grain = new THREE.CanvasTexture(grainCanvas);
+  grain.wrapS = grain.wrapT = THREE.RepeatWrapping;
+  grain.minFilter = THREE.LinearMipmapLinearFilter;
+  grain.magFilter = THREE.LinearFilter;
+
   const batches = new Map<
     string,
     {
@@ -109,6 +159,9 @@ export function makeWorld(scene: THREE.Scene) {
     cone: new THREE.ConeGeometry(1, 1, 12),
     sphere: new THREE.SphereGeometry(1, 12, 8),
     frond: palmFrond(),
+    arch: archWindow(),
+    roof: pitchedRoof(),
+    rounded: new RoundedBoxGeometry(1, 1, 1, 2, 0.12),
   };
   const dummy = new THREE.Object3D();
   const pavement = pavementLayout();
@@ -129,7 +182,7 @@ export function makeWorld(scene: THREE.Scene) {
     if (!batches.has(key))
       batches.set(key, {
         geo: geometries[shape],
-        material: surfaceMaterial(color),
+        material: surfaceMaterial(color, grain),
         matrices: [],
       });
     dummy.position.set(x, y, z);
@@ -150,9 +203,9 @@ export function makeWorld(scene: THREE.Scene) {
   ) => add("box", c, x, y, z, w, h, d, 0, ry);
   // Narrow coastal land with inland city blocks, not a circular island.
   box("#4b9da5", 0, -1.1, 0, 2400, 1, 2500);
-  box("#c9c5a6", 43, -0.25, 60, 674, 0.5, 1260);
-  box("#decba6", -283, PAVEMENT_TOP / 2, 10, 22, PAVEMENT_TOP, 1120);
-  for (let z = -535; z < 572; z += 5) {
+  box("#c9c5a6", 177, -0.25, -30, 942, 0.5, 1376);
+  box("#decba6", -283, PAVEMENT_TOP / 2, -30, 22, PAVEMENT_TOP, 1376);
+  for (let z = -718; z < 658; z += 5) {
     box("#aaa890", -294, 0.65, z, 1.2, 1.3, 5);
     add("sphere", "#546d6c", -300, -0.1, z, 2, 1, 2);
   }
@@ -179,7 +232,7 @@ export function makeWorld(scene: THREE.Scene) {
       }
     }
     for (let d = 28; d < g.length - 28; d += 10) {
-      for (const side of [-1, 1]) {
+      for (const side of e.width > 12 ? [-1, 1] : []) {
         const p = lanePosition(e.id, e.a, d, side * 5);
         box("#d8dfd2", p.x, 0.085, p.z, 0.16, 0.018, 4, yaw);
       }
@@ -253,22 +306,26 @@ export function makeWorld(scene: THREE.Scene) {
       const from = e.a === n.id ? e.b : e.a,
         g = geometry(e.id, from),
         yaw = Math.atan2(-g.dx, -g.dz);
-      for (let offset = -10.5; offset <= 11; offset += 2.7) {
+      for (
+        let offset = -e.width / 2 + 1.5;
+        offset <= e.width / 2 - 1;
+        offset += 2.7
+      ) {
         const p = lanePosition(e.id, from, g.length - 21, offset);
         box("#ebebd6", p.x, 0.12, p.z, 1.5, 0.025, 4.8, Math.atan2(g.dx, g.dz));
       }
-      const bar = lanePosition(e.id, from, g.length - 26, 6);
+      const bar = lanePosition(e.id, from, g.length - 26, e.width / 4);
       box(
         "#e9e7cd",
         bar.x,
         0.12,
         bar.z,
-        10,
+        e.width / 2 - 2,
         0.025,
         0.4,
         Math.atan2(g.dx, g.dz),
       );
-      const p = lanePosition(e.id, from, g.length - 24, 14);
+      const p = lanePosition(e.id, from, g.length - 24, e.width / 2 + 2);
       if (n.signal) {
         add("cylinder", "#374c42", p.x, 2.25, p.z, 0.09, 4.5, 0.09);
         box("#213b31", p.x, 4.25, p.z, 0.6, 1.8, 0.4, yaw);
@@ -320,8 +377,8 @@ export function makeWorld(scene: THREE.Scene) {
         const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 13));
         if (
           p.x < -242 ||
-          p.x > 328 ||
-          p.z > 658 ||
+          p.x > 640 ||
+          p.z > 650 ||
           roadContains(p.x, p.z, 0) ||
           buildingPositions.some(
             (b) => Math.hypot(b.x - p.x, b.z - p.z) < 20,
@@ -331,15 +388,140 @@ export function makeWorld(scene: THREE.Scene) {
           continue;
         buildingPositions.push(p);
         const seed = e.id * 13 + Math.floor(d) + side,
-          h = 13 + (Math.abs(seed) % 6) * 4,
+          style = e.width <= 12 ? 2 : Math.abs(seed) % 4,
+          h =
+            style === 2
+              ? 12 + (Math.abs(seed) % 3) * 3.5
+              : style === 1
+                ? 17 + (Math.abs(seed) % 2) * 4
+                : 16 + (Math.abs(seed) % 4) * 3.5,
           c = facades[Math.abs(seed) % 6];
-        box(c, p.x, h / 2, p.z, 17, h, 20, p.yaw);
+        add(
+          style === 0 ? "rounded" : "box",
+          style === 1 ? "#ad8a61" : c,
+          p.x,
+          h / 2,
+          p.z,
+          17,
+          h,
+          20,
+          0,
+          p.yaw,
+        );
+        const front = (along: number, out = 0) => ({
+          x: p.x - g.dz * side * (8.6 + out) + g.dx * along,
+          z: p.z + g.dx * side * (8.6 + out) + g.dz * along,
+        });
+        const face = (
+          color: string,
+          along: number,
+          y: number,
+          wide: number,
+          tall: number,
+          depth = 0.15,
+          out = 0,
+        ) => {
+          const q = front(along, out);
+          box(color, q.x, y, q.z, depth, tall, wide, p.yaw);
+        };
+        // Mumbai's coastal Art Deco, Fort stone arcades, chawls and mixed-use blocks.
+        if (style === 0) {
+          for (let floor = 3; floor < h; floor += 3.5) {
+            face("#eee0b7", 0, floor, 20, 0.25, 1.1, 0.45);
+            const q = front(7, 0.1);
+            add("cylinder", c, q.x, floor + 0.35, q.z, 2.1, 0.8, 2.1);
+          }
+          face("#e4cf9b", -7, h / 2, 1.1, h + 1, 0.5, 0.2);
+          face("#eee0b7", -7, h + 0.5, 3, 1, 0.6, 0.2);
+          face("#b57d54", -7, h + 1.3, 1.8, 0.6, 0.6, 0.2);
+        } else if (style === 1) {
+          for (const along of [-9, -3, 3, 9]) {
+            const q = front(along, 0.2);
+            add("cylinder", "#e0c291", q.x, h / 2, q.z, 0.38, h, 0.38);
+            face("#e9d0a1", along, h - 0.3, 1.2, 0.5, 0.8, 0.25);
+          }
+          add("roof", "#795440", p.x, h + 0.5, p.z, 18, 3, 21, 0, p.yaw);
+          for (const along of [-7, 0, 7])
+            face("#d7bb8c", along, h + 1, 1.2, 2.2, 1.2, 0.2);
+        } else if (style === 2) {
+          add("roof", "#985e40", p.x, h + 0.5, p.z, 19, 2.5, 22, 0, p.yaw);
+          for (let floor = 3; floor < h; floor += 3.5) {
+            face("#565a4b", 0, floor + 0.65, 20, 0.08, 0.08, 1.2);
+            face("#c5ac80", 0, floor, 20, 0.3, 2, 1);
+            for (let along = -9; along <= 9; along += 1.5)
+              face("#565a4b", along, floor + 0.35, 0.05, 0.7, 0.05, 1.2);
+            for (let along = -7; along <= 7; along += 3.5) {
+              face("#5d6c60", along, floor + 1.3, 1.5, 2.1, 0.12, 0.1);
+              face(
+                ["#bd6860", "#d3b653", "#54798a"][
+                  Math.abs(Math.floor(along + floor)) % 3
+                ],
+                along + 0.6,
+                floor + 1.3,
+                0.8,
+                1.1,
+                0.035,
+                1.3,
+              );
+            }
+          }
+        } else {
+          for (let floor = 5; floor < h; floor += 4)
+            for (const along of [-6, 6]) {
+              face("#aab3aa", along, floor, 1.7, 0.7, 0.6, 0.35);
+              face("#526b68", along, floor, 1.35, 0.45, 0.65, 0.37);
+            }
+          for (let along = -9; along <= 9; along += 6)
+            face("#e3cda5", along, h / 2, 0.35, h, 0.3, 0.1);
+        }
+        if (Math.abs(seed) % 3 === 0) {
+          const q = front(0, 0.5);
+          sign(
+            ["SAGAR MAHAL", "FORT CHAMBERS", "GANESH NIWAS", "MUMBAI SADAN"][
+              style
+            ],
+            q.x,
+            h - 0.9,
+            q.z,
+            Math.atan2(-g.dz * side, g.dx * side),
+            5,
+            style === 1 ? "#614d3c" : "#31645e",
+          );
+        }
         box("#eee1bf", p.x, h + 0.25, p.z, 18, 0.5, 21, p.yaw);
         for (let floor = 3.6; floor < h; floor += 3.5)
           for (const shift of [-5, 0, 5]) {
             const wx = p.x - g.dz * side * 8.6 + g.dx * shift,
               wz = p.z + g.dx * side * 8.6 + g.dz * shift;
-            box("#4d7480", wx, floor, wz, 0.15, 1.65, 2.3, p.yaw);
+            if (style === 1) {
+              add(
+                "arch",
+                "#e3c99a",
+                wx,
+                floor - 0.95,
+                wz,
+                0.22,
+                2.4,
+                3,
+                0,
+                p.yaw,
+              );
+              const q = front(shift, 0.25);
+              add(
+                "arch",
+                "#344a47",
+                q.x,
+                floor - 0.8,
+                q.z,
+                0.25,
+                1.9,
+                2.4,
+                0,
+                p.yaw,
+              );
+            } else if (style !== 2)
+              box("#4d7480", wx, floor, wz, 0.15, 1.65, 2.3, p.yaw);
+            if (style === 1 || style === 2) continue;
             // Window mullions and iron balcony rails soften the repeated facades.
             box("#d5cab5", wx, floor, wz, 0.19, 1.7, 0.075, p.yaw);
             const railX = wx - g.dz * side * 0.72,
@@ -620,6 +802,52 @@ export function makeWorld(scene: THREE.Scene) {
       }
     }
   }
+  // Continuous visible perimeter: seawall to the west, masonry and buildings inland.
+  const { minX, maxX, minZ, maxZ } = WORLD_BOUNDS;
+  box("#aa8060", maxX, 1.1, (minZ + maxZ) / 2, 1.2, 2.2, maxZ - minZ);
+  for (const z of [minZ, maxZ]) {
+    box("#aa8060", (minX + maxX) / 2, 1.1, z, maxX - minX, 2.2, 1.2);
+    for (let x = minX + 12; x < maxX; x += 24) {
+      box("#d5ad7b", x, 1.5, z, 1.8, 3, 1.8);
+      box("#edc698", x, 3.05, z, 2.2, 0.2, 2.2);
+    }
+  }
+  for (let z = minZ + 10; z < maxZ; z += 24)
+    box("#d5ad7b", maxX, 1.5, z, 1.8, 3, 1.8);
+  for (const n of junctions) {
+    if (n.ring) continue;
+    const incident = streets.filter((e) => e.a === n.id || e.b === n.id);
+    for (const [dx, dz] of [
+      [0, 1],
+      [0, -1],
+      [1, 0],
+      [-1, 0],
+    ]) {
+      if (
+        incident.some((e) => {
+          const other = junctions[e.a === n.id ? e.b : e.a];
+          return (other.x - n.x) * dx + (other.z - n.z) * dz > 1;
+        })
+      )
+        continue;
+      const yaw = Math.atan2(dx, dz),
+        x = n.x + dx * 18.8,
+        z = n.z + dz * 18.8;
+      box("#c7ae7d", x, 0.65, z, 32, 1.3, 0.65, yaw);
+      for (let offset = -14; offset <= 14; offset += 4)
+        box(
+          "#3b4340",
+          x + dz * offset,
+          0.7,
+          z - dx * offset,
+          1.5,
+          0.45,
+          0.7,
+          yaw,
+        );
+      sign("RUKO · AAGE RASTA NAHI", x, 2.5, z, yaw + Math.PI, 6, "#875a35");
+    }
+  }
   // Gateway-inspired waterfront arch in the south-east, plus a station silhouette inland.
   const gx = 335,
     gz = 585;
@@ -669,7 +897,9 @@ export function makeWorld(scene: THREE.Scene) {
   for (const b of batches.values()) {
     const mesh = new THREE.InstancedMesh(b.geo, b.material, b.matrices.length);
     b.matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
-    mesh.castShadow = true;
+    mesh.castShadow = !["53595b", "4b9da5", "c9c5a6", "decba6"].includes(
+      (b.material as THREE.MeshStandardMaterial).color.getHexString(),
+    );
     mesh.receiveShadow = true;
     mesh.computeBoundingSphere();
     scene.add(mesh);

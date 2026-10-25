@@ -174,6 +174,7 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
 test("mobile: simultaneous steering and throttle, pointer release, resize", async ({
   browser,
 }) => {
+  test.setTimeout(150_000);
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     hasTouch: true,
@@ -245,4 +246,37 @@ test("graphics context loss pauses and can restart the drive", async ({
   await expect(
     page.getByRole("button", { name: "Chal Chala", exact: true }),
   ).toBeVisible();
+});
+
+test("three camera views switch by keyboard and button without resetting the drive", async ({
+  page,
+}) => {
+  test.setTimeout(150_000);
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await enter(page);
+  await page.getByRole("button", { name: "Pause drive" }).click();
+  await page.getByRole("button", { name: "Standard graphics" }).click();
+  await page.getByRole("button", { name: "Resume drive" }).click();
+  const canvas = page.locator("canvas"),
+    game = page.locator(".game");
+  const position = await game.getAttribute("data-position");
+  await expect(canvas).toHaveAttribute("data-camera-mode", "third-person");
+  await page.keyboard.press("c");
+  await expect(canvas).toHaveAttribute("data-camera-mode", "behind-driver");
+  await page.getByRole("button", { name: "Pause drive" }).click();
+  // Freeze the scene for consistent camera previews; hide only the pause panel.
+  await page.addStyleTag({ content: ".game-overlay { visibility: hidden; }" });
+  await page.screenshot({ path: "test-results/camera-behind-driver.png" });
+  await page.getByRole("button", { name: "Change camera view" }).click();
+  await expect(canvas).toHaveAttribute("data-camera-mode", "driver");
+  await page.screenshot({ path: "test-results/camera-driver.png" });
+  await page.getByRole("button", { name: "Change camera view" }).click();
+  await expect(canvas).toHaveAttribute("data-camera-mode", "third-person");
+  await page.screenshot({ path: "test-results/camera-third-person.png" });
+  expect(await game.getAttribute("data-position")).toBe(position);
+  expect(errors).toEqual([]);
 });

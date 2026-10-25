@@ -250,3 +250,31 @@ test("auto slows for pedestrians using the shared crossing positions", () => {
   assert.ok(s.speed < 5);
   assert.equal(s.signal, "pedestrian");
 });
+
+test("expanded neighbourhood lanes carry opposing traffic and stay inside the visible city perimeter", () => {
+  const lanes = streets.filter((e) => e.width === 10);
+  assert.ok(lanes.length >= 20);
+  for (const e of lanes) {
+    assert.equal(e.oneWay, false);
+    const length = geometry(e.id).length;
+    const a = lanePosition(e.id, e.a, length / 2, 2.5),
+      b = lanePosition(e.id, e.b, length / 2, 2.5);
+    assert.ok(roadContains(a.x, a.z));
+    assert.ok(roadContains(b.x, b.z));
+    assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 4.9);
+  }
+  for (const p of [
+    [-295, 0],
+    [649, 0],
+    [0, -719],
+    [0, 659],
+  ])
+    assert.equal(roadContains(p[0], p[1], 0), false);
+  const drive = newDrive(),
+    input = emptyInput();
+  Object.assign(drive, { x: 452.5, z: -420, yaw: 0 });
+  input.throttle = true;
+  for (let i = 0; i < 600; i++) step(drive, input, []);
+  assert.ok(drive.distance > 50);
+  assert.ok(roadContains(drive.x, drive.z));
+});

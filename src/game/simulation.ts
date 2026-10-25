@@ -1,5 +1,6 @@
 import {
   streets,
+  trafficLane,
   junctions,
   connections,
   geometry,
@@ -93,7 +94,7 @@ export function newTraffic(): Traffic[] {
       from =
         e.oneWay || (i + Math.floor(i / streets.length)) % 2 === 0 ? e.a : e.b,
       g = geometry(edge, from),
-      lane = e.oneWay ? 0 : i % 3 === 0 ? 7 : 3,
+      lane = trafficLane(edge, i % 3 === 0 ? 7 : 3),
       progress =
         margin(g.length) +
         (g.length - margin(g.length) * 2) *
@@ -146,7 +147,7 @@ function planTurn(t: Traffic): Turn {
     choices = options.length ? options : connections(g.b.id),
     next = choices[(t.id + t.decisions * 7) % choices.length];
   const ng = geometry(next.edge, g.b.id),
-    lane = streets[next.edge].oneWay ? 0 : t.lane || 3,
+    lane = trafficLane(next.edge, t.lane || 3),
     p0 = lanePosition(t.edge, t.from, g.length - margin(g.length), t.lane),
     p3 = lanePosition(next.edge, g.b.id, margin(ng.length), lane),
     handle = Math.min(20, margin(g.length), margin(ng.length));
@@ -193,7 +194,9 @@ export function updateTraffic(
       traffic.some(
         (other) => other !== t && blocked(other, t.kind === 3 ? 13 : 9),
       ) || blocked(player, 10);
-    let target = ahead ? 0 : t.cruise;
+    let target = ahead
+      ? 0
+      : Math.min(t.cruise, streets[t.edge].width <= 12 ? 6 : t.cruise);
     if (t.turn) {
       target = Math.min(target, 5.5);
       t.speed += Math.max(-6 * dt, Math.min(2.5 * dt, target - t.speed));
@@ -250,7 +253,7 @@ export function resetDrive(s: Drive, traffic: Traffic[]) {
             Math.min(g.length - margin(g.length) - 2, base - i * 5),
           )
         : g.length * 0.5;
-    const p = lanePosition(edge, from, progress, e.oneWay ? 0 : 3);
+    const p = lanePosition(edge, from, progress, trafficLane(edge));
     if (
       !roadContains(p.x, p.z) ||
       traffic.some((t) => Math.hypot(t.x - p.x, t.z - p.z) < 12) ||

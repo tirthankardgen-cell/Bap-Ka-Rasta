@@ -82,7 +82,11 @@ function kit() {
     y: number,
     z: number,
     color: string,
-  ) => mesh(new THREE.BoxGeometry(w, h, d), color, x, y, z, "fabric");
+  ) => {
+    const part = mesh(new THREE.BoxGeometry(w, h, d), color, x, y, z, "fabric");
+    part.userData.driver = true;
+    return part;
+  };
   const wheel = (x: number, z: number, r = 0.34, width = 0.22) => {
     const g = new THREE.Group();
     g.position.set(x, r, z);
@@ -166,7 +170,7 @@ export function autoRickshaw() {
   box(1.55, 0.36, 2.18, 0, 0.63, -0.02, "#efb91b");
   box(1.58, 0.65, 0.18, 0, 1.07, -1.08, "#20282b", "fabric");
   box(1.62, 0.14, 0.13, 0, 1.44, -1.1, "#f4c32b");
-  box(1.52, 0.55, 0.68, 0, 0.99, 0.82, "#edbe23", "paint", 0.16);
+  box(1.52, 0.55, 0.68, 0, 0.99, 0.82, "#171f23", "paint", 0.22);
   box(1.35, 0.38, 0.27, 0, 0.67, 1.12, "#232b2e", "paint", 0.12);
   // A curved fabric canopy rather than a box roof.
   const vertices: number[] = [],
@@ -191,6 +195,7 @@ export function autoRickshaw() {
   roof.computeVertexNormals();
   const canopy = mesh(roof, "#24292c", 0, 0, 0, "fabric");
   (canopy.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide;
+  canopy.userData.cabinRoof = true;
   const rear = new THREE.Shape();
   rear.moveTo(-0.81, 1.4);
   rear.lineTo(-0.81, 1.7);
@@ -212,13 +217,89 @@ export function autoRickshaw() {
   for (const side of [-1, 1]) {
     box(0.085, 0.8, 0.08, side * 0.73, 1.83, 0.78, "#eab821", "paint");
     box(0.085, 0.72, 0.08, side * 0.76, 1.71, -0.53, "#333c3c", "chrome");
-    box(0.09, 0.43, 1.3, side * 0.76, 0.95, -0.3, "#eabb22");
+    box(0.09, 0.43, 0.55, side * 0.76, 0.95, -0.8, "#eabb22");
     box(0.13, 0.06, 1.6, side * 0.8, 0.44, -0.2, "#7d8a8b", "chrome");
     box(0.27, 0.23, 0.09, side * 0.94, 1.62, 0.69, "#26353b", "glass");
     box(0.13, 0.19, 0.035, side * 0.62, 0.9, -1.19, "#a7281c");
     box(0.19, 0.12, 0.04, side * 0.54, 1.13, 1.17, "#fff0c7");
     box(0.4, 0.18, 0.75, side * 0.73, 0.68, -0.67, "#242c2c", "rubber", 0.08);
   }
+  // Reference-inspired round headlamp, front mudguard and open entry frame.
+  const lamp = mesh(
+    new THREE.CylinderGeometry(0.14, 0.14, 0.055, 24),
+    "#fff4cd",
+    0,
+    1.04,
+    1.185,
+  );
+  lamp.rotation.x = Math.PI / 2;
+  (lamp.material as THREE.MeshStandardMaterial).emissive.set("#ffce74");
+  (lamp.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5;
+  box(0.48, 0.16, 0.65, 0, 0.71, 1.05, "#20292b", "paint", 0.08);
+  function piping(points: THREE.Vector3[], color: string) {
+    const geo = new THREE.TubeGeometry(
+      new THREE.CatmullRomCurve3(points),
+      28,
+      0.014,
+      6,
+      false,
+    );
+    const trim = new THREE.Mesh(
+      geo,
+      new THREE.MeshStandardMaterial({
+        color,
+        emissive: color,
+        emissiveIntensity: 1.3,
+        roughness: 0.25,
+      }),
+    );
+    root.add(trim);
+  }
+  for (const side of [-1, 1]) {
+    piping(
+      [
+        new THREE.Vector3(side * 0.8, 2.17, 0.74),
+        new THREE.Vector3(side * 0.85, 1.8, 0.86),
+        new THREE.Vector3(side * 0.85, 0.57, 0.72),
+        new THREE.Vector3(side * 0.85, 0.44, 0.45),
+        new THREE.Vector3(side * 0.85, 0.44, -0.52),
+      ],
+      "#73d5ec",
+    );
+    piping(
+      [
+        new THREE.Vector3(side * 0.82, 1.12, -1),
+        new THREE.Vector3(side * 0.82, 1.12, -0.55),
+      ],
+      "#a3ed65",
+    );
+  }
+  const upholstery = document.createElement("canvas");
+  upholstery.width = 128;
+  upholstery.height = 128;
+  const fabric = upholstery.getContext("2d")!;
+  fabric.fillStyle = "#a88c70";
+  fabric.fillRect(0, 0, 128, 128);
+  fabric.strokeStyle = "#5a4436";
+  fabric.lineWidth = 3;
+  for (let x = -128; x < 256; x += 32) {
+    fabric.beginPath();
+    fabric.moveTo(x, 0);
+    fabric.lineTo(x + 128, 128);
+    fabric.stroke();
+    fabric.beginPath();
+    fabric.moveTo(x, 128);
+    fabric.lineTo(x + 128, 0);
+    fabric.stroke();
+  }
+  const seatTexture = new THREE.CanvasTexture(upholstery);
+  seatTexture.colorSpace = THREE.SRGBColorSpace;
+  const patternedSeat = new THREE.Mesh(
+    new RoundedBoxGeometry(1.22, 0.65, 0.16, 2, 0.07),
+    new THREE.MeshStandardMaterial({ map: seatTexture, roughness: 0.95 }),
+  );
+  patternedSeat.position.set(0, 1.35, -0.82);
+  root.add(patternedSeat);
   const glass = new THREE.Mesh(
     new THREE.PlaneGeometry(1.35, 0.65),
     new THREE.MeshPhysicalMaterial({
@@ -250,7 +331,7 @@ export function autoRickshaw() {
       "rubber",
     );
   box(1.25, 0.18, 0.7, 0, 1, -0.55, "#6d3e26", "fabric");
-  box(1.24, 0.48, 0.18, 0, 1.27, -0.89, "#9a5e37", "fabric");
+  box(1.24, 0.48, 0.1, 0, 1.27, -0.96, "#9a5e37", "fabric");
   box(0.6, 0.17, 0.5, 0, 1, 0.22, "#74492f", "fabric");
   human(0.55, 0.62, 0.36, 0, 1.43, 0.18, "#ad956d");
   human(0.38, 0.4, 0.38, 0, 1.95, 0.2, "#bd8755");

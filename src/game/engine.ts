@@ -11,7 +11,9 @@ import {
   STEP,
   type Input,
 } from "./simulation";
+export type CameraMode = "third-person" | "behind-driver" | "driver";
 export type Stats = {
+  cameraMode: CameraMode;
   audioStatus: string;
   speed: number;
   distance: number;
@@ -52,6 +54,7 @@ export function createEngine(
   scene.add(player.root);
   const traffic = newTraffic();
   const placeTraffic = trafficVisuals(scene, traffic);
+  renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = newDrive();
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
@@ -74,10 +77,12 @@ export function createEngine(
     audioStatus = status;
     renderer.domElement.dataset.audioStatus = status;
   });
+  let cameraMode: CameraMode = "third-person";
   const cameraTarget = new THREE.Vector3(),
     lookTarget = new THREE.Vector3();
   function publish() {
     onStats({
+      cameraMode,
       audioStatus,
       speed: state.speed * 3.6,
       distance: state.distance,
@@ -96,17 +101,35 @@ export function createEngine(
     player.root.position.set(state.x, 0, state.z);
     player.root.rotation.y = state.yaw;
     const portrait = host.clientHeight > host.clientWidth;
-    const distance = portrait ? 9 : 7.5;
+    const outside = cameraMode === "third-person";
+    const distance = outside
+      ? portrait
+        ? 9
+        : 7.5
+      : cameraMode === "behind-driver"
+        ? 0.95
+        : -0.08;
+    const lateral = outside ? 1.8 : cameraMode === "behind-driver" ? 0.48 : 0;
+    const height = outside
+      ? portrait
+        ? 5.8
+        : 4.4
+      : cameraMode === "behind-driver"
+        ? 2.03
+        : 1.83;
+    camera.near = outside ? 0.1 : 0.04;
+    camera.fov = outside ? 55 : 70;
+    camera.updateProjectionMatrix();
     cameraTarget.set(
-      state.x - Math.sin(state.yaw) * distance,
-      portrait ? 5.8 : 4.4,
-      state.z - Math.cos(state.yaw) * distance,
+      state.x - Math.sin(state.yaw) * distance + Math.cos(state.yaw) * lateral,
+      height,
+      state.z - Math.cos(state.yaw) * distance - Math.sin(state.yaw) * lateral,
     );
     if (snap) camera.position.copy(cameraTarget);
     lookTarget.set(
-      state.x + Math.sin(state.yaw) * 5,
-      1.1,
-      state.z + Math.cos(state.yaw) * 5,
+      state.x + Math.sin(state.yaw) * 8,
+      outside ? 1.1 : 1.5,
+      state.z + Math.cos(state.yaw) * 8,
     );
     camera.lookAt(lookTarget);
     placeTraffic(state.x, state.z);
@@ -178,6 +201,10 @@ export function createEngine(
       e.preventDefault();
       reset();
     }
+    if (e.code === "KeyC") {
+      e.preventDefault();
+      cycleCamera();
+    }
     if (e.code === "KeyH") {
       e.preventDefault();
       horn();
@@ -210,6 +237,23 @@ export function createEngine(
   window.addEventListener("blur", blur);
   document.addEventListener("visibilitychange", visibility);
   renderer.domElement.addEventListener("webglcontextlost", lost);
+  function cycleCamera() {
+    cameraMode =
+      cameraMode === "third-person"
+        ? "behind-driver"
+        : cameraMode === "behind-driver"
+          ? "driver"
+          : "third-person";
+    player.root.traverse((o) => {
+      if (o.userData.driver) o.visible = cameraMode !== "driver";
+      // Cut away the roof only for the rear-seat camera to keep the road visible.
+      if (o.userData.cabinRoof) o.visible = cameraMode !== "behind-driver";
+    });
+    renderer.domElement.dataset.cameraMode = cameraMode;
+    place(true);
+    publish();
+    renderer.render(scene, camera);
+  }
   function reset() {
     resetDrive(state, traffic);
     clear();
@@ -263,6 +307,7 @@ export function createEngine(
   publish();
   raf = requestAnimationFrame(loop);
   return {
+    cycleCamera,
     setPaused,
     reset,
     pointer(id: number, action: keyof Input | null) {
@@ -301,7 +346,10 @@ export function createEngine(
             ? o.material
             : [o.material]) {
             materials.add(mat);
-            for (const value of Object.values(mat))
+            for (const value of [
+              ...Object.values(mat),
+              ...Object.values(mat.userData),
+            ])
               if (value instanceof THREE.Texture) textures.add(value);
           }
         }

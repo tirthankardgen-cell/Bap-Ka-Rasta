@@ -12,11 +12,13 @@ import {
   ArrowUp,
   ArrowDown,
   Gauge,
+  Camera,
 } from "lucide-react";
 import { createEngine, type Engine, type Stats } from "./engine";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
+  cameraMode: "third-person",
   audioStatus: "idle",
   speed: 0,
   distance: 0,
@@ -152,6 +154,26 @@ export default function Game({ onExit }: { onExit: () => void }) {
         </div>
         <div className="game-actions">
           <button
+            onClick={() => engine.current?.cycleCamera()}
+            aria-label="Change camera view"
+            title={
+              {
+                "third-person": "Bahar se",
+                "behind-driver": "Driver ke peeche",
+                driver: "Driver ki nazar",
+              }[stats.cameraMode]
+            }
+          >
+            <Camera size={20} />
+            <span style={{ fontSize: 10 }}>
+              {stats.cameraMode === "third-person"
+                ? "3P"
+                : stats.cameraMode === "behind-driver"
+                  ? "BACK"
+                  : "1P"}
+            </span>
+          </button>
+          <button
             onClick={toggleSound}
             aria-label={sound ? "Mute sound" : "Enable sound"}
             aria-pressed={sound}
@@ -191,7 +213,8 @@ export default function Game({ onExit }: { onExit: () => void }) {
                           : ""}
           </div>
           <div className="keyboard-hint">
-            WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE
+            WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE{" "}
+            <i>·</i> C CAMERA
           </div>
           <div className="drive-buttons">
             <div className="steering">
@@ -266,7 +289,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     <strong>Keyboard</strong>
                     <span>
                       WASD / arrows se chalao · Space se brake
-                      <br />H horn · R reset · Esc pause
+                      <br />H horn · R reset · Esc pause · C se nazar badlo
                     </span>
                   </div>
                   <div>
