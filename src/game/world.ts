@@ -1,3 +1,4 @@
+import { pavementLayout, PAVEMENT_TOP } from "./pavements";
 import * as THREE from "three";
 import {
   streets,
@@ -110,6 +111,7 @@ export function makeWorld(scene: THREE.Scene) {
     frond: palmFrond(),
   };
   const dummy = new THREE.Object3D();
+  const pavement = pavementLayout();
   function add(
     shape: keyof typeof geometries,
     color: string,
@@ -149,7 +151,7 @@ export function makeWorld(scene: THREE.Scene) {
   // Narrow coastal land with inland city blocks, not a circular island.
   box("#4b9da5", 0, -1.1, 0, 2400, 1, 2500);
   box("#c9c5a6", 43, -0.25, 60, 674, 0.5, 1260);
-  box("#decba6", -283, 0.08, 10, 22, 0.18, 1120);
+  box("#decba6", -283, PAVEMENT_TOP / 2, 10, 22, PAVEMENT_TOP, 1120);
   for (let z = -535; z < 572; z += 5) {
     box("#aaa890", -294, 0.65, z, 1.2, 1.3, 5);
     add("sphere", "#546d6c", -300, -0.1, z, 2, 1, 2);
@@ -167,10 +169,10 @@ export function makeWorld(scene: THREE.Scene) {
         box(
           Math.floor(d / 4) % 2 ? "#ead6a0" : "#323f41",
           p.x,
-          0.18,
+          PAVEMENT_TOP / 2,
           p.z,
           0.45,
-          0.32,
+          PAVEMENT_TOP,
           3.8,
           yaw,
         );
@@ -190,6 +192,16 @@ export function makeWorld(scene: THREE.Scene) {
       box("#d9d0b8", n.x, 0.01, n.z, 44, 0.04, 44);
       box("#525f65", n.x, 0.075, n.z, 36, 0.06, 36);
     }
+  for (const strip of pavement.strips)
+    box(
+      "#dbd0b5",
+      strip.x,
+      PAVEMENT_TOP / 2,
+      strip.z,
+      strip.width,
+      PAVEMENT_TOP,
+      1,
+    );
   add("cylinder", "#d4c5a2", 110, 0.2, 180, 22, 0.4, 22);
   add("cylinder", "#7e9c6b", 110, 0.42, 180, 20, 0.35, 20);
   add("cylinder", "#d3d9bf", 110, 0.8, 180, 8, 1, 8);
@@ -498,12 +510,29 @@ export function makeWorld(scene: THREE.Scene) {
       const side = (e.id + Math.floor(d)) % 2 ? 1 : -1;
       const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 0.95));
       vendors.push(p);
+      const lift = PAVEMENT_TOP;
+      const vbox: typeof box = (c, x, y, z, w, h, d, ry = 0) =>
+        box(c, x, y + lift, z, w, h, d, ry);
+      const vadd: typeof add = (
+        shape,
+        c,
+        x,
+        y,
+        z,
+        sx,
+        sy,
+        sz,
+        rx = 0,
+        ry = 0,
+        rz = 0,
+      ) => add(shape, c, x, y + lift, z, sx, sy, sz, rx, ry, rz);
+
       const style = vendors.length % 4;
       const local = (forward: number, lateral: number) => ({
         x: p.x + g.dx * forward - g.dz * lateral,
         z: p.z + g.dz * forward + g.dx * lateral,
       });
-      box(
+      vbox(
         ["#267e74", "#b5482f", "#b89a44", "#4c7796"][style],
         p.x,
         0.85,
@@ -513,10 +542,10 @@ export function makeWorld(scene: THREE.Scene) {
         2.7,
         p.yaw,
       );
-      box("#b9b6a4", p.x, 1.35, p.z, 1.45, 0.12, 2.9, p.yaw);
+      vbox("#b9b6a4", p.x, 1.35, p.z, 1.45, 0.12, 2.9, p.yaw);
       for (const f of [-1.1, 1.1]) {
         const q = local(f, 0);
-        add(
+        vadd(
           "cylinder",
           "#273332",
           q.x,
@@ -529,9 +558,9 @@ export function makeWorld(scene: THREE.Scene) {
           0,
           Math.PI / 2,
         );
-        add("cylinder", "#49544b", q.x, 1.95, q.z, 0.035, 1.3, 0.035);
+        vadd("cylinder", "#49544b", q.x, 1.95, q.z, 0.035, 1.3, 0.035);
       }
-      box(
+      vbox(
         style % 2 ? "#e39d3d" : "#396e6a",
         p.x,
         2.65,
@@ -544,11 +573,11 @@ export function makeWorld(scene: THREE.Scene) {
       for (const f of [-0.9, -0.3, 0.3, 0.9]) {
         const q = local(f, 0);
         if (style === 0) {
-          add("cylinder", "#a4aaa4", q.x, 1.58, q.z, 0.18, 0.35, 0.18);
+          vadd("cylinder", "#a4aaa4", q.x, 1.58, q.z, 0.18, 0.35, 0.18);
         } else {
           for (const l of [-0.3, 0, 0.3]) {
             const fruit = local(f, l);
-            add(
+            vadd(
               "sphere",
               style === 1 ? "#eab63f" : style === 2 ? "#87a447" : "#c9643b",
               fruit.x,
@@ -564,7 +593,7 @@ export function makeWorld(scene: THREE.Scene) {
       sign(
         ["CHAI · CUTTING", "VADA PAV", "TAZE PHAL", "BHEL PURI"][style],
         p.x,
-        2.35,
+        2.35 + lift,
         p.z,
         Math.atan2(-g.dz * side, g.dx * side),
         3.2,
@@ -573,7 +602,7 @@ export function makeWorld(scene: THREE.Scene) {
       // Boxy sellers and customers, sharing the city's instanced geometry.
       for (const f of [-2.1, 2.1]) {
         const q = local(f, 0);
-        box(
+        vbox(
           style % 2 ? "#d3b779" : "#89a2a0",
           q.x,
           1.25,
@@ -583,10 +612,10 @@ export function makeWorld(scene: THREE.Scene) {
           0.35,
           p.yaw,
         );
-        box("#b67e51", q.x, 1.88, q.z, 0.4, 0.42, 0.4, p.yaw);
+        vbox("#b67e51", q.x, 1.88, q.z, 0.4, 0.42, 0.4, p.yaw);
         for (const l of [-0.16, 0.16]) {
           const leg = local(f, l);
-          box("#3e4b53", leg.x, 0.58, leg.z, 0.2, 0.6, 0.23, p.yaw);
+          vbox("#3e4b53", leg.x, 0.58, leg.z, 0.2, 0.6, 0.23, p.yaw);
         }
       }
     }
@@ -689,7 +718,7 @@ export function makeWorld(scene: THREE.Scene) {
     yaw = 0,
     rx = 0,
   ) {
-    dummy.position.set(x, y, z);
+    dummy.position.set(x, y + pavement.heightAt(x, z), z);
     dummy.scale.set(sx, sy, sz);
     dummy.rotation.set(rx, yaw, 0);
     dummy.updateMatrix();
