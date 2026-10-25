@@ -11,18 +11,15 @@ import {
   Megaphone,
   ArrowUp,
   ArrowDown,
-  Flag,
   Gauge,
 } from "lucide-react";
 import { createEngine, type Engine, type Stats } from "./engine";
 import type { Input } from "./simulation";
 import "./game.css";
-import { streets, junctions, districts, lightFor } from "./network";
 const initial: Stats = {
   speed: 0,
   distance: 0,
   topSpeed: 0,
-  explored: 1,
   street: "Marine Drive",
   signal: "",
   time: 0,
@@ -32,29 +29,16 @@ const initial: Stats = {
   impact: false,
   fps: 0,
 };
-const distance = (m: number) =>
-  m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${Math.floor(m)} m`;
-function readBest() {
-  try {
-    const value = Number(localStorage.getItem("bkr:mumbai:auto:best"));
-    return Number.isFinite(value) ? Math.max(0, value) : 0;
-  } catch {
-    return 0;
-  }
-}
 export default function Game({ onExit }: { onExit: () => void }) {
   const host = useRef<HTMLDivElement>(null),
     engine = useRef<Engine | null>(null);
   const [stats, setStats] = useState(initial),
-    [status, setStatus] = useState<"ready" | "driving" | "paused" | "results">(
-      "ready",
-    );
+    [status, setStatus] = useState<"ready" | "driving" | "paused">("ready");
   const [error, setError] = useState(""),
     [loaded, setLoaded] = useState(false),
     [session, setSession] = useState(0),
     [sound, setSound] = useState(false),
     [low, setLow] = useState(false),
-    [best, setBest] = useState(readBest),
     [hornActive, setHornActive] = useState(false);
   const hornTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -100,22 +84,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
     engine.current?.setPaused(true);
     setStatus("paused");
   }
-  function save() {
-    const value = Math.max(best, stats.distance);
-    setBest(value);
-    try {
-      localStorage.setItem("bkr:mumbai:auto:best", String(value));
-    } catch {
-      /* Storage is optional. */
-    }
-  }
-  function finish() {
-    save();
-    engine.current?.setPaused(true);
-    setStatus("results");
-  }
   function exit() {
-    save();
     onExit();
   }
   function restart() {
@@ -189,67 +158,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
       <div className="speedometer">
         <strong>{Math.round(Math.abs(stats.speed))}</strong>
         <span>KM/H {stats.speed < -0.1 ? "· R" : ""}</span>
-        <div>
-          <span>{distance(stats.distance)}</span>
-          <span>{stats.explored}/7 AREAS</span>
-        </div>
       </div>
-      <aside className="mini-map network-map" aria-label="Mumbai street map">
-        <svg
-          viewBox="-335 -530 720 1220"
-          role="img"
-          aria-label="Your position on the South Mumbai street network"
-        >
-          <rect x="-335" y="-530" width="720" height="1220" fill="#afc4ac" />
-          <rect x="-335" y="-530" width="36" height="1220" fill="#73b0b4" />
-          {streets.map((e) => (
-            <line
-              key={e.id}
-              x1={junctions[e.a].x}
-              y1={junctions[e.a].z}
-              x2={junctions[e.b].x}
-              y2={junctions[e.b].z}
-              stroke="#faf0cf"
-              strokeWidth={e.width + 4}
-            />
-          ))}
-          {streets.map((e) => (
-            <line
-              key={e.id}
-              x1={junctions[e.a].x}
-              y1={junctions[e.a].z}
-              x2={junctions[e.b].x}
-              y2={junctions[e.b].z}
-              stroke="#5a6966"
-              strokeWidth={e.width - 4}
-            />
-          ))}
-          {junctions
-            .filter((n) => n.signal)
-            .map((n) => (
-              <circle
-                key={n.id}
-                cx={n.x}
-                cy={n.z}
-                r="8"
-                fill={
-                  lightFor(n.id, 0, 1, stats.time) === "green"
-                    ? "#74d586"
-                    : "#de8e5c"
-                }
-              />
-            ))}
-          <circle cx="110" cy="180" r="21" fill="#738c5d" />
-          <path
-            d="M 0 -24 L -16 18 L 0 10 L 16 18 Z"
-            fill="#ffcc37"
-            stroke="#26352e"
-            strokeWidth="4"
-            transform={`translate(${stats.x},${stats.z}) rotate(${180 - (stats.yaw * 180) / Math.PI})`}
-          />
-        </svg>
-        <span>SOUTH MUMBAI</span>
-      </aside>
       {status === "driving" && (
         <>
           <div className="driving-message" aria-live="polite">
@@ -355,7 +264,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                   Back to home
                 </button>
               </>
-            ) : status === "paused" ? (
+            ) : (
               <>
                 <span className="panel-kicker">EK CHAI BREAK?</span>
                 <h1 id="drive-panel-title">
@@ -389,44 +298,12 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     <Gauge size={18} />
                     {low ? "Low" : "Standard"} graphics
                   </button>
-                  <button onClick={finish}>
-                    <Flag size={18} /> End drive
+                  <button onClick={exit}>
+                    <Home size={18} /> End drive
                   </button>
                 </div>
                 <button className="game-secondary" onClick={exit}>
                   <Home size={16} /> Back to home
-                </button>
-              </>
-            ) : (
-              <>
-                <span className="panel-kicker">MUMBAI · AUTO RICKSHAW</span>
-                <h1 id="drive-panel-title">Badiya drive!</h1>
-                <p>There’s always another road to take.</p>
-                <div className="results-stats">
-                  <div>
-                    <span>DISTANCE</span>
-                    <strong>{distance(stats.distance)}</strong>
-                  </div>
-                  <div>
-                    <span>TOP SPEED</span>
-                    <strong>{Math.round(stats.topSpeed)} km/h</strong>
-                  </div>
-                  <div>
-                    <span>AREAS EXPLORED</span>
-                    <strong>
-                      {stats.explored} / {districts.length}
-                    </strong>
-                  </div>
-                  <div>
-                    <span>LOCAL BEST</span>
-                    <strong>{distance(best)}</strong>
-                  </div>
-                </div>
-                <button className="game-primary" onClick={restart}>
-                  Phir Se <RotateCcw size={18} />
-                </button>
-                <button className="game-secondary" onClick={exit}>
-                  Back to home
                 </button>
               </>
             )}

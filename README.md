@@ -47,7 +47,7 @@ The production build and TypeScript checks pass. Chromium checks cover six deskt
 
 ## Mumbai streets
 
-Drive a simplified South Mumbai-inspired network with 42 road segments, 16 signalized intersections, a roundabout, 64 moving vehicles, and 202 pedestrians. Turn freely between the coastal avenue, city blocks, station area and Colaba waterfront. The minimap shows the actual street graph, and seven discoverable areas replace lap counting. See [map sources and attribution](docs/research/mumbai/README.md) and the [current playable guide](docs/Mumbai-Playable.md).
+Drive a simplified South Mumbai-inspired network with 42 road segments, 16 signalized intersections, a roundabout, 112 moving vehicles, and 202 pedestrians. Turn freely between the coastal avenue, city blocks, station area and Colaba waterfront. Free roaming has no minimap, lap counter, area objectives or score screen. Vehicles have curved bodies, detailed wheels and reflective finishes; warm shadows, surface textures and water ripples improve the city environment while NPC people stay boxy. See [map sources and attribution](docs/research/mumbai/README.md) and the [current playable guide](docs/Mumbai-Playable.md).
 
 ## Playable game checks
 
@@ -58,7 +58,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Twelve simulation tests and five production-browser flows cover the connected road graph, signals, traffic, pedestrian crossings, driving, collisions, reverse, district exploration, touch controls, pause/reset, replay/results, and graphics recovery. Browser checks use software WebGL and touch emulation; real-phone frame-rate validation is still pending. No new Vercel settings or secrets are needed.
+Twelve simulation tests and five production-browser flows cover the connected road graph, signals, traffic, pedestrian crossings, driving, collisions, reverse, free roaming, touch controls, pause/reset, exit/fresh drives, and graphics recovery. Browser checks use software WebGL and touch emulation; real-phone frame-rate validation is still pending. No new Vercel settings or secrets are needed.
 
 ## Website artwork
 

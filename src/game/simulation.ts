@@ -10,7 +10,6 @@ import {
   constrainRoad,
   roadContains,
   SPAWN,
-  districts,
   obstacles,
   crossingPosition,
   type Point,
@@ -62,8 +61,6 @@ export type Drive = {
   steer: number;
   distance: number;
   topSpeed: number;
-  explored: number;
-  visited: boolean[];
   reverseWait: number;
   cooldown: number;
   impact: number;
@@ -79,8 +76,6 @@ export function newDrive(): Drive {
     steer: 0,
     distance: 0,
     topSpeed: 0,
-    explored: 1,
-    visited: districts.map((_, i) => i === 0),
     reverseWait: 0,
     cooldown: 0,
     impact: 0,
@@ -92,10 +87,11 @@ export function newDrive(): Drive {
 }
 export function newTraffic(): Traffic[] {
   const result: Traffic[] = [];
-  for (let i = 0; i < 64; i++) {
+  for (let i = 0; i < 420 && result.length < 112; i++) {
     const edge = i % streets.length,
       e = streets[edge],
-      from = e.oneWay || i % 2 === 0 ? e.a : e.b,
+      from =
+        e.oneWay || (i + Math.floor(i / streets.length)) % 2 === 0 ? e.a : e.b,
       g = geometry(edge, from),
       lane = e.oneWay ? 0 : i % 3 === 0 ? 7 : 3,
       progress =
@@ -104,6 +100,7 @@ export function newTraffic(): Traffic[] {
           ((0.23 + (i % 5) * 0.11 + Math.floor(i / streets.length) * 0.43) % 1);
     const p = lanePosition(edge, from, progress, lane);
     if (Math.hypot(p.x - SPAWN.x, p.z - SPAWN.z) < 32) continue;
+    if (result.some((t) => Math.hypot(t.x - p.x, t.z - p.z) < 9)) continue;
     result.push({
       id: i,
       edge,
@@ -371,14 +368,6 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
       Math.abs(s.speed) * dt * 1.1,
     );
   s.topSpeed = Math.max(s.topSpeed, Math.abs(s.speed) * 3.6);
-  for (let i = 0; i < districts.length; i++)
-    if (
-      !s.visited[i] &&
-      Math.hypot(s.x - districts[i].x, s.z - districts[i].z) < 95
-    ) {
-      s.visited[i] = true;
-      s.explored++;
-    }
   const near = nearestStreet(s.x, s.z);
   s.street = streets[near.edge].name;
   s.signal = yielding ? "pedestrian" : "";

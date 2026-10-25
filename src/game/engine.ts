@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { atmosphere } from "./atmosphere";
 import { makeWorld, autoRickshaw, trafficVisuals } from "./world";
 import {
   emptyInput,
@@ -13,7 +14,6 @@ export type Stats = {
   speed: number;
   distance: number;
   topSpeed: number;
-  explored: number;
   street: string;
   signal: string;
   time: number;
@@ -36,7 +36,7 @@ export function createEngine(
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 0.95;
   renderer.setClearColor("#bfd6d3");
   renderer.domElement.setAttribute(
     "aria-label",
@@ -44,12 +44,7 @@ export function createEngine(
   );
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#bfd6d3");
-  scene.fog = new THREE.Fog("#bfd6d3", 100, 460);
-  scene.add(new THREE.HemisphereLight("#fff1d4", "#748665", 2.5));
-  const sun = new THREE.DirectionalLight("#ffdfa0", 2.6);
-  sun.position.set(180, 240, -60);
-  scene.add(sun);
+  const lighting = atmosphere(renderer, scene);
   const world = makeWorld(scene);
   const player = autoRickshaw();
   scene.add(player.root);
@@ -82,7 +77,6 @@ export function createEngine(
       speed: state.speed * 3.6,
       distance: state.distance,
       topSpeed: state.topSpeed,
-      explored: state.explored,
       street: state.street,
       signal: state.signal,
       time: state.time,
@@ -110,7 +104,8 @@ export function createEngine(
       state.z + Math.cos(state.yaw) * 5,
     );
     camera.lookAt(lookTarget);
-    placeTraffic();
+    placeTraffic(state.x, state.z);
+    lighting.update(state.x, state.z, state.time);
     world.update(state.time);
   }
   function resize() {
@@ -324,7 +319,7 @@ export function createEngine(
     },
     quality(low: boolean) {
       renderer.setPixelRatio(low ? 1 : Math.min(devicePixelRatio, 1.5));
-      scene.fog = new THREE.Fog("#bfd6d3", low ? 70 : 100, low ? 260 : 460);
+      lighting.quality(low);
       resize();
     },
     dispose() {
@@ -356,6 +351,7 @@ export function createEngine(
       geometries.forEach((g) => g.dispose());
       textures.forEach((t) => t.dispose());
       materials.forEach((m) => m.dispose());
+      lighting.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       renderer.domElement.remove();

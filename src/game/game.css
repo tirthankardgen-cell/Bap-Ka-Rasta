@@ -99,35 +99,6 @@
   letter-spacing: 2px;
   font-weight: 800;
 }
-.speedometer > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  margin-top: 12px;
-  padding-top: 9px;
-  border-top: 1px solid #d6ddcc;
-  font-size: 9px;
-  font-weight: 600;
-}
-.mini-map {
-  position: absolute;
-  right: 25px;
-  top: 90px;
-  width: 130px;
-  background: #f7f3e8d9;
-  border-radius: 9px;
-  padding: 5px 8px 10px;
-  text-align: center;
-}
-.mini-map svg {
-  width: 100%;
-  display: block;
-}
-.mini-map > span {
-  font-size: 7px;
-  letter-spacing: 1.4px;
-  font-weight: 800;
-}
 .drive-buttons {
   position: absolute;
   bottom: max(25px, env(safe-area-inset-bottom));
@@ -343,22 +314,6 @@
   padding: 13px 8px;
   font-size: 11px;
 }
-.results-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin: 25px 0;
-}
-.results-stats span {
-  display: block;
-  color: #78836e;
-  font-size: 8px;
-  letter-spacing: 1px;
-}
-.results-stats strong {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 30px;
-}
 .game-launch {
   margin-top: 15px;
   width: 100%;
@@ -413,11 +368,6 @@
   .speedometer > div {
     font-size: 8px;
     gap: 10px;
-  }
-  .mini-map {
-    right: 14px;
-    top: 80px;
-    width: 100px;
   }
   .drive-buttons {
     left: 14px;
@@ -494,10 +444,6 @@
   .speedometer > strong {
     font-size: 34px;
   }
-  .mini-map {
-    width: 90px;
-    top: 76px;
-  }
   .drive-panel h1 {
     font-size: 38px;
   }
@@ -531,18 +477,6 @@
     margin-bottom: 12px;
   }
 }
-.network-map {
-  width: 112px;
-  padding: 6px;
-}
-.network-map svg {
-  height: 170px;
-  width: 100%;
-}
-.network-map > span {
-  font-size: 6px;
-  letter-spacing: 1px;
-}
 .driving-message {
   background: #faf8f0e6;
   border-radius: 5px;
@@ -556,24 +490,12 @@
   display: none;
 }
 @media (max-width: 700px) {
-  .network-map {
-    width: 83px;
-  }
-  .network-map svg {
-    height: 125px;
-  }
   .driving-message {
     font-size: 10px;
     top: 32%;
   }
 }
 @media (max-height: 500px) {
-  .network-map {
-    width: 65px;
-  }
-  .network-map svg {
-    height: 95px;
-  }
   .driving-message {
     top: 24%;
     font-size: 10px;

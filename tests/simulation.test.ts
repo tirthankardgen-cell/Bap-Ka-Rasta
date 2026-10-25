@@ -108,13 +108,11 @@ test("safe reset preserves progress and avoids occupied positions", () => {
     traffic = newTraffic();
   s.distance = 124;
   s.topSpeed = 42;
-  s.explored = 3;
   s.speed = 10;
   resetDrive(s, traffic);
   assert.equal(s.speed, 0);
   assert.equal(s.distance, 124);
   assert.equal(s.topSpeed, 42);
-  assert.equal(s.explored, 3);
   assert.ok(roadContains(s.x, s.z));
   assert.ok(traffic.every((t) => Math.hypot(t.x - s.x, t.z - s.z) >= 12));
 });
@@ -168,7 +166,13 @@ test("pedestrians cross only during all-red and do not teleport between cycles",
 
 test("dense traffic follows connected routes for three minutes without invalid poses", () => {
   const traffic = newTraffic();
-  assert.ok(traffic.length >= 55);
+  assert.equal(traffic.length, 112);
+  for (let i = 0; i < traffic.length; i++)
+    for (let j = i + 1; j < traffic.length; j++)
+      assert.ok(
+        Math.hypot(traffic[i].x - traffic[j].x, traffic[i].z - traffic[j].z) >=
+          9,
+      );
   let transitions = 0;
   for (let tick = 0; tick < 60 * 180; tick++) {
     updateTraffic(traffic, { x: 999, z: 999 }, tick / 60, 1 / 60);
@@ -185,7 +189,7 @@ test("dense traffic follows connected routes for three minutes without invalid p
   assert.ok(transitions > 100, `only ${transitions} completed turns`);
 });
 
-test("five-minute drive can choose cross streets and explore districts", () => {
+test("five-minute free drive can choose cross streets without a finish condition", () => {
   const s = newDrive(),
     input = emptyInput();
   const points = [
@@ -226,7 +230,7 @@ test("five-minute drive can choose cross streets and explore districts", () => {
     assert.ok(roadContains(s.x, s.z));
   }
   assert.ok(s.distance > 1500, `distance ${s.distance}`);
-  assert.ok(s.explored >= 3, `explored ${s.explored}`);
+
   assert.ok(s.topSpeed <= 65.01);
 });
 

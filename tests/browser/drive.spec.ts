@@ -8,11 +8,14 @@ async function enter(page: Page) {
   await expect(page.locator(".game")).toHaveAttribute("data-status", "driving");
 }
 
-test("Mumbai drive: motion, steering, pause, reset, results, replay and home", async ({
+test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (msg) => {
+    if (msg.type() === "error") errors.push(msg.text());
+  });
   await page.goto("/");
   await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
   await page.getByRole("button", { name: "Delhi", exact: true }).click();
@@ -27,16 +30,20 @@ test("Mumbai drive: motion, steering, pause, reset, results, replay and home", a
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
   await page.getByRole("button", { name: "Chal Chala", exact: true }).click();
   const game = page.locator(".game");
-  await expect(
-    page.getByRole("img", {
-      name: "Your position on the South Mumbai street network",
-    }),
-  ).toBeVisible();
+  await expect(page.locator(".mini-map")).toHaveCount(0);
+  await expect(page.getByText(/AREAS|LOCAL BEST/)).toHaveCount(0);
   expect(
     Number(await page.locator("canvas").getAttribute("data-traffic-count")),
-  ).toBeGreaterThanOrEqual(55);
-  expect(await page.locator(".network-map line").count()).toBeGreaterThan(60);
+  ).toBeGreaterThanOrEqual(100);
 
+  // Exercise the lower-cost graphics path for extended controls on software WebGL.
+  // The mobile and context-recovery flows keep Standard graphics enabled.
+  await page.getByRole("button", { name: "Pause drive" }).click();
+  await page.getByRole("button", { name: "Standard graphics" }).click();
+  await expect(
+    page.getByRole("button", { name: "Low graphics" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Resume drive" }).click();
   await page.keyboard.down("w");
   await expect
     .poll(async () => Number(await game.getAttribute("data-distance")))
@@ -67,15 +74,9 @@ test("Mumbai drive: motion, steering, pause, reset, results, replay and home", a
   await expect(game).toHaveAttribute("data-status", "paused");
   await page.getByRole("button", { name: "End drive" }).click();
   await expect(
-    page.getByRole("heading", { name: "Badiya drive!" }),
+    page.getByRole("button", { name: "Mera Bap Ka Rasta" }),
   ).toBeVisible();
-  expect(
-    Number(
-      await page.evaluate(() => localStorage.getItem("bkr:mumbai:auto:best")),
-    ),
-  ).toBeGreaterThan(5);
-  await page.getByRole("button", { name: "Phir Se" }).click();
-  await page.getByRole("button", { name: "Chal Chala", exact: true }).click();
+  await enter(page);
   await expect
     .poll(async () => Number(await game.getAttribute("data-distance")))
     .toBe(0);
