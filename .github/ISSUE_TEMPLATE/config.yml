@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/blob/main/SECURITY.md
+    about: Use the private email contact in the security policy; do not disclose vulnerabilities in public issues.
+  - name: Read the documentation
+    url: https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/blob/main/docs/README.md
+    about: Setup, gameplay, contribution guidance, roadmap, and research references.

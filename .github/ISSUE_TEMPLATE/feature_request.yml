@@ -1,0 +1,37 @@
+name: Feature proposal
+description: Suggest a focused improvement to gameplay, accessibility, tooling, or documentation.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check the [roadmap](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/blob/main/docs/ROADMAP.md) and existing issues before proposing work. Mumbai and the auto rickshaw are the current playable milestone.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or player need
+      description: Explain who is affected and what they cannot currently do well.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe a focused, observable outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: validation
+    attributes:
+      label: How could we validate it?
+      description: Relevant device tests, measurements, accessibility checks, or acceptance criteria.
+  - type: textarea
+    id: assets
+    attributes:
+      label: Dependencies or asset sources
+      description: If the proposal needs new packages, audio, models, or images, explain the requirements and include source/license information when known.

@@ -5,3 +5,14 @@ dist/
 *.tsbuildinfo
 test-results/
 playwright-report/
+.env
+.env.*
+!.env.example
+!.env.*.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+output/playwright/

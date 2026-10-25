@@ -1,0 +1,36 @@
+name: Support question
+description: Ask about installation, controls, development, or documentation.
+title: "[Question]: "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Start with the [README](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/blob/main/README.md) and [support guide](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/blob/main/SUPPORT.md). Security reports belong in the private channel listed in SECURITY.md.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Topic
+      options:
+        - Installation or local setup
+        - Playing the game
+        - Development or testing
+        - Documentation or asset attribution
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What have you tried?
+      description: Link relevant documentation and explain where you got stuck.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and relevant output
+      description: Include browser/device or Node/npm versions as appropriate. Remove credentials and personal information.

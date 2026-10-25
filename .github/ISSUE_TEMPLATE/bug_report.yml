@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a reproducible problem with the game or local setup.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues first. For vulnerabilities, use the private contact in [SECURITY.md](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/blob/main/SECURITY.md). Do not include credentials or personal information.
+  - type: input
+    id: version
+    attributes:
+      label: Version or URL
+      description: Live URL, branch/commit, or local checkout you tested.
+      placeholder: "Live demo, or main at commit ..."
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Browser and device
+      description: Browser/version, operating system, device, graphics setting, and viewport if relevant. For setup problems, include Node and npm versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Give the shortest steps that reliably show the problem.
+      placeholder: |
+        1. Open the game...
+        2. Select...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots, recordings, or logs
+      description: Include relevant output or attach evidence. Remove secrets and unrelated personal data.

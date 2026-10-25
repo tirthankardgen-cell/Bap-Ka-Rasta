@@ -2,6 +2,33 @@
   "name": "bap-ka-rasta",
   "private": true,
   "version": "0.1.0",
+  "description": "A browser-based Indian street-driving game built with React, TypeScript, and Three.js. Explore Mumbai-inspired roads in an auto rickshaw with keyboard or touch controls.",
+  "license": "UNLICENSED",
+  "homepage": "https://bap-ka-rasta.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tirthankardgen-cell/Bap-Ka-Rasta.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/issues"
+  },
+  "keywords": [
+    "browser-game",
+    "driving-game",
+    "indie-game",
+    "mumbai",
+    "india",
+    "react",
+    "typescript",
+    "threejs",
+    "vite",
+    "webgl",
+    "web-audio",
+    "single-player"
+  ],
+  "engines": {
+    "node": "^22.18.0 || ^24.0.0"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",

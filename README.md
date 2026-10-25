@@ -1,10 +1,14 @@
 # Bap ka Rasta
 
+[![CI](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/actions/workflows/ci.yml/badge.svg)](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/actions/workflows/ci.yml)
+
 **Apna sheher. Apni sawaari. Apna rasta.**
 
 A single-player, browser-based 3D driving game inspired by Indian streets. Explore a South Mumbai-inspired neighbourhood in a black-and-yellow auto rickshaw, sharing the roads with traffic, pedestrians, and street vendors.
 
 Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the browser and can be deployed as a static site without accounts, a backend, API keys, or a database.
+
+[Play the live demo](https://bap-ka-rasta.vercel.app) · [Browse the documentation](docs/README.md) · [Contribute](CONTRIBUTING.md) · [Get support](SUPPORT.md)
 
 ![Bap ka Rasta concept artwork: an auto rickshaw and its driver on Mumbai's seafront](public/images/landing-hero.webp)
 
@@ -124,6 +128,8 @@ The browser configuration uses Chromium with software WebGL. `PLAYWRIGHT_CHROMIU
 
 Before submitting a change, run the checks relevant to it and update documentation when controls, availability, or setup steps change. Keep audio attribution alongside any added or edited recordings.
 
+The [CI workflow](.github/workflows/ci.yml) checks the production build, simulation/layout tests, and research-audio manifest on pull requests and pushes to `main`. Browser tests remain a separate check; the desktop pause-display timing assertion is a known failure under investigation. [Dependabot](.github/dependabot.yml) is configured for weekly dependency and workflow-action updates.
+
 ## Project structure
 
 ```text
@@ -184,6 +190,9 @@ Run `npm run build` and publish the contents of `dist/` at the site's root. Asse
 | [Street audio research](docs/research/mumbai/audio/README.md) | Recording sources, locations, licenses, and coverage |
 | [Audio library](assets/audio/mumbai/README.md) / [listening catalogue](assets/audio/mumbai/listen.html) | Local source recordings and playback |
 | [Primary source verification](docs/research/source-checks.json) | Recorded research evidence for the design document |
+| [Roadmap](docs/ROADMAP.md) | Reliability priorities and planned content expansion |
+| [Changelog](CHANGELOG.md) | Notable development changes |
+| [Maintainer guide](docs/MAINTAINERS.md) | Repository profile, CI, and publication workflow |
 
 The game plan and storyboards describe intended features and technology choices. For example, the plan proposes React Three Fiber and Vitest; the current code uses direct Three.js and Node's test runner. Use this README and the playable guide for current setup and behavior.
 
@@ -224,6 +233,12 @@ The PDF builder currently uses Segoe UI and Consolas from `C:/Windows/Fonts`. On
 - **Test runner rejects `--experimental-strip-types`:** check `node --version` and switch to the Node.js version listed under requirements.
 - **Browser tests cannot start:** build the app, install Chromium, and ensure port `4175` is available or already serving this project's current production build.
 
+## Contributing and community
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, code conventions, validation, assets, and pull requests. Use the [issue forms](https://github.com/tirthankardgen-cell/Bap-Ka-Rasta/issues/new/choose) for bugs, feature proposals, or support questions, and follow the [Code of Conduct](CODE_OF_CONDUCT.md) when participating.
+
+Report vulnerabilities privately using [SECURITY.md](SECURITY.md). The [support guide](SUPPORT.md) covers troubleshooting and general questions. This is a development prototype; the [roadmap](docs/ROADMAP.md) describes priorities without promising release dates.
+
 ## Credits and licensing
 
 Audio is drawn from credited Freesound recordings. The [research library attribution](assets/audio/mumbai/ATTRIBUTION.md), [manifest](assets/audio/mumbai/manifest.json), and [license texts](assets/audio/mumbai/licenses/) record each source and its terms. The collection uses CC0 1.0, CC BY 4.0, and CC BY 3.0 licenses.
@@ -232,4 +247,4 @@ The four gameplay excerpts have their own [deployed credits](public/audio/credit
 
 The municipal reference illustration uses DataMeet data under **CC BY-SA 2.5 India**; see the [map attribution](docs/research/mumbai/README.md). Landing/gallery images and storyboards are original generated concept artwork. Font licenses are included with their upstream Fontsource packages.
 
-This repository currently has no project-wide `LICENSE` file. Individual asset and dependency licenses apply to their respective materials and do not establish a license for the game code.
+The original game code remains **unlicensed**, recorded as `UNLICENSED` in the package metadata. [NOTICE.md](NOTICE.md) summarizes the applicable attribution and licensing boundaries. Individual asset and dependency licenses apply to their respective materials and do not establish a license for the game code.
