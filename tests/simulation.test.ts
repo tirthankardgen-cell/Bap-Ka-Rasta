@@ -98,6 +98,8 @@ test("traffic contacts separate vehicles and reduce speed", () => {
       junctions[e.a].z === 180,
   )!;
   Object.assign(t, { edge: e.id, from: e.b, progress: 75, lane: 6 });
+  // Place the collision fixture on its traffic lane, independently of the kerbside spawn.
+  Object.assign(s, lanePosition(e.id, e.b, 75, 6));
   step(s, emptyInput(), [t]);
   assert.ok(Math.hypot(s.x - t.x, s.z - t.z) >= 2.49);
   assert.ok(s.impact > 0);

@@ -134,7 +134,7 @@ export const connections = (id: number) =>
     .filter((e) => e.a === id || (!e.oneWay && e.b === id))
     .map((e) => ({ edge: e.id, to: e.a === id ? e.b : e.a }));
 for (const n of junctions) n.signal = !n.ring && connections(n.id).length >= 3;
-export const SPAWN = { x: -266, z: 325, yaw: Math.PI };
+export const SPAWN = { x: -270, z: 325, yaw: Math.PI };
 export const districts = [
   { name: "Marine Drive", x: -260, z: 80 },
   { name: "Chowpatty", x: -180, z: -480 },

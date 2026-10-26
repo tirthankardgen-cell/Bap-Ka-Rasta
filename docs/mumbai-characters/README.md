@@ -1,6 +1,6 @@
 # Mumbai characters, crowd variety and voice production
 
-**Design proposal and recording pack — not implemented gameplay.** Prepared for Bap ka Rasta's next Mumbai update. The current driving game remains free roam. This pack adds a planned opening, 20 character designs, street activity and event-based voices; it does not introduce mandatory fares, races or missions. Constable Patil is **male**. The separate cabin-camera fix keeps 1P/BACK anchored to the auto while moving.
+**Implementation update:** the game now includes all 20 procedural character designs (Sachin plus 19 uniquely placed named locals), varied district crowds, a guided driver-entry opening, skip/pause/reduced-motion support and subtitles. Constable Patil is male. Character recordings remain unlinked until audio is supplied; no missing voice assets are fetched. The tables below remain the production brief. Advanced schedules, full on-foot movement, saved camera preferences, passenger jobs, shop purchases and repairs are still future work. See the [playable guide](../Mumbai-Playable.md) for current behaviour.
 
 ## Visual references
 
@@ -135,7 +135,7 @@ Mostly natural Hinglish, with perhaps one short Marathi phrase per line. Use fam
 
 ## Delivery order
 
-1. **This pack:** concept images, character/voice briefs, crowd design and recording sheet. No new NPCs, intro, dialogue playback or crowd population are implemented here.
+1. **Reference pack complete:** concept images, character/voice briefs, crowd design and recording sheet. The current procedural implementation covers the opening, cast and initial crowd variety; recorded dialogue is pending.
 2. **Opening prototype:** one stand, Sachin + Raju + Meera, guided walk/entry, skip/reduced-motion/touch support, safe camera handoff. Integrate approved intro clips when provided.
 3. **Crowd variety:** implement six neighbourhood kits, 12 shared-rig crowd archetypes, variant selection, seating/queues/browsing and LOD. Review three consecutive blocks and real-phone performance before raising density.
 4. **Reactive speech:** add proximity/event scheduler, subtitles, cooldowns and audio settings; wire approved ambient lines. Keep future interaction rows disabled.

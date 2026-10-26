@@ -9,6 +9,7 @@ The current build provides:
 - Landing, city selection, and vehicle selection screens.
 - Free driving through an authored South Mumbai-inspired street network.
 - An auto rickshaw, NPC traffic, pedestrians, crossings, and roadside activity.
+- A skippable driver-entry opening, twenty character designs, neighbourhood crowd variety and text greetings; character audio recording/integration is pending.
 - Keyboard and touch input, pause/resume, safe reset, sound, and graphics controls.
 - Recorded engine, horn, traffic, and market audio with attribution.
 - Simulation/layout tests, browser flows, and a static production build.
@@ -17,14 +18,14 @@ Mumbai and the auto rickshaw are the only playable combination. See the [playabl
 
 ## Validation and reliability
 
-- [ ] Investigate the desktop browser test's pause-display timing failure and verify that the HUD and paused simulation remain consistent.
+- [ ] Resolve the long desktop browser flow exceeding its software-WebGL time budget. Pause now publishes the current HUD state immediately; continue checking pause/resume consistency.
 - [ ] Measure frame rate, loading time, memory, and touch behavior on real Android and iOS devices.
 - [ ] Validate Safari/WebKit behavior, including WebGL recovery and browser audio restrictions.
 - [ ] Extend manual drives through congested intersections and test repeated start/pause/reset/exit sessions.
 - [ ] Review download size, draw calls, resource cleanup, and graphics quality tradeoffs using measurements.
 - [ ] Review keyboard focus, control labels, reduced-motion behavior, and touch-target accessibility.
 
-The automated repository checks cover the build, simulation/layout tests, and audio manifest. The existing Playwright suite remains a separate check; it is not presented as consistently passing while the pause-display failure is unresolved.
+The automated repository checks cover the build, simulation/layout tests, and audio manifest. The existing Playwright suite remains a separate check; it is not presented as consistently passing while the long desktop flow still times out under software WebGL.
 
 ## Planned content expansion
 

@@ -6,6 +6,9 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Added
 
+- Playable driver POV opening: walk from the pavement, enter the kerbside auto, see the handlebar view and transition to driving; skip, pause/resume and reduced-motion support included.
+- Twenty procedural Mumbai character designs, 19 unique named locals and 939 total crowd actors with six district mixes, props, outfit variations, chatting/browsing/work activity and nearby text greetings. No character voice audio is loaded until recordings are supplied.
+
 - Mumbai character planning pack: 20 character concepts (including male Constable Patil), three reference boards, six neighbourhood crowd kits, a driver-entry sequence and 56 planned voice lines for external recording. These are design assets, not implemented NPC or dialogue features.
 
 - Third-person, behind-driver and driver-eye cameras, switchable with C or the camera button.
@@ -35,7 +38,7 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 ### Known limitations
 
 - Mumbai and the auto rickshaw remain the only playable combination.
-- The desktop browser test can fail on the distance displayed immediately after pausing; the simulation and HUD update on different schedules.
+- The long desktop browser flow still times out under software WebGL; the pause action now publishes HUD state immediately.
 - Real Android/iOS performance, Safari compatibility, and extended manual driving still need validation.
 
 ## Prototype baseline

@@ -1,3 +1,4 @@
+import { makeCrowd } from "./crowd";
 import { pavementLayout, PAVEMENT_TOP } from "./pavements";
 import * as THREE from "three";
 import {
@@ -8,7 +9,6 @@ import {
   lanePosition,
   lightFor,
   signalPhase,
-  crossingPosition,
   obstacles,
   roadContains,
 } from "./network";
@@ -904,67 +904,18 @@ export function makeWorld(scene: THREE.Scene) {
     mesh.computeBoundingSphere();
     scene.add(mesh);
   }
-  const walkers: {
-    edge: number;
-    side: number;
-    phase: number;
-    cross: number;
-  }[] = [];
-  for (const e of streets)
-    if (!e.oneWay && geometry(e.id).length > 90)
-      for (let i = 0; i < 10; i++)
-        walkers.push({
-          edge: e.id,
-          side: i % 2 ? 1 : -1,
-          phase: i * 0.1,
-          cross: -1,
-        });
-  for (const n of junctions)
-    if (n.signal)
-      for (let i = 0; i < 2; i++)
-        walkers.push({
-          edge: 0,
-          side: i % 2 ? 1 : -1,
-          phase: i * 0.06,
-          cross: n.id,
-        });
-  const people = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 1 }),
-    walkers.length * 8,
-  );
-  people.frustumCulled = false;
-  scene.add(people);
-  const outfits = ["#cd913c", "#568b8b", "#b26887", "#ddd2b0", "#b39a6b"];
-  function personPart(
-    index: number,
-    x: number,
-    y: number,
-    z: number,
-    sx: number,
-    sy: number,
-    sz: number,
-    c: string,
-    yaw = 0,
-    rx = 0,
-  ) {
-    dummy.position.set(x, y + pavement.heightAt(x, z), z);
-    dummy.scale.set(sx, sy, sz);
-    dummy.rotation.set(rx, yaw, 0);
-    dummy.updateMatrix();
-    people.setMatrixAt(index, dummy.matrix);
-    people.setColorAt(index, color.set(c));
-  }
-  let lastPeople = -1,
-    lastLights = -1;
+  const crowd = makeCrowd(scene, pavement.heightAt);
+  let lastLights = -1;
   return {
+    crowd,
     marketIntensity(x: number, z: number) {
       let nearest = Infinity;
       for (const vendor of vendors)
         nearest = Math.min(nearest, Math.hypot(x - vendor.x, z - vendor.z));
       return Math.max(0, 1 - nearest / 38);
     },
-    update(time: number) {
+    update(time: number, x: number, z: number, low = false) {
+      crowd.update(time, x, z, low);
       cityTime.value = time;
       if (Math.floor(time * 4) !== lastLights) {
         lastLights = Math.floor(time * 4);
@@ -983,83 +934,7 @@ export function makeWorld(scene: THREE.Scene) {
         });
         if (bulbs.instanceColor) bulbs.instanceColor.needsUpdate = true;
       }
-      if (Math.floor(time * 12) === lastPeople) return;
-      lastPeople = Math.floor(time * 12);
-      walkers.forEach((w, i) => {
-        let x: number,
-          z: number,
-          yaw: number,
-          moving = true;
-        if (w.cross >= 0) {
-          const p = crossingPosition(w.cross, time, w.side, w.phase * 12);
-          x = p.x;
-          z = p.z;
-          yaw = p.yaw;
-          moving = p.moving;
-        } else {
-          const e = streets[w.edge],
-            g = geometry(e.id),
-            span = g.length - 65,
-            phase = ((time * 1.25) / Math.max(1, span) + w.phase) % 2,
-            u = phase < 1 ? phase : 2 - phase,
-            p = lanePosition(
-              e.id,
-              e.a,
-              32 + u * span,
-              w.side * (e.width / 2 + 2.1 + (i % 3) * 0.3),
-            );
-          x = p.x;
-          z = p.z;
-          yaw = p.yaw + (phase >= 1 ? Math.PI : 0);
-        }
-        const base = i * 8,
-          swing = moving ? Math.sin(time * 6 + i) * 0.35 : 0,
-          c = outfits[i % outfits.length],
-          dx = Math.cos(yaw),
-          dz = -Math.sin(yaw);
-        personPart(base, x, 1.35, z, 0.55, 0.75, 0.35, c, yaw);
-        personPart(base + 1, x, 1.98, z, 0.4, 0.42, 0.4, "#bc885c", yaw);
-        personPart(base + 2, x, 2.22, z, 0.43, 0.12, 0.43, "#38352e", yaw);
-        for (const side of [-1, 1]) {
-          personPart(
-            base + 3 + (side === 1 ? 1 : 0),
-            x + dx * side * 0.16,
-            0.65,
-            z + dz * side * 0.16,
-            0.22,
-            0.65,
-            0.26,
-            "#3c4c5a",
-            yaw,
-            swing * side,
-          );
-          personPart(
-            base + 5 + (side === 1 ? 1 : 0),
-            x + dx * side * 0.38,
-            1.3,
-            z + dz * side * 0.38,
-            0.18,
-            0.6,
-            0.23,
-            c,
-            yaw,
-            -swing * side,
-          );
-        }
-        personPart(
-          base + 7,
-          x + Math.sin(yaw) * 0.22,
-          2.01,
-          z + Math.cos(yaw) * 0.22,
-          0.22,
-          0.045,
-          0.02,
-          "#29372e",
-          yaw,
-        );
-      });
-      people.instanceMatrix.needsUpdate = true;
-      if (people.instanceColor) people.instanceColor.needsUpdate = true;
+
     },
   };
 }

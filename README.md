@@ -30,8 +30,9 @@ The current build includes:
 - **Connected streets:** 75 road segments, 34 signalized intersections, and a clockwise roundabout, with routes through Marine Drive, Churchgate, Fort, and Colaba-inspired areas.
 - **Neighbourhood lanes:** 29 narrow two-way streets, with one lane each way; new northern/eastern connections and visible perimeter walls and closed-end barriers.
 - **Mumbai-inspired architecture:** Art Deco curved balconies, Fort-style stone arches, tiled-roof chawls, shared galleries, laundry, shopfronts and rooftop tanks. The auto has an open cabin, patterned seating, a round front lamp and coloured trim under warmer sunset lighting. These are custom interpretations of the supplied reference.
-- **Street activity:** 112 moving traffic vehicles, 738 moving pedestrians, raised pavements, and roadside food carts with sellers and customers.
+- **Street activity:** 112 moving traffic vehicles and 939 crowd actors, including 19 named locals, with walking, browsing, chatting, working and crossing activity. Twenty character designs include the player driver.
 - **Arcade driving:** acceleration, steering, braking, delayed reverse, vehicle and roadside collisions, and safe vehicle reset. The auto reaches approximately 65 km/h.
+- **Driver opening:** a skippable, subtitled walk to the auto, cabin entry and camera handoff, with reduced-motion support. Character voice recordings can be linked later.
 - **Desktop and touch controls:** simultaneous steering and acceleration, responsive galleries, three camera views (third person, behind driver and driver eye), and a HUD with speed, street names, and signal warnings.
 - **Recorded street audio:** an engine loop, horn, traffic, and market ambience, with driving-sensitive engine sound and nearby activity mixing.
 - **Session controls:** pause/resume, sound toggle, Standard/Low graphics, automatic pause on focus loss, and a retry screen for graphics context loss.
@@ -125,13 +126,13 @@ npm run test:e2e
 The browser installation is needed on first setup and may be needed after a Playwright upgrade. Build before running browser tests: Playwright starts `npm run preview -- --port 4175` and uses the existing `dist/` directory; it does not build the app itself.
 
 - **Simulation and layout tests** cover road connectivity, pavements, speed limits, braking/reverse, steering, collisions, safe resets, signal phases, pedestrian yielding, and extended simulated traffic and driving.
-- **Browser tests** cover city/vehicle selection, responsive galleries, driving controls, touch input, three camera modes, pause/reset/exit, audio loading and lifecycle, and graphics context-loss recovery.
+- **Browser tests** cover city/vehicle selection, responsive galleries, driving controls, touch input, the opening/skip/reduced-motion flow, three camera modes, pause/reset/exit, audio loading and lifecycle, and graphics context-loss recovery.
 
 The browser configuration uses Chromium with software WebGL. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can point to an installed Chromium-compatible browser. See [playwright.config.ts](playwright.config.ts) for the server, timeout, and browser settings. Screenshots and test output are written to `test-results/`.
 
 Before submitting a change, run the checks relevant to it and update documentation when controls, availability, or setup steps change. Keep audio attribution alongside any added or edited recordings.
 
-The [CI workflow](.github/workflows/ci.yml) checks the production build, simulation/layout tests, and research-audio manifest on pull requests and pushes to `main`. Browser tests remain a separate check; the desktop pause-display timing assertion is a known failure under investigation. [Dependabot](.github/dependabot.yml) is configured for weekly dependency and workflow-action updates.
+The [CI workflow](.github/workflows/ci.yml) checks the production build, simulation/layout tests, and research-audio manifest on pull requests and pushes to `main`. Browser tests remain a separate check; the long desktop flow still exceeds its 150-second budget under software WebGL. Pause now publishes its HUD state immediately, but the full browser suite is not yet consistently passing. [Dependabot](.github/dependabot.yml) is configured for weekly dependency and workflow-action updates.
 
 ## Project structure
 

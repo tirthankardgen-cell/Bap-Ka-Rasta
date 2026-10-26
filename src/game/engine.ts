@@ -1,3 +1,10 @@
+import {
+  introFrame,
+  advanceIntro,
+  INTRO_DURATION,
+  type IntroStage,
+} from "./intro";
+import { driverHands } from "./intro-visuals";
 import { createStreetAudio } from "./audio";
 import * as THREE from "three";
 import { atmosphere } from "./atmosphere";
@@ -14,6 +21,12 @@ import {
 import { followCamera, type CameraMode } from "./camera";
 export type { CameraMode } from "./camera";
 export type Stats = {
+  introStage: IntroStage;
+  introFade: number;
+  speaker: string;
+  subtitle: string;
+  meaning: string;
+  clipId: string;
   cameraMode: CameraMode;
   audioStatus: string;
   speed: number;
@@ -59,6 +72,13 @@ export function createEngine(
   renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = newDrive();
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
+  scene.add(camera);
+  const hands = driverHands(camera);
+  let introActive = false,
+    introStarted = false,
+    introTime = 0,
+    lowQuality = false;
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const input = emptyInput();
   const keys = new Set<string>();
   const touch = new Map<number, keyof Input>();
@@ -82,13 +102,29 @@ export function createEngine(
   const cameraTarget = new THREE.Vector3(),
     lookTarget = new THREE.Vector3();
   function publish() {
+    const frame = introFrame(introTime, reducedMotion);
+    const greeting = world.crowd.greeting(
+      state.time,
+      state.x,
+      state.z,
+      state.speed,
+    );
+    const stage = !introStarted ? "ready" : introActive ? frame.stage : "done";
+    renderer.domElement.dataset.introStage = stage;
+    renderer.domElement.dataset.characterCount = String(world.crowd.count);
     onStats({
+      introStage: stage,
+      introFade: introActive ? frame.fade : 0,
+      speaker: introActive ? frame.speaker : greeting.name,
+      subtitle: introActive ? frame.caption : greeting.text,
+      meaning: introActive ? frame.meaning : "",
+      clipId: introActive ? frame.clipId : greeting.clipId,
       cameraMode,
       audioStatus,
       speed: state.speed * 3.6,
       distance: state.distance,
       topSpeed: state.topSpeed,
-      street: state.street,
+      street: introActive ? "Apna auto stand" : state.street,
       signal: state.signal,
       time: state.time,
       x: state.x,
@@ -135,7 +171,62 @@ export function createEngine(
     camera.lookAt(lookTarget);
     placeTraffic(state.x, state.z);
     lighting.update(state.x, state.z, state.time);
-    world.update(state.time);
+    world.update(state.time, state.x, state.z, lowQuality);
+    hands.update(cameraMode === "driver", false, state.time, reducedMotion);
+    if (introActive) placeIntro();
+  }
+  function driverVisibility(seated: boolean) {
+    player.root.traverse((o) => {
+      if (o.userData.driver)
+        o.visible = seated && (introActive || cameraMode !== "driver");
+      if (o.userData.cabinRoof) o.visible = cameraMode !== "behind-driver";
+    });
+  }
+  function placeIntro() {
+    const frame = introFrame(introTime, reducedMotion);
+    driverVisibility(frame.exterior);
+    camera.near = 0.04;
+    camera.fov = 70;
+    if (!frame.exterior) {
+      camera.position.set(frame.x, frame.y, frame.z);
+      const entering = Math.max(0, Math.min(1, (introTime - 3) / 3));
+      const approach = Math.min(1, introTime / 3);
+      lookTarget.set(
+        -274 + (state.x + 274) * approach,
+        1.5,
+        325 - approach - entering * 7,
+      );
+      camera.lookAt(lookTarget);
+    } else {
+      camera.fov = 55;
+      camera.position.set(state.x - 1.8, 4.4, state.z + 7.5);
+      camera.lookAt(state.x, 1.1, state.z - 8);
+    }
+    camera.updateProjectionMatrix();
+    hands.update(!frame.exterior, introTime < 6, introTime, reducedMotion);
+    world.update(introTime, state.x, state.z, lowQuality);
+  }
+  function finishIntro() {
+    if (!introActive && introStarted) return;
+    introActive = false;
+    introStarted = true;
+    state.time = Math.max(state.time, introTime);
+    introTime = INTRO_DURATION;
+    accumulator = 0;
+    clear();
+    driverVisibility(true);
+    place(true);
+    publish();
+    renderer.render(scene, camera);
+  }
+  function beginIntro() {
+    if (introStarted) return;
+    introStarted = true;
+    introActive = true;
+    introTime = 0;
+    clear();
+    place(true);
+    publish();
   }
   function resize() {
     const w = host.clientWidth,
@@ -168,9 +259,10 @@ export function createEngine(
     accumulator = 0;
     last = performance.now();
     streetAudio.pause(value);
+    publish();
   }
   function horn() {
-    if (paused) return;
+    if (paused || introActive) return;
     lastHorn = performance.now();
     streetAudio.horn();
   }
@@ -187,7 +279,12 @@ export function createEngine(
   ]);
   function down(e: KeyboardEvent) {
     if (paused) return;
-    if (motionKeys.has(e.code)) {
+    if (introActive && e.code === "Enter") {
+      e.preventDefault();
+      finishIntro();
+      return;
+    }
+    if (motionKeys.has(e.code) && !introActive) {
       e.preventDefault();
       keys.add(e.code);
       updateInput();
@@ -239,6 +336,7 @@ export function createEngine(
   document.addEventListener("visibilitychange", visibility);
   renderer.domElement.addEventListener("webglcontextlost", lost);
   function cycleCamera() {
+    if (introActive) return;
     cameraMode =
       cameraMode === "third-person"
         ? "behind-driver"
@@ -256,6 +354,7 @@ export function createEngine(
     renderer.render(scene, camera);
   }
   function reset() {
+    if (introActive) finishIntro();
     resetDrive(state, traffic);
     clear();
     place(true);
@@ -265,9 +364,16 @@ export function createEngine(
   function loop(now: number) {
     if (disposed) return;
     raf = requestAnimationFrame(loop);
-    const dt = Math.min((now - last) / 1000, 0.1);
+    const elapsed = Math.max(0, (now - last) / 1000);
+    const dt = Math.min(elapsed, 0.1);
     last = now;
-    if (!paused) {
+    if (!paused && introActive) {
+      introTime = advanceIntro(introTime, Math.min(elapsed, 0.5), false);
+      placeIntro();
+      lighting.update(state.x, state.z, introTime);
+      if (introTime >= INTRO_DURATION) finishIntro();
+      renderer.render(scene, camera);
+    } else if (!paused) {
       accumulator += dt;
       let ticks = 0;
       while (accumulator >= STEP && ticks < 5) {
@@ -307,10 +413,12 @@ export function createEngine(
   raf = requestAnimationFrame(loop);
   return {
     cycleCamera,
+    beginIntro,
+    skipIntro: finishIntro,
     setPaused,
     reset,
     pointer(id: number, action: keyof Input | null) {
-      if (action && !paused) touch.set(id, action);
+      if (action && !paused && !introActive) touch.set(id, action);
       else touch.delete(id);
       updateInput();
     },
@@ -320,6 +428,7 @@ export function createEngine(
       return sound;
     },
     quality(low: boolean) {
+      lowQuality = low;
       renderer.setPixelRatio(low ? 0.65 : Math.min(devicePixelRatio, 1.5));
       lighting.quality(low);
       resize();

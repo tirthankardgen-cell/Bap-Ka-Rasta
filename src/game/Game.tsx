@@ -18,6 +18,12 @@ import { createEngine, type Engine, type Stats } from "./engine";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
+  introStage: "ready",
+  introFade: 0,
+  speaker: "",
+  subtitle: "",
+  meaning: "",
+  clipId: "",
   cameraMode: "third-person",
   audioStatus: "idle",
   speed: 0,
@@ -26,7 +32,7 @@ const initial: Stats = {
   street: "Marine Drive",
   signal: "",
   time: 0,
-  x: -266,
+  x: -270,
   z: 325,
   yaw: Math.PI,
   impact: false,
@@ -78,7 +84,12 @@ export default function Game({ onExit }: { onExit: () => void }) {
       if (hornTimer.current) clearTimeout(hornTimer.current);
     };
   }, [session]);
-  function start() {
+  const introducing = status === "driving" && stats.introStage !== "done";
+  function start(skip = false) {
+    if (status === "ready") {
+      if (skip) engine.current?.skipIntro();
+      else engine.current?.beginIntro();
+    }
     setStatus("driving");
     engine.current?.setPaused(false);
     setSound(engine.current?.sound(sound) ?? false);
@@ -142,6 +153,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
       className="game"
       aria-label="Mumbai auto rickshaw game"
       data-status={status}
+      data-stage={stats.introStage}
       data-distance={stats.distance.toFixed(2)}
       data-speed={stats.speed.toFixed(2)}
       data-position={`${stats.x.toFixed(2)},${stats.z.toFixed(2)}`}
@@ -156,6 +168,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
           <button
             onClick={() => engine.current?.cycleCamera()}
             aria-label="Change camera view"
+            disabled={introducing}
             title={
               {
                 "third-person": "Bahar se",
@@ -189,11 +202,46 @@ export default function Game({ onExit }: { onExit: () => void }) {
           </button>
         </div>
       </header>
-      <div className="speedometer">
-        <strong>{Math.round(Math.abs(stats.speed))}</strong>
-        <span>KM/H {stats.speed < -0.1 ? "· R" : ""}</span>
-      </div>
-      {status === "driving" && (
+      {!introducing && (
+        <div className="speedometer">
+          <strong>{Math.round(Math.abs(stats.speed))}</strong>
+          <span>KM/H {stats.speed < -0.1 ? "· R" : ""}</span>
+        </div>
+      )}
+      {introducing && (
+        <div className="intro-story">
+          <span className="intro-chapter">APNI SHIFT, APNA SHEHER</span>
+          <h2>
+            {stats.introStage === "approach"
+              ? "Subah ki chai. Phir Mumbai."
+              : stats.introStage === "entering"
+                ? "Chalo, auto mein baitho."
+                : "Meter down. Mumbai, ready?"}
+          </h2>
+          <button
+            onClick={() => engine.current?.skipIntro()}
+            aria-label="Skip intro"
+          >
+            Seedha drive <ArrowRight size={18} />
+          </button>
+        </div>
+      )}
+      {status === "driving" && stats.subtitle && (
+        <div
+          className="character-subtitle"
+          aria-live="polite"
+          data-clip-id={stats.clipId}
+        >
+          <strong>{stats.speaker}</strong>
+          <span>{stats.subtitle}</span>
+          {stats.meaning && <small>{stats.meaning}</small>}
+        </div>
+      )}
+      <div
+        className="intro-fade"
+        style={{ opacity: introducing ? stats.introFade : 0 }}
+      />
+      {status === "driving" && !introducing && (
         <>
           <div className="driving-message" aria-live="polite">
             {sound && stats.audioStatus === "loading"
@@ -275,9 +323,9 @@ export default function Game({ onExit }: { onExit: () => void }) {
                   <em>Tension down.</em>
                 </h1>
                 <p>
-                  Kaali-peeli ready hai, bhidu! Galiyon mein ghoom, signal pe
-                  ruk, phir samundar ki hawa kha. Na race, na deadline — bas
-                  apni ride.
+                  Raju Kaka stand pe hain, Meera Tai ki chai ready hai. Apne
+                  auto mein baitho, galiyon mein ghoom, signal pe ruk, phir
+                  samundar ki hawa kha. Na race, na deadline — bas apni ride.
                 </p>
                 <div className="ride-spec">
                   <span>AUTO RICKSHAW</span>
@@ -304,10 +352,18 @@ export default function Game({ onExit }: { onExit: () => void }) {
                 <button
                   className="game-primary"
                   disabled={!loaded}
-                  onClick={start}
+                  onClick={() => start()}
                 >
                   {loaded ? "Chal Chala" : "Rasta taiyaar ho raha hai…"}{" "}
                   <ArrowRight size={20} />
+                </button>
+                <button
+                  className="game-secondary"
+                  disabled={!loaded}
+                  onClick={() => start(true)}
+                  aria-label="Drive without intro"
+                >
+                  Seedha drive · intro baad mein
                 </button>
                 <button
                   className="game-secondary"
@@ -331,7 +387,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                 </a>
                 <button
                   className="game-primary"
-                  onClick={start}
+                  onClick={() => start()}
                   aria-label="Resume drive"
                 >
                   <Play size={18} /> Chal, phir niklein
