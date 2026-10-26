@@ -210,7 +210,7 @@ export function nearestStreet(x: number, z: number) {
   }
   return best;
 }
-// Union of road corridors and intersection aprons: turning is free, no spline constraint.
+// The road union also defines pavement edges, keeping junction corners square.
 export function roadContains(x: number, z: number, r = 1) {
   if (
     x < WORLD_BOUNDS.minX + r ||
@@ -220,9 +220,6 @@ export function roadContains(x: number, z: number, r = 1) {
   )
     return false;
   if (Math.hypot(x - 110, z - 180) < 22 + r) return false;
-  for (const n of junctions)
-    if (!n.ring && Math.abs(x - n.x) <= 18 - r && Math.abs(z - n.z) <= 18 - r)
-      return true;
   return streets.some((e) => {
     const g = geometry(e.id),
       p = (x - g.a.x) * g.dx + (z - g.a.z) * g.dz,
@@ -250,12 +247,6 @@ export function constrainRoad(x: number, z: number) {
       );
     candidate(g.a.x + g.dx * p + g.dz * o, g.a.z + g.dz * p - g.dx * o);
   }
-  for (const n of junctions)
-    if (!n.ring)
-      candidate(
-        Math.max(n.x - 16.95, Math.min(n.x + 16.95, x)),
-        Math.max(n.z - 16.95, Math.min(n.z + 16.95, z)),
-      );
   return { x: best.x, z: best.z, hit: true };
 }
 export type Light = "green" | "amber" | "red";

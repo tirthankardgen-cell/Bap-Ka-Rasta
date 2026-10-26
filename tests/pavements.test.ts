@@ -16,3 +16,19 @@ test("raised pavements meet street edges and junction corners without blocking r
     )
       assert.equal(roadContains(x, strip.z, 0), false);
 });
+
+test("junction footpaths fill asphalt notches with continuous right-angle corners", () => {
+  const layout = pavementLayout();
+  // The avenue at (-260, 180) has 12m half-widths. All four corner
+  // quadrants must be paved right up to those edges, not an 18m apron.
+  for (const sx of [-1, 1])
+    for (const sz of [-1, 1])
+      for (let x = 12.5; x < 22; x++)
+        for (let z = 12.5; z < 22; z++) {
+          assert.equal(
+            layout.heightAt(-260 + sx * x, 180 + sz * z),
+            PAVEMENT_TOP,
+          );
+          assert.equal(roadContains(-260 + sx * x, 180 + sz * z, 0), false);
+        }
+});

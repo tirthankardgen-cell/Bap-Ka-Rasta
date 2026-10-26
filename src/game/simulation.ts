@@ -157,6 +157,12 @@ function planTurn(t: Traffic): Turn {
     { x: p3.x - ng.dx * handle, z: p3.z - ng.dz * handle },
     p3,
   ];
+  // Turn through the junction centre instead of clipping the raised corners,
+  // including where a narrow two-lane street meets an avenue.
+  if (!g.b.ring && Math.abs(g.dx * ng.dx + g.dz * ng.dz) < 0.5) {
+    points[1] = { x: g.b.x, z: g.b.z };
+    points[2] = { x: g.b.x, z: g.b.z };
+  }
   let length = 0,
     last: Point = p0;
   for (let i = 1; i <= 12; i++) {

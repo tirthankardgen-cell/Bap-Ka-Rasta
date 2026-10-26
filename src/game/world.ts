@@ -243,7 +243,7 @@ export function makeWorld(scene: THREE.Scene) {
   for (const n of junctions)
     if (!n.ring) {
       box("#d9d0b8", n.x, 0.01, n.z, 44, 0.04, 44);
-      box("#525f65", n.x, 0.075, n.z, 36, 0.06, 36);
+      // Street rectangles meet directly; no asphalt apron cutting into footpaths.
     }
   for (const strip of pavement.strips)
     box(

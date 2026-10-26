@@ -19,6 +19,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Changed
 
+- Joined raised footpaths at square 90-degree junction corners, removing asphalt notches and keeping traffic turns and road collision boundaries aligned.
+
 - Reworked buildings into Mumbai-inspired Art Deco, stone-arcade, chawl and apartment types.
 - Refined the auto cabin, patterned seats, round headlamp and coloured trim; added warmer sunset lighting and filtered road surface grain.
 
