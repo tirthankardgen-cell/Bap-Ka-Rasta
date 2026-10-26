@@ -71,7 +71,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Fifteen simulation/layout checks cover continuous right-angle pavement corners without asphalt notches, raised pavements staying outside drivable roads, graph connectivity, multiple lanes, the roundabout, braking/reverse, steering, barriers, vehicle contacts, safe resets, non-conflicting signals, red-light stops and green releases, pedestrian phases/continuity/yielding, three simulated minutes of dense traffic, and a five-minute drive through multiple streets/districts.
+Eighteen camera/simulation/layout checks cover cabin cameras staying attached at speed and through turns/reverse, third-person camera smoothing and reset, continuous right-angle pavement corners without asphalt notches, raised pavements staying outside drivable roads, graph connectivity, multiple lanes, the roundabout, braking/reverse, steering, barriers, vehicle contacts, safe resets, non-conflicting signals, red-light stops and green releases, pedestrian phases/continuity/yielding, three simulated minutes of dense traffic, and a five-minute drive through multiple streets/districts.
 
 Production-browser checks cover selection galleries, driving, steering, pause/focus loss, reset, recorded-audio decoding, mute/pause/exit audio-context lifecycle, sound/horn controls, exit/fresh drives, multi-touch controls, orientation changes, three camera modes via button/keyboard, absence of map/objectives, dense traffic presence and renderer console errors and WebGL context-loss recovery. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select an already installed browser.
 

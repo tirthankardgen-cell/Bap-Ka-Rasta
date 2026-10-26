@@ -11,7 +11,8 @@ import {
   STEP,
   type Input,
 } from "./simulation";
-export type CameraMode = "third-person" | "behind-driver" | "driver";
+import { followCamera, type CameraMode } from "./camera";
+export type { CameraMode } from "./camera";
 export type Stats = {
   cameraMode: CameraMode;
   audioStatus: string;
@@ -97,7 +98,7 @@ export function createEngine(
       fps,
     });
   }
-  function place(snap = false) {
+  function place(snap = false, dt = 0) {
     player.root.position.set(state.x, 0, state.z);
     player.root.rotation.y = state.yaw;
     const portrait = host.clientHeight > host.clientWidth;
@@ -125,7 +126,7 @@ export function createEngine(
       height,
       state.z - Math.cos(state.yaw) * distance - Math.sin(state.yaw) * lateral,
     );
-    if (snap) camera.position.copy(cameraTarget);
+    followCamera(camera.position, cameraTarget, cameraMode, dt, snap);
     lookTarget.set(
       state.x + Math.sin(state.yaw) * 8,
       outside ? 1.1 : 1.5,
@@ -275,9 +276,7 @@ export function createEngine(
         ticks++;
       }
       if (ticks === 5) accumulator %= STEP;
-      place();
-      camera.position.lerp(cameraTarget, 1 - Math.exp(-5 * dt));
-      camera.lookAt(lookTarget);
+      place(false, dt);
       player.wheels.forEach((w) => {
         w.rotation.x += (state.speed * dt) / 0.34;
       });
