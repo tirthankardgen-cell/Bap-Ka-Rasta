@@ -6,6 +6,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Added
 
+- Mumbai character planning pack: 20 character concepts (including male Constable Patil), three reference boards, six neighbourhood crowd kits, a driver-entry sequence and 56 planned voice lines for external recording. These are design assets, not implemented NPC or dialogue features.
+
 - Third-person, behind-driver and driver-eye cameras, switchable with C or the camera button.
 - 33 additional road segments, including 29 narrow two-way neighbourhood streets, with lane-aware traffic and crossings.
 - Visible city perimeter walls and closed-end barriers, plus regression checks for the new roads and camera controls.
@@ -18,6 +20,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 - Editor, line-ending, and Node-version configuration for consistent checkouts.
 
 ### Changed
+
+- Anchored first-person and behind-driver cameras to the cabin during acceleration, steering and reverse; retained smooth following for the third-person view.
 
 - Joined raised footpaths at square 90-degree junction corners, removing asphalt notches and keeping traffic turns and road collision boundaries aligned.
 

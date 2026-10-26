@@ -25,6 +25,7 @@ Use the current implementation guides for setup and behavior. The original desig
 | Resource | Purpose |
 | --- | --- |
 | [Game design and architecture](Bap-ka-Rasta-Game-Plan.md) | Original product specification and proposed implementation |
+| [Mumbai characters and voices](mumbai-characters/README.md) | Planned 20-character cast, varied neighbourhood crowds, driver entry storyboard and 56-line recording sheet |
 | [Visual storyboards](storyboard/README.md) | City, character, vehicle, and player-journey concept art |
 | [Mumbai map reference](research/mumbai/README.md) | Geographic context and municipal-data attribution |
 | [Mumbai audio research](research/mumbai/audio/README.md) | Recording sources, locations, licenses, and coverage |
