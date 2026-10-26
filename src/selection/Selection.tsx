@@ -8,6 +8,7 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import "./selection.css";
+import VehicleSelection from "./VehicleSelection";
 export const cities = [
   {
     name: "Mumbai",
@@ -110,7 +111,7 @@ type Props = {
   onConfirm: () => void;
   city: string;
 };
-export default function Selection({
+function ClassicSelection({
   kind,
   selected,
   onSelect,
@@ -358,5 +359,13 @@ export default function Selection({
         {items.length}.
       </span>
     </main>
+  );
+}
+
+export default function Selection(props: Props) {
+  return props.kind === "vehicle" ? (
+    <VehicleSelection {...props} vehicles={vehicles} />
+  ) : (
+    <ClassicSelection {...props} />
   );
 }

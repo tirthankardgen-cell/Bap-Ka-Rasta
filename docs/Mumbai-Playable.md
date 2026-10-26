@@ -2,7 +2,7 @@
 
 ## Play
 
-From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai**, press **Yahin Chalao**, choose **Auto rickshaw**, then **Drive Mumbai** and **Chal Chala**. Both selection screens are full-screen galleries with arrows, keyboard navigation, swipe and direct selection dots. Only Mumbai and the auto are playable in this build. **Chal Chala** starts a guided, approximately 10-second driver POV opening with Raju Kaka and Meera Tai beside the kerbside auto. The driver walks over, enters, sits at the controls and hands off to third-person driving. **Seedha drive** or Enter skips the intro; the ready screen also offers **Drive without intro**. Pause, reset, exit and reduced-motion mode are supported.
+From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai**, press **Yahin Chalao**, choose **Auto rickshaw**, then **Drive Mumbai** and **Chal Chala**. Both selection screens are full-screen galleries with arrows, keyboard navigation, swipe and direct selection dots. Vehicle selection uses a perspective oval of five clickable vehicle previews, with the selected ride enlarged above centered details; future vehicles remain locked. The implementation follows the repository’s circular-gallery concept using the existing vehicle artwork. Only Mumbai and the auto are playable in this build. **Chal Chala** starts a guided, approximately 10-second driver POV opening with Raju Kaka and Meera Tai beside the kerbside auto. The driver walks over, enters, sits at the controls and hands off to third-person driving. **Seedha drive** or Enter skips the intro; the ready screen also offers **Drive without intro**. Pause, reset, exit and reduced-motion mode are supported.
 
 ## City environment
 

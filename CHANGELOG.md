@@ -24,6 +24,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Changed
 
+- Rebuilt vehicle selection around the circular gallery reference: large selected ride, scaled side previews, oval selection arc, centered details and yellow drive button, with drag, preview clicks, keyboard navigation and responsive layouts. Only the auto remains playable.
+
 - Anchored first-person and behind-driver cameras to the cabin during acceleration, steering and reverse; retained smooth following for the third-person view.
 
 - Joined raised footpaths at square 90-degree junction corners, removing asphalt notches and keeping traffic turns and road collision boundaries aligned.

@@ -32,7 +32,10 @@ test("full-screen city and vehicle galleries support arrows, keyboard and back n
   await expect(
     page.getByRole("button", { name: "Drive Mumbai" }),
   ).toBeEnabled();
-  await page.screenshot({ path: "test-results/vehicle-gallery-desktop.png" });
+  await page.screenshot({
+    path: "test-results/vehicle-gallery-desktop.png",
+    animations: "disabled",
+  });
   await page.keyboard.press("Escape");
   await expect(
     page.getByRole("heading", { name: "Sheher chun." }),
@@ -54,6 +57,7 @@ test("mobile galleries fit the screen and support swipe", async ({ page }) => {
     [390, 844],
     [320, 568],
     [844, 390],
+    [667, 375],
   ]) {
     await page.setViewportSize({ width, height });
     await page.goto("/");
@@ -92,6 +96,68 @@ test("mobile galleries fit the screen and support swipe", async ({ page }) => {
     if (width === 390)
       await page.screenshot({
         path: "test-results/vehicle-gallery-mobile.png",
+        animations: "disabled",
       });
   }
+});
+
+test("circular vehicle chooser selects previews, wraps, drags and keeps future rides locked", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1536, height: 864 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
+  await page.getByRole("button", { name: "Yahin Chalao" }).click();
+  await expect(page.locator(".ride-vehicle")).toHaveCount(5);
+  await page.screenshot({
+    path: "test-results/vehicle-orbit-reference.png",
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "Preview Thar", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Thar", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Coming soon", exact: true }),
+  ).toBeDisabled();
+  await page
+    .getByRole("button", { name: "Auto rickshaw", exact: true })
+    .click();
+  await page.keyboard.press("ArrowLeft");
+  await expect(
+    page.getByRole("heading", { name: "Scooty", exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+  await expect(
+    page.getByRole("heading", { name: "Auto rickshaw", exact: true }),
+  ).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const art = await page.locator(".ride-vehicle.is-selected").boundingBox();
+  if (!art) throw Error("Missing selected vehicle");
+  await page.mouse.move(art.x + art.width * 0.7, art.y + art.height * 0.5);
+  await page.mouse.down();
+  await page.mouse.move(
+    art.x + art.width * 0.7 - 100,
+    art.y + art.height * 0.5,
+    { steps: 5 },
+  );
+  await page.mouse.up();
+  await expect(
+    page.getByRole("heading", { name: "Thar", exact: true }),
+  ).toBeVisible();
+  for (const name of ["Fortuner", "KTM", "Scooty"]) {
+    await page.getByRole("button", { name, exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Coming soon", exact: true }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole("button", { name: "Drive Mumbai", exact: true }),
+    ).toHaveCount(0);
+  }
+  await page
+    .getByRole("button", { name: "Auto rickshaw", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Drive Mumbai" }),
+  ).toBeEnabled();
 });
