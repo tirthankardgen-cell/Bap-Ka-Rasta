@@ -176,7 +176,7 @@ test("mobile: simultaneous steering and throttle, pointer release, resize", asyn
 }) => {
   test.setTimeout(150_000);
   const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
+    viewport: { width: 844, height: 390 },
     hasTouch: true,
     isMobile: true,
   });
@@ -218,7 +218,7 @@ test("mobile: simultaneous steering and throttle, pointer release, resize", asyn
   await page
     .getByRole("button", { name: "Reset vehicle", exact: true })
     .click();
-  await page.setViewportSize({ width: 844, height: 390 });
+  await page.setViewportSize({ width: 915, height: 412 });
   await expect(
     page.getByRole("button", { name: "Accelerate", exact: true }),
   ).toBeVisible();

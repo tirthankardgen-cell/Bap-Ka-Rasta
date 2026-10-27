@@ -26,6 +26,7 @@ Use the current implementation guides for setup and behavior. The original desig
 | --- | --- |
 | [Game design and architecture](Bap-ka-Rasta-Game-Plan.md) | Original product specification and proposed implementation |
 | [Mumbai characters and voices](mumbai-characters/README.md) | Planned 20-character cast, varied neighbourhood crowds, driver entry storyboard and 56-line recording sheet |
+| [BR brand kit](branding/README.md) | Canonical BR mark, icons, social covers, site metadata and branded geographic map |
 | [Vehicle carousel reference](../output/design/vehicle-circular-gallery-prompt.md) | Supplied design brief for the implemented oval vehicle chooser |
 | [Visual storyboards](storyboard/README.md) | City, character, vehicle, and player-journey concept art |
 | [Mumbai map reference](research/mumbai/README.md) | Geographic context and municipal-data attribution |

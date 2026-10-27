@@ -10,9 +10,13 @@ Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the 
 
 [Play the live demo](https://bap-ka-rasta.vercel.app) · [Browse the documentation](docs/README.md) · [Contribute](CONTRIBUTING.md) · [Get support](SUPPORT.md)
 
-![Bap ka Rasta concept artwork: an auto rickshaw and its driver on Mumbai's seafront](public/images/landing-hero.webp)
+![BR — Bap Ka Rasta: Apna sheher. Apni sawaari. Mumbai auto rickshaw browser game](public/brand/readme-cover.png)
 
-*Original generated promotional artwork used on the landing page. Gameplay uses procedural 3D geometry.*
+*The BR brand cover uses the original generated landing artwork. Gameplay uses procedural 3D geometry.*
+
+[![Mumbai's actual municipal ward boundaries in the BR brand colours](docs/research/mumbai/br-mumbai-map.png)](docs/research/mumbai/br-mumbai-map.svg)
+
+*Real geographic reference: 24 Mumbai municipal ward boundaries from DataMeet, CC BY-SA 2.5 India. This source snapshot is not the fictional playable road network or a current navigation map. [Map sources](docs/research/mumbai/README.md) · [Brand assets and covers](docs/branding/README.md).*
 
 [Quick start](#quick-start) · [How to play](#how-to-play) · [Development](#development) · [Project structure](#project-structure) · [Deployment](#deployment) · [Documentation](#documentation) · [Credits and licensing](#credits-and-licensing)
 
@@ -33,6 +37,7 @@ The current build includes:
 - **Street activity:** 112 moving traffic vehicles and 939 crowd actors, including 19 named locals, with walking, browsing, chatting, working and crossing activity. Twenty character designs include the player driver.
 - **Arcade driving:** acceleration, steering, braking, delayed reverse, vehicle and roadside collisions, and safe vehicle reset. The auto reaches approximately 65 km/h.
 - **Driver opening:** a skippable, subtitled walk to the auto, cabin entry and camera handoff, with reduced-motion support. Character voice recordings can be linked later.
+- **Landscape mobile gameplay:** phones must be sideways to start. Rotating upright pauses the intro/drive and clears held controls; rotate back and explicitly resume. Home and selection screens remain usable in portrait.
 - **Desktop and touch controls:** simultaneous steering and acceleration, responsive galleries, three camera views (third person, behind driver and driver eye), and a HUD with speed, street names, and signal warnings.
 - **Recorded street audio:** an engine loop, horn, traffic, and market ambience, with driving-sensitive engine sound and nearby activity mixing.
 - **Session controls:** pause/resume, sound toggle, Standard/Low graphics, automatic pause on focus loss, and a retry screen for graphics context loss.

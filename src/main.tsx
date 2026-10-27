@@ -66,7 +66,13 @@ function App() {
         />
         <div className="hero-shade" />
         <a className="brand" href="/" aria-label="Bap ka Rasta home">
-          <span className="brand-mark">BR</span>
+          <img
+            className="brand-mark"
+            src="/brand/br-mark.svg"
+            alt=""
+            width="42"
+            height="42"
+          />
           <span>
             BAP KA
             <br />

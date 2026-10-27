@@ -51,7 +51,7 @@ test("mobile reduced-motion intro can skip directly to a stationary drive", asyn
   page,
 }) => {
   test.setTimeout(120_000);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 844, height: 390 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();

@@ -1,3 +1,4 @@
+import LandscapeNotice, { PORTRAIT_GAME_QUERY } from "./LandscapeNotice";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -49,6 +50,9 @@ export default function Game({ onExit }: { onExit: () => void }) {
     [sound, setSound] = useState(true),
     [low, setLow] = useState(false),
     [hornActive, setHornActive] = useState(false);
+  const [needsLandscape, setNeedsLandscape] = useState(
+    () => window.matchMedia(PORTRAIT_GAME_QUERY).matches,
+  );
   const hornTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     let active = true;
@@ -84,8 +88,22 @@ export default function Game({ onExit }: { onExit: () => void }) {
       if (hornTimer.current) clearTimeout(hornTimer.current);
     };
   }, [session]);
+  useEffect(() => {
+    const query = window.matchMedia(PORTRAIT_GAME_QUERY);
+    function updateOrientation() {
+      setNeedsLandscape(query.matches);
+      if (query.matches) {
+        engine.current?.setPaused(true);
+        setStatus((previous) => (previous === "driving" ? "paused" : previous));
+      }
+    }
+    updateOrientation();
+    query.addEventListener("change", updateOrientation);
+    return () => query.removeEventListener("change", updateOrientation);
+  }, [session]);
   const introducing = status === "driving" && stats.introStage !== "done";
   function start(skip = false) {
+    if (window.matchMedia(PORTRAIT_GAME_QUERY).matches) return;
     if (status === "ready") {
       if (skip) engine.current?.skipIntro();
       else engine.current?.beginIntro();
@@ -149,288 +167,300 @@ export default function Game({ onExit }: { onExit: () => void }) {
     );
   }
   return (
-    <main
-      className="game"
-      aria-label="Mumbai auto rickshaw game"
-      data-status={status}
-      data-stage={stats.introStage}
-      data-distance={stats.distance.toFixed(2)}
-      data-speed={stats.speed.toFixed(2)}
-      data-position={`${stats.x.toFixed(2)},${stats.z.toFixed(2)}`}
-    >
-      <div className="game-canvas" ref={host} />
-      <header className="game-top">
-        <div className="location-pill">
-          <span className="live-dot" /> MUMBAI{" "}
-          <small>{stats.street.toUpperCase()}</small>
-        </div>
-        <div className="game-actions">
-          <button
-            onClick={() => engine.current?.cycleCamera()}
-            aria-label="Change camera view"
-            disabled={introducing}
-            title={
-              {
-                "third-person": "Bahar se",
-                "behind-driver": "Driver ke peeche",
-                driver: "Driver ki nazar",
-              }[stats.cameraMode]
-            }
+    <>
+      <main
+        className="game"
+        inert={needsLandscape}
+        aria-hidden={needsLandscape}
+        aria-label="Mumbai auto rickshaw game"
+        data-status={status}
+        data-stage={stats.introStage}
+        data-distance={stats.distance.toFixed(2)}
+        data-speed={stats.speed.toFixed(2)}
+        data-position={`${stats.x.toFixed(2)},${stats.z.toFixed(2)}`}
+      >
+        <div className="game-canvas" ref={host} />
+        <header className="game-top">
+          <div className="location-pill">
+            <span className="live-dot" /> MUMBAI{" "}
+            <small>{stats.street.toUpperCase()}</small>
+          </div>
+          <div className="game-actions">
+            <button
+              onClick={() => engine.current?.cycleCamera()}
+              aria-label="Change camera view"
+              disabled={introducing}
+              title={
+                {
+                  "third-person": "Bahar se",
+                  "behind-driver": "Driver ke peeche",
+                  driver: "Driver ki nazar",
+                }[stats.cameraMode]
+              }
+            >
+              <Camera size={20} />
+              <span style={{ fontSize: 10 }}>
+                {stats.cameraMode === "third-person"
+                  ? "3P"
+                  : stats.cameraMode === "behind-driver"
+                    ? "BACK"
+                    : "1P"}
+              </span>
+            </button>
+            <button
+              onClick={toggleSound}
+              aria-label={sound ? "Mute sound" : "Enable sound"}
+              aria-pressed={sound}
+            >
+              {sound ? <Volume2 size={20} /> : <VolumeX size={20} />}
+            </button>
+            <button
+              onClick={pause}
+              aria-label="Pause drive"
+              disabled={status !== "driving"}
+            >
+              <Pause size={21} />
+            </button>
+          </div>
+        </header>
+        {!introducing && (
+          <div className="speedometer">
+            <strong>{Math.round(Math.abs(stats.speed))}</strong>
+            <span>KM/H {stats.speed < -0.1 ? "· R" : ""}</span>
+          </div>
+        )}
+        {introducing && (
+          <div className="intro-story">
+            <span className="intro-chapter">APNI SHIFT, APNA SHEHER</span>
+            <h2>
+              {stats.introStage === "approach"
+                ? "Subah ki chai. Phir Mumbai."
+                : stats.introStage === "entering"
+                  ? "Chalo, auto mein baitho."
+                  : "Meter down. Mumbai, ready?"}
+            </h2>
+            <button
+              onClick={() => engine.current?.skipIntro()}
+              aria-label="Skip intro"
+            >
+              Seedha drive <ArrowRight size={18} />
+            </button>
+          </div>
+        )}
+        {status === "driving" && stats.subtitle && (
+          <div
+            className="character-subtitle"
+            aria-live="polite"
+            data-clip-id={stats.clipId}
           >
-            <Camera size={20} />
-            <span style={{ fontSize: 10 }}>
-              {stats.cameraMode === "third-person"
-                ? "3P"
-                : stats.cameraMode === "behind-driver"
-                  ? "BACK"
-                  : "1P"}
-            </span>
-          </button>
-          <button
-            onClick={toggleSound}
-            aria-label={sound ? "Mute sound" : "Enable sound"}
-            aria-pressed={sound}
-          >
-            {sound ? <Volume2 size={20} /> : <VolumeX size={20} />}
-          </button>
-          <button
-            onClick={pause}
-            aria-label="Pause drive"
-            disabled={status !== "driving"}
-          >
-            <Pause size={21} />
-          </button>
-        </div>
-      </header>
-      {!introducing && (
-        <div className="speedometer">
-          <strong>{Math.round(Math.abs(stats.speed))}</strong>
-          <span>KM/H {stats.speed < -0.1 ? "· R" : ""}</span>
-        </div>
-      )}
-      {introducing && (
-        <div className="intro-story">
-          <span className="intro-chapter">APNI SHIFT, APNA SHEHER</span>
-          <h2>
-            {stats.introStage === "approach"
-              ? "Subah ki chai. Phir Mumbai."
-              : stats.introStage === "entering"
-                ? "Chalo, auto mein baitho."
-                : "Meter down. Mumbai, ready?"}
-          </h2>
-          <button
-            onClick={() => engine.current?.skipIntro()}
-            aria-label="Skip intro"
-          >
-            Seedha drive <ArrowRight size={18} />
-          </button>
-        </div>
-      )}
-      {status === "driving" && stats.subtitle && (
+            <strong>{stats.speaker}</strong>
+            <span>{stats.subtitle}</span>
+            {stats.meaning && <small>{stats.meaning}</small>}
+          </div>
+        )}
         <div
-          className="character-subtitle"
-          aria-live="polite"
-          data-clip-id={stats.clipId}
-        >
-          <strong>{stats.speaker}</strong>
-          <span>{stats.subtitle}</span>
-          {stats.meaning && <small>{stats.meaning}</small>}
-        </div>
-      )}
-      <div
-        className="intro-fade"
-        style={{ opacity: introducing ? stats.introFade : 0 }}
-      />
-      {status === "driving" && !introducing && (
-        <>
-          <div className="driving-message" aria-live="polite">
-            {sound && stats.audioStatus === "loading"
-              ? "Mumbai ka soundcheck chal raha hai…"
-              : sound && stats.audioStatus === "unavailable"
-                ? "Sound ne nakhra kiya. Off-on karke dekho."
-                : stats.impact
-                  ? "Arre bhidu, thoda aaram se!"
-                  : hornActive
-                    ? "Horn OK please, bhidu!"
-                    : stats.signal === "red"
-                      ? "Laal batti, bhidu! Crossing se pehle ruk."
-                      : stats.signal === "amber"
-                        ? "Peeli batti! Hero, zara slow ho ja."
-                        : stats.signal === "pedestrian"
-                          ? "Public cross kar rahi hai, pehle unko jaane de."
-                          : ""}
-          </div>
-          <div className="keyboard-hint">
-            WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE{" "}
-            <i>·</i> C CAMERA
-          </div>
-          <div className="drive-buttons">
-            <div className="steering">
-              {pedal("left", "Steer left", <ArrowLeft />)}
-              {pedal("right", "Steer right", <ArrowRight />)}
+          className="intro-fade"
+          style={{ opacity: introducing ? stats.introFade : 0 }}
+        />
+        {status === "driving" && !introducing && (
+          <>
+            <div className="driving-message" aria-live="polite">
+              {sound && stats.audioStatus === "loading"
+                ? "Mumbai ka soundcheck chal raha hai…"
+                : sound && stats.audioStatus === "unavailable"
+                  ? "Sound ne nakhra kiya. Off-on karke dekho."
+                  : stats.impact
+                    ? "Arre bhidu, thoda aaram se!"
+                    : hornActive
+                      ? "Horn OK please, bhidu!"
+                      : stats.signal === "red"
+                        ? "Laal batti, bhidu! Crossing se pehle ruk."
+                        : stats.signal === "amber"
+                          ? "Peeli batti! Hero, zara slow ho ja."
+                          : stats.signal === "pedestrian"
+                            ? "Public cross kar rahi hai, pehle unko jaane de."
+                            : ""}
             </div>
-            <div className="utility">
-              <button onClick={horn} aria-label="Horn">
-                <Megaphone />
-              </button>
-              <button
-                onClick={() => engine.current?.reset()}
-                aria-label="Reset vehicle"
-              >
-                <RotateCcw />
-              </button>
+            <div className="keyboard-hint">
+              WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE{" "}
+              <i>·</i> C CAMERA
             </div>
-            <div className="pedals">
-              {pedal("brake", "Brake / reverse", <ArrowDown />)}
-              {pedal("throttle", "Accelerate", <ArrowUp />)}
+            <div className="drive-buttons">
+              <div className="steering">
+                {pedal("left", "Steer left", <ArrowLeft />)}
+                {pedal("right", "Steer right", <ArrowRight />)}
+              </div>
+              <div className="utility">
+                <button onClick={horn} aria-label="Horn">
+                  <Megaphone />
+                </button>
+                <button
+                  onClick={() => engine.current?.reset()}
+                  aria-label="Reset vehicle"
+                >
+                  <RotateCcw />
+                </button>
+              </div>
+              <div className="pedals">
+                {pedal("brake", "Brake / reverse", <ArrowDown />)}
+                {pedal("throttle", "Accelerate", <ArrowUp />)}
+              </div>
             </div>
-          </div>
-        </>
-      )}
-      {(status !== "driving" || error) && (
-        <div className="game-overlay">
-          <section className="drive-panel" aria-labelledby="drive-panel-title">
-            {error ? (
-              <>
-                <span className="panel-kicker">
-                  PICTURE ABHI BAAKI HAI, BHIDU
-                </span>
-                <h1 id="drive-panel-title">Arre, chhota sa panga!</h1>
-                <p>{error}</p>
-                <button
-                  className="game-primary"
-                  onClick={restart}
-                  aria-label="Retry drive"
-                >
-                  Phir try karein <RotateCcw size={18} />
-                </button>
-                <button
-                  className="game-secondary"
-                  onClick={exit}
-                  aria-label="Back to home"
-                >
-                  Ghar chalo
-                </button>
-              </>
-            ) : status === "ready" ? (
-              <>
-                <span className="panel-kicker">
-                  MUMBAI · APNA SHEHER, APNI RIDE
-                </span>
-                <h1 id="drive-panel-title">
-                  Meter down.
-                  <br />
-                  <em>Tension down.</em>
-                </h1>
-                <p>
-                  Raju Kaka stand pe hain, Meera Tai ki chai ready hai. Apne
-                  auto mein baitho, galiyon mein ghoom, signal pe ruk, phir
-                  samundar ki hawa kha. Na race, na deadline — bas apni ride.
-                </p>
-                <div className="ride-spec">
-                  <span>AUTO RICKSHAW</span>
-                  <span>65 KM/H</span>
-                  <span>BINDASS GHUMO</span>
-                </div>
-                <div className="control-guide">
-                  <div>
-                    <strong>Keyboard</strong>
-                    <span>
-                      WASD / arrows se chalao · Space se brake
-                      <br />H horn · R reset · Esc pause · C se nazar badlo
-                    </span>
-                  </div>
-                  <div>
-                    <strong>Phone / tablet</strong>
-                    <span>
-                      Steering aur pedal daba ke rakho.
-                      <br />
-                      Reverse ke liye ruk ke brake dabaao.
-                    </span>
-                  </div>
-                </div>
-                <button
-                  className="game-primary"
-                  disabled={!loaded}
-                  onClick={() => start()}
-                >
-                  {loaded ? "Chal Chala" : "Rasta taiyaar ho raha hai…"}{" "}
-                  <ArrowRight size={20} />
-                </button>
-                <button
-                  className="game-secondary"
-                  disabled={!loaded}
-                  onClick={() => start(true)}
-                  aria-label="Drive without intro"
-                >
-                  Seedha drive · intro baad mein
-                </button>
-                <button
-                  className="game-secondary"
-                  onClick={exit}
-                  aria-label="Back to home"
-                >
-                  Ghar chalo
-                </button>
-              </>
-            ) : (
-              <>
-                <span className="panel-kicker">EK CHAI BREAK?</span>
-                <h1 id="drive-panel-title">
-                  Zara chai
-                  <br />
-                  <em>ho jaaye?</em>
-                </h1>
-                <p>Auto side mein hai. Chai pee, phir scene banate hain.</p>
-                <a href="/audio/credits.html" target="_blank" rel="noreferrer">
-                  Sound ke asli kalakaar
-                </a>
-                <button
-                  className="game-primary"
-                  onClick={() => start()}
-                  aria-label="Resume drive"
-                >
-                  <Play size={18} /> Chal, phir niklein
-                </button>
-                <div className="pause-grid">
+          </>
+        )}
+        {(status !== "driving" || error) && (
+          <div className="game-overlay">
+            <section
+              className="drive-panel"
+              aria-labelledby="drive-panel-title"
+            >
+              {error ? (
+                <>
+                  <span className="panel-kicker">
+                    PICTURE ABHI BAAKI HAI, BHIDU
+                  </span>
+                  <h1 id="drive-panel-title">Arre, chhota sa panga!</h1>
+                  <p>{error}</p>
                   <button
-                    aria-label="Reset vehicle"
-                    onClick={() => {
-                      engine.current?.reset();
-                      start();
-                    }}
+                    className="game-primary"
+                    onClick={restart}
+                    aria-label="Retry drive"
                   >
-                    <RotateCcw size={18} /> Auto seedha karo
-                  </button>
-                  <button onClick={toggleSound}>
-                    {sound ? <Volume2 size={18} /> : <VolumeX size={18} />}Sound{" "}
-                    {sound ? "on" : "off"}
+                    Phir try karein <RotateCcw size={18} />
                   </button>
                   <button
-                    onClick={() => {
-                      setLow(!low);
-                      engine.current?.quality(!low);
-                    }}
+                    className="game-secondary"
+                    onClick={exit}
+                    aria-label="Back to home"
                   >
-                    <Gauge size={18} />
-                    {low ? "Low" : "Standard"} graphics
+                    Ghar chalo
                   </button>
-                  <button onClick={exit} aria-label="End drive">
-                    <Home size={18} /> Aaj ka ho gaya
+                </>
+              ) : status === "ready" ? (
+                <>
+                  <span className="panel-kicker">
+                    MUMBAI · APNA SHEHER, APNI RIDE
+                  </span>
+                  <h1 id="drive-panel-title">
+                    Meter down.
+                    <br />
+                    <em>Tension down.</em>
+                  </h1>
+                  <p>
+                    Raju Kaka stand pe hain, Meera Tai ki chai ready hai. Apne
+                    auto mein baitho, galiyon mein ghoom, signal pe ruk, phir
+                    samundar ki hawa kha. Na race, na deadline — bas apni ride.
+                  </p>
+                  <div className="ride-spec">
+                    <span>AUTO RICKSHAW</span>
+                    <span>65 KM/H</span>
+                    <span>BINDASS GHUMO</span>
+                  </div>
+                  <div className="control-guide">
+                    <div>
+                      <strong>Keyboard</strong>
+                      <span>
+                        WASD / arrows se chalao · Space se brake
+                        <br />H horn · R reset · Esc pause · C se nazar badlo
+                      </span>
+                    </div>
+                    <div>
+                      <strong>Phone / tablet</strong>
+                      <span>
+                        Steering aur pedal daba ke rakho.
+                        <br />
+                        Reverse ke liye ruk ke brake dabaao.
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    className="game-primary"
+                    disabled={!loaded}
+                    onClick={() => start()}
+                  >
+                    {loaded ? "Chal Chala" : "Rasta taiyaar ho raha hai…"}{" "}
+                    <ArrowRight size={20} />
                   </button>
-                </div>
-                <button
-                  className="game-secondary"
-                  onClick={exit}
-                  aria-label="Back to home"
-                >
-                  <Home size={16} /> Ghar chalo
-                </button>
-              </>
-            )}
-          </section>
-        </div>
-      )}
-    </main>
+                  <button
+                    className="game-secondary"
+                    disabled={!loaded}
+                    onClick={() => start(true)}
+                    aria-label="Drive without intro"
+                  >
+                    Seedha drive · intro baad mein
+                  </button>
+                  <button
+                    className="game-secondary"
+                    onClick={exit}
+                    aria-label="Back to home"
+                  >
+                    Ghar chalo
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="panel-kicker">EK CHAI BREAK?</span>
+                  <h1 id="drive-panel-title">
+                    Zara chai
+                    <br />
+                    <em>ho jaaye?</em>
+                  </h1>
+                  <p>Auto side mein hai. Chai pee, phir scene banate hain.</p>
+                  <a
+                    href="/audio/credits.html"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Sound ke asli kalakaar
+                  </a>
+                  <button
+                    className="game-primary"
+                    onClick={() => start()}
+                    aria-label="Resume drive"
+                  >
+                    <Play size={18} /> Chal, phir niklein
+                  </button>
+                  <div className="pause-grid">
+                    <button
+                      aria-label="Reset vehicle"
+                      onClick={() => {
+                        engine.current?.reset();
+                        start();
+                      }}
+                    >
+                      <RotateCcw size={18} /> Auto seedha karo
+                    </button>
+                    <button onClick={toggleSound}>
+                      {sound ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                      Sound {sound ? "on" : "off"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLow(!low);
+                        engine.current?.quality(!low);
+                      }}
+                    >
+                      <Gauge size={18} />
+                      {low ? "Low" : "Standard"} graphics
+                    </button>
+                    <button onClick={exit} aria-label="End drive">
+                      <Home size={18} /> Aaj ka ho gaya
+                    </button>
+                  </div>
+                  <button
+                    className="game-secondary"
+                    onClick={exit}
+                    aria-label="Back to home"
+                  >
+                    <Home size={16} /> Ghar chalo
+                  </button>
+                </>
+              )}
+            </section>
+          </div>
+        )}
+      </main>
+      {needsLandscape && <LandscapeNotice onExit={exit} />}
+    </>
   );
 }
