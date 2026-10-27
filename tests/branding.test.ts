@@ -32,9 +32,9 @@ test("social covers and launcher icons have their declared dimensions", () => {
   }
 });
 
-test("landscape manifest references real local icons and matches the brand palette", () => {
+test("orientation-flexible manifest references real local icons and matches the brand palette", () => {
   const manifest = JSON.parse(text("public/site.webmanifest"));
-  assert.equal(manifest.orientation, "landscape");
+  assert.equal(manifest.orientation, "any");
   assert.equal(manifest.short_name, "BR");
   assert.equal(manifest.theme_color, "#ffcc37");
   for (const icon of manifest.icons)

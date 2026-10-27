@@ -7,6 +7,7 @@ import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/dm-sans/latin-800.css";
 import "./style.css";
+import LandscapeStage from "./LandscapeStage";
 import Selection, { cities } from "./selection/Selection";
 
 const Game = lazy(() => import("./game/Game"));
@@ -20,39 +21,43 @@ function App() {
 
   if (screen === "game")
     return (
-      <Suspense
-        fallback={
-          <div className="game-loading">
-            Road taiyaar ho raha hai…
-            <small>Mumbai ki kaali-peeli aa rahi hai, bhidu</small>
-          </div>
-        }
-      >
-        <Game onExit={() => setScreen("home")} />
-      </Suspense>
+      <LandscapeStage>
+        <Suspense
+          fallback={
+            <div className="game-loading">
+              Road taiyaar ho raha hai…
+              <small>Mumbai ki kaali-peeli aa rahi hai, bhidu</small>
+            </div>
+          }
+        >
+          <Game onExit={() => setScreen("home")} />
+        </Suspense>
+      </LandscapeStage>
     );
 
   if (screen === "city" || screen === "vehicle")
     return (
-      <Selection
-        key={screen}
-        kind={screen}
-        selected={screen === "city" ? selectedCity : selectedVehicle}
-        onSelect={screen === "city" ? setSelectedCity : setSelectedVehicle}
-        city={cities[selectedCity].name}
-        onBack={() => setScreen(screen === "city" ? "home" : "city")}
-        onConfirm={() => {
-          if (screen === "city" && selectedCity === 0) {
-            setSelectedVehicle(0);
-            setScreen("vehicle");
-          } else if (
-            screen === "vehicle" &&
-            selectedCity === 0 &&
-            selectedVehicle === 0
-          )
-            setScreen("game");
-        }}
-      />
+      <LandscapeStage>
+        <Selection
+          key={screen}
+          kind={screen}
+          selected={screen === "city" ? selectedCity : selectedVehicle}
+          onSelect={screen === "city" ? setSelectedCity : setSelectedVehicle}
+          city={cities[selectedCity].name}
+          onBack={() => setScreen(screen === "city" ? "home" : "city")}
+          onConfirm={() => {
+            if (screen === "city" && selectedCity === 0) {
+              setSelectedVehicle(0);
+              setScreen("vehicle");
+            } else if (
+              screen === "vehicle" &&
+              selectedCity === 0 &&
+              selectedVehicle === 0
+            )
+              setScreen("game");
+          }}
+        />
+      </LandscapeStage>
     );
 
   return (

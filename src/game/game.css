@@ -1,5 +1,5 @@
 .game {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: #bfd6d3;
   color: #26372e;
@@ -28,7 +28,7 @@
   position: absolute;
   left: 25px;
   right: 25px;
-  top: max(20px, env(safe-area-inset-top));
+  top: max(20px, var(--play-safe-top, 0px));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -101,7 +101,7 @@
 }
 .drive-buttons {
   position: absolute;
-  bottom: max(25px, env(safe-area-inset-bottom));
+  bottom: max(25px, var(--play-safe-bottom, 0px));
   left: 25px;
   right: 25px;
   display: flex;
@@ -204,7 +204,7 @@
 }
 .drive-panel {
   width: min(480px, 100%);
-  max-height: calc(100dvh - 40px);
+  max-height: calc(100cqh - 40px);
   overflow-y: auto;
   border-radius: 15px;
   background: #faf8f0;
@@ -327,7 +327,7 @@
   margin-top: 10px;
 }
 .game-loading {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: grid;
   place-content: center;
@@ -339,11 +339,11 @@
 .game-loading small {
   font-weight: 400;
 }
-@media (max-width: 700px) {
+@container playfield (max-width: 700px) {
   .game-top {
     left: 14px;
     right: 14px;
-    top: max(14px, env(safe-area-inset-top));
+    top: max(14px, var(--play-safe-top, 0px));
   }
   .location-pill {
     font-size: 11px;
@@ -372,7 +372,7 @@
   .drive-buttons {
     left: 14px;
     right: 14px;
-    bottom: max(25px, env(safe-area-inset-bottom));
+    bottom: max(25px, var(--play-safe-bottom, 0px));
     gap: 10px;
   }
   .steering,
@@ -434,10 +434,10 @@
     padding: 14px;
   }
   .drive-panel {
-    max-height: calc(100dvh - 28px);
+    max-height: calc(100cqh - 28px);
   }
 }
-@media (max-height: 500px) {
+@container playfield (max-height: 500px) {
   .speedometer {
     top: 78px;
   }
@@ -482,20 +482,20 @@
   border-radius: 5px;
   padding: 6px 10px;
   text-shadow: none;
-  max-width: 70vw;
+  max-width: 70cqw;
   text-align: center;
   white-space: normal;
 }
 .driving-message:empty {
   display: none;
 }
-@media (max-width: 700px) {
+@container playfield (max-width: 700px) {
   .driving-message {
     font-size: 10px;
     top: 32%;
   }
 }
-@media (max-height: 500px) {
+@container playfield (max-height: 500px) {
   .driving-message {
     top: 24%;
     font-size: 10px;
@@ -503,9 +503,9 @@
 }
 .intro-story {
   position: absolute;
-  left: max(24px, env(safe-area-inset-left));
+  left: max(24px, var(--play-safe-left, 0px));
   top: 27%;
-  max-width: min(470px, 80vw);
+  max-width: min(470px, 80cqw);
   color: #fff9e5;
   text-shadow: 0 2px 12px #1d302b;
 }
@@ -516,7 +516,7 @@
 }
 .intro-story h2 {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(28px, 5vw, 54px);
+  font-size: clamp(28px, 5cqw, 54px);
   line-height: 1.05;
   margin: 12px 0 20px;
 }
@@ -538,7 +538,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
-  max-width: min(560px, 88vw);
+  max-width: min(560px, 88cqw);
   display: grid;
   gap: 5px;
   padding: 12px 18px;
@@ -565,7 +565,7 @@
   pointer-events: none;
   transition: opacity 80ms linear;
 }
-@media (max-width: 700px) {
+@container playfield (max-width: 700px) {
   .intro-story {
     top: 24%;
   }
@@ -574,103 +574,109 @@
     font-size: 12px;
   }
 }
-@media (max-height: 500px) {
+@container playfield (max-height: 500px) {
   .intro-story {
     top: 24%;
-    max-width: 42vw;
+    max-width: 42cqw;
   }
   .character-subtitle {
     left: auto;
     right: 18px;
     transform: none;
     bottom: 24px;
-    max-width: 45vw;
+    max-width: 45cqw;
   }
 }
-.landscape-notice {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 24px;
-  background: #faf8f0;
-  color: #23281f;
-  text-align: center;
-  overflow: auto;
-  font-family: "DM Sans", sans-serif;
-}
-.landscape-notice > img {
-  flex-shrink: 0;
-}
-.landscape-kicker {
-  font-size: 9px;
-  letter-spacing: 1.6px;
-  font-weight: 800;
-  margin: 22px 0 30px;
-}
-.rotate-phone {
-  width: 105px;
-  height: 62px;
-  border: 3px solid #23281f;
-  border-radius: 12px;
-  background: #ffcc37;
-  display: grid;
-  place-items: center;
-  box-shadow: 4px 4px 0 #23281f;
-  transform: rotate(-8deg);
-}
-.landscape-notice h1 {
-  font:
-    800 clamp(42px, 11vw, 62px) / 0.95 "Barlow Condensed",
-    sans-serif;
-  margin: 30px 0 16px;
-}
-.landscape-notice h1 em {
-  font-style: normal;
-  color: #9d701c;
-}
-.landscape-notice p {
-  font-size: 13px;
-  line-height: 1.8;
-  margin: 0;
-  max-width: 310px;
-}
-.landscape-notice small {
-  font-size: 10px;
-  color: #687963;
-  margin-top: 14px;
-}
-.landscape-notice button {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 44px;
-  margin-top: 26px;
-  border: 1px solid #23281f;
-  border-radius: 24px;
-  background: #ffcc37;
-  padding: 12px 24px;
-  color: #23281f;
-  font:
-    600 13px "DM Sans",
-    sans-serif;
-}
-@media (max-height: 600px) {
-  .landscape-notice {
-    padding: 18px;
+@container playfield (max-height: 500px) and (min-width: 500px) {
+  .game-top {
+    left: max(14px, var(--play-safe-left, 0px));
+    right: max(14px, var(--play-safe-right, 0px));
+    top: 10px;
   }
-  .landscape-notice > img {
-    width: 50px;
-    height: 50px;
+  .location-pill {
+    padding: 8px 12px;
+    font-size: 11px;
   }
-  .landscape-kicker {
-    margin: 15px 0 20px;
-    font-size: 8px;
+  .game-actions button,
+  .utility button {
+    width: 44px;
+    height: 44px;
   }
-  .landscape-notice h1 {
-    margin: 23px 0 13px;
+  .speedometer {
+    left: 14px;
+    top: 72px;
+    min-width: 72px;
+    padding: 8px 12px;
+  }
+  .speedometer > strong {
+    font-size: 34px;
+  }
+  .drive-buttons {
+    left: max(14px, var(--play-safe-left, 0px));
+    right: max(14px, var(--play-safe-right, 0px));
+    bottom: max(12px, var(--play-safe-bottom, 0px));
+  }
+  .drive-control {
+    min-width: 64px;
+    height: 58px;
+  }
+  .drive-control.throttle {
+    min-width: 70px;
+    height: 68px;
+  }
+  .utility {
+    margin-bottom: 0;
+  }
+  .drive-panel {
+    max-height: calc(100cqh - 20px);
+    padding: 16px 22px;
+  }
+  .drive-panel h1 {
+    font-size: 34px;
+  }
+  .drive-panel .control-guide {
+    margin: 8px 0;
+  }
+}
+@media (any-pointer: coarse) {
+  .keyboard-hint {
+    display: none;
+  }
+}
+@media (any-pointer: coarse) {
+  .control-guide > div:first-child {
+    display: none;
+  }
+}
+@container playfield (max-height: 500px) and (min-width: 500px) {
+  .drive-panel h1 {
+    font-size: 30px;
+    margin: 8px 0;
+  }
+  .drive-panel p {
+    font-size: 11px;
+    line-height: 1.4;
+    margin: 6px 0 8px;
+  }
+  .game[data-status="ready"] .ride-spec,
+  .game[data-status="ready"] .control-guide {
+    display: none;
+  }
+  .game-primary {
+    min-height: 44px;
+    padding: 8px 14px;
+  }
+  .game-secondary {
+    min-height: 44px;
+    margin-top: 4px;
+    padding: 6px;
+  }
+  .pause-grid {
+    margin-top: 8px;
+    gap: 6px;
+  }
+  .pause-grid button {
+    min-height: 44px;
+    padding: 8px;
   }
 }

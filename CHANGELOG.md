@@ -11,7 +11,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 - Consistent outlined BR identity, SVG/ICO favicons, Apple/app/maskable icons, social and README covers, Open Graph/X metadata, structured data, web manifest, robots and sitemap.
 - Branded playable Mumbai map generated from the game road network and boundary buildings.
-- Landscape-only gameplay on touch phones: portrait blocks start, pauses the intro/drive and clears controls; resume remains explicit after rotation.
+- Automatic landscape canvas from city selection through driving on phones, with adapted swipes and compact touch layouts; no rotate-phone prompt.
+- Palm trees limited to the western beach promenade.
 
 - Playable driver POV opening: walk from the pavement, enter the kerbside auto, see the handlebar view and transition to driving; skip, pause/resume and reduced-motion support included.
 - Twenty procedural Mumbai character designs, 19 unique named locals and 939 total crowd actors with six district mixes, props, outfit variations, chatting/browsing/work activity and nearby text greetings. No character voice audio is loaded until recordings are supplied.

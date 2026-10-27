@@ -672,7 +672,8 @@ export function makeWorld(scene: THREE.Scene) {
         const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 3.3));
         add("cylinder", "#3f5551", p.x, 3.2, p.z, 0.09, 6.4, 0.09);
         box("#f6e5b0", p.x, 6.5, p.z, 0.8, 0.23, 0.6, p.yaw);
-        if ((e.id + Math.floor(d)) % 3 === 0 || p.x < -270) {
+        // Palms belong on the western beach promenade, not inland streets.
+        if (p.x < -270) {
           add(
             "cylinder",
             "#887151",

@@ -1,4 +1,3 @@
-import LandscapeNotice, { PORTRAIT_GAME_QUERY } from "./LandscapeNotice";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -50,9 +49,6 @@ export default function Game({ onExit }: { onExit: () => void }) {
     [sound, setSound] = useState(true),
     [low, setLow] = useState(false),
     [hornActive, setHornActive] = useState(false);
-  const [needsLandscape, setNeedsLandscape] = useState(
-    () => window.matchMedia(PORTRAIT_GAME_QUERY).matches,
-  );
   const hornTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     let active = true;
@@ -88,22 +84,8 @@ export default function Game({ onExit }: { onExit: () => void }) {
       if (hornTimer.current) clearTimeout(hornTimer.current);
     };
   }, [session]);
-  useEffect(() => {
-    const query = window.matchMedia(PORTRAIT_GAME_QUERY);
-    function updateOrientation() {
-      setNeedsLandscape(query.matches);
-      if (query.matches) {
-        engine.current?.setPaused(true);
-        setStatus((previous) => (previous === "driving" ? "paused" : previous));
-      }
-    }
-    updateOrientation();
-    query.addEventListener("change", updateOrientation);
-    return () => query.removeEventListener("change", updateOrientation);
-  }, [session]);
   const introducing = status === "driving" && stats.introStage !== "done";
   function start(skip = false) {
-    if (window.matchMedia(PORTRAIT_GAME_QUERY).matches) return;
     if (status === "ready") {
       if (skip) engine.current?.skipIntro();
       else engine.current?.beginIntro();
@@ -170,8 +152,6 @@ export default function Game({ onExit }: { onExit: () => void }) {
     <>
       <main
         className="game"
-        inert={needsLandscape}
-        aria-hidden={needsLandscape}
         aria-label="Mumbai auto rickshaw game"
         data-status={status}
         data-stage={stats.introStage}
@@ -460,7 +440,6 @@ export default function Game({ onExit }: { onExit: () => void }) {
           </div>
         )}
       </main>
-      {needsLandscape && <LandscapeNotice onExit={exit} />}
     </>
   );
 }

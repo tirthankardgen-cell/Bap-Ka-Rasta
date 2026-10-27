@@ -29,7 +29,7 @@ The covers reuse the existing generated landing artwork, composed with the canon
 
 ## Metadata and hosting
 
-`index.html` provides the canonical URL, description, Open Graph tags, X/Twitter large-image tags, image dimensions/alt text, icons and VideoGame structured data. `public/site.webmanifest` defines standalone presentation, app icons and landscape orientation. `robots.txt` and `sitemap.xml` describe the public landing URL. There is no service worker or offline gameplay promise.
+`index.html` provides the canonical URL, description, Open Graph tags, X/Twitter large-image tags, image dimensions/alt text, icons and VideoGame structured data. `public/site.webmanifest` defines standalone presentation, app icons and unrestricted device orientation; the application handles its landscape play canvas. `robots.txt` and `sitemap.xml` describe the public landing URL. There is no service worker or offline gameplay promise.
 
 Canonical production URL: `https://bap-ka-rasta.vercel.app/`. Update the canonical, social tags, structured data, sitemap, robots and artwork URL together if the domain changes. Share platforms cache previews; their crawlers must fetch the deployed assets before a new card appears.
 

@@ -1,5 +1,5 @@
 .selection {
-  height: 100svh;
+  height: 100cqh;
   min-height: 560px;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
@@ -71,7 +71,7 @@
   font-weight: 800;
 }
 .selection-heading h1 {
-  font-size: clamp(36px, 5.5vh, 58px);
+  font-size: clamp(36px, 5.5cqh, 58px);
   font-family: "Barlow Condensed", sans-serif;
   margin: 8px 0 0;
   letter-spacing: -0.5px;
@@ -97,7 +97,7 @@
   width: 84%;
   margin: 0 auto;
   overflow: hidden;
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   min-height: 0;
@@ -184,7 +184,7 @@
 }
 .gallery-copy h2 {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(43px, 5.6vw, 82px);
+  font-size: clamp(43px, 5.6cqw, 82px);
   font-weight: 800;
   margin: 8px 0 18px;
   letter-spacing: -1.5px;
@@ -326,7 +326,7 @@
   white-space: nowrap;
   border: 0;
 }
-@media (max-width: 700px) {
+@container playfield (max-width: 700px) {
   .selection-header {
     padding: 13px 5%;
     gap: 10px;
@@ -407,7 +407,7 @@
     letter-spacing: 0.6px;
   }
   .gallery-copy h2 {
-    font-size: clamp(36px, 10vw, 49px);
+    font-size: clamp(36px, 10cqw, 49px);
     margin: 6px 0 10px;
     letter-spacing: -0.7px;
   }
@@ -481,7 +481,7 @@
     gap: 0;
   }
 }
-@media (max-height: 650px) and (min-width: 701px) {
+@container playfield (max-height: 650px) and (min-width: 701px) {
   .selection {
     min-height: 360px;
   }
@@ -531,7 +531,7 @@
     display: none;
   }
 }
-@media (max-width: 700px) and (max-height: 650px) {
+@container playfield (max-width: 700px) and (max-height: 650px) {
   .selection-heading {
     padding-top: 10px;
   }
@@ -566,7 +566,7 @@
     margin-top: 8px;
   }
 }
-@media (max-width: 700px) and (orientation: landscape) {
+@container playfield (max-width: 700px) and (min-aspect-ratio: 1/1) {
   .selection {
     min-height: 320px;
   }
@@ -625,13 +625,85 @@
   }
 }
 /* Keep intrinsic SVG dimensions from widening the full-screen grid on phones. */
-.selection { grid-template-columns: minmax(0, 1fr); }
-.gallery, .gallery-window, .gallery-art-wrap { min-width: 0; }
-@media (max-height: 450px) and (min-width: 701px) {
-  .gallery-copy p, .gallery-footnote { display: none; }
-  .gallery-copy h2 { font-size: 36px; margin: 5px 0 8px; }
-  .gallery-status { margin-bottom: 7px; padding: 4px 7px; }
-  .gallery-subtitle { font-size: 9px; }
-  .gallery-detail { padding: 6px 0; margin-bottom: 10px; font-size: 7px; }
-  .gallery-confirm { min-height: 38px; padding: 7px 12px; font-size: 12px; }
+.selection {
+  grid-template-columns: minmax(0, 1fr);
+}
+.gallery,
+.gallery-window,
+.gallery-art-wrap {
+  min-width: 0;
+}
+@container playfield (max-height: 450px) and (min-width: 701px) {
+  .gallery-copy p,
+  .gallery-footnote {
+    display: none;
+  }
+  .gallery-copy h2 {
+    font-size: 36px;
+    margin: 5px 0 8px;
+  }
+  .gallery-status {
+    margin-bottom: 7px;
+    padding: 4px 7px;
+  }
+  .gallery-subtitle {
+    font-size: 9px;
+  }
+  .gallery-detail {
+    padding: 6px 0;
+    margin-bottom: 10px;
+    font-size: 7px;
+  }
+  .gallery-confirm {
+    min-height: 38px;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+}
+@container playfield (max-height: 500px) and (min-width: 500px) {
+  .selection-header {
+    min-height: 44px;
+    padding: 4px max(16px, var(--play-safe-left, 0px));
+  }
+  .selection-back {
+    min-height: 44px;
+  }
+  .selection-heading {
+    padding: 3px 8% 0;
+  }
+  .selection-heading h1 {
+    font-size: 28px;
+    margin-top: 3px;
+  }
+  .gallery-copy p,
+  .gallery-footnote,
+  .art-caption {
+    display: none;
+  }
+  .gallery-slide {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    padding: 3px 0;
+  }
+  .gallery-copy h2 {
+    font-size: 32px;
+    margin: 4px 0 7px;
+  }
+  .gallery-status {
+    margin-bottom: 4px;
+  }
+  .gallery-detail {
+    margin-bottom: 7px;
+    padding: 5px 0;
+  }
+  .gallery-confirm {
+    min-height: 44px;
+  }
+  .gallery-arrow {
+    width: 44px;
+    height: 44px;
+  }
+  .gallery-footer {
+    padding: 2px 0;
+  }
 }

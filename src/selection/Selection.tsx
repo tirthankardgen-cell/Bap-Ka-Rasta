@@ -1,3 +1,4 @@
+import { landscapeDelta } from "../LandscapeStage";
 import { useEffect, useRef } from "react";
 import {
   ArrowLeft,
@@ -212,8 +213,11 @@ function ClassicSelection({
             const start = gesture.current;
             gesture.current = null;
             if (!start || start.id !== e.pointerId) return;
-            const dx = e.clientX - start.x,
-              dy = e.clientY - start.y;
+            const { dx, dy } = landscapeDelta(
+              e.currentTarget,
+              e.clientX - start.x,
+              e.clientY - start.y,
+            );
             if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.25)
               move(dx < 0 ? 1 : -1);
           }}

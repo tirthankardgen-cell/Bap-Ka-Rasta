@@ -1,0 +1,37 @@
+.landscape-shell {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #faf8f0;
+}
+.landscape-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  container: playfield / size;
+  --play-safe-left: env(safe-area-inset-left);
+  --play-safe-right: env(safe-area-inset-right);
+  --play-safe-top: env(safe-area-inset-top);
+  --play-safe-bottom: env(safe-area-inset-bottom);
+}
+@media (any-pointer: coarse) and (orientation: portrait) {
+  .landscape-stage {
+    inset: auto;
+    top: 0;
+    left: 0;
+    width: 100dvh;
+    height: 100dvw;
+    --play-safe-left: env(safe-area-inset-top);
+    --play-safe-right: env(safe-area-inset-bottom);
+    --play-safe-top: env(safe-area-inset-right);
+    --play-safe-bottom: env(safe-area-inset-left);
+    transform-origin: 0 0;
+    transform: translateX(100dvw) rotate(90deg);
+  }
+}
+.landscape-stage > .selection,
+.landscape-stage > .ride-selection {
+  height: 100%;
+  min-height: 0;
+}
