@@ -83,7 +83,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Twenty-seven branding/character/intro/camera/simulation/layout checks cover icon and cover dimensions, the shared BR master, map source integrity, unique cast placement, deterministic neighbourhood variety, off-road pedestrian routes, intro stages/pause/reduced motion, cabin cameras staying attached at speed and through turns/reverse, third-person camera smoothing and reset, continuous right-angle pavement corners without asphalt notches, raised pavements staying outside drivable roads, graph connectivity, multiple lanes, the roundabout, braking/reverse, steering, barriers, vehicle contacts, safe resets, non-conflicting signals, red-light stops and green releases, pedestrian phases/continuity/yielding, three simulated minutes of dense traffic, and a five-minute drive through multiple streets/districts.
+Thirty-one road-shape/branding/character/intro/camera/simulation/layout checks cover icon and cover dimensions, the shared BR master, map source integrity, unique cast placement, deterministic neighbourhood variety, off-road pedestrian routes, intro stages/pause/reduced motion, cabin cameras staying attached at speed and through turns/reverse, third-person camera smoothing and reset, continuous right-angle pavement corners without asphalt notches, raised pavements staying outside drivable roads, graph connectivity, multiple lanes, the roundabout, braking/reverse, steering, barriers, vehicle contacts, safe resets, non-conflicting signals, red-light stops and green releases, pedestrian phases/continuity/yielding, three simulated minutes of dense traffic, and a five-minute drive through multiple streets/districts.
 
 Production-browser checks cover public branding metadata, the portrait touch-screen gate and explicit resume after rotation, the opening, its pause/resume and mobile skip flow, absence of unprovided voice requests, selection galleries, driving, steering, pause/focus loss, reset, recorded-audio decoding, mute/pause/exit audio-context lifecycle, sound/horn controls, exit/fresh drives, multi-touch controls, orientation changes, three camera modes via button/keyboard, absence of map/objectives, dense traffic presence and renderer console errors and WebGL context-loss recovery. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select an already installed browser.
 
@@ -92,3 +92,9 @@ Validation here used Chromium with software WebGL and simulated touch input. The
 ## Vercel
 
 Build `npm run build`; publish `dist`. The existing deployment configuration applies. No new environment variables are needed.
+
+## Road layout and game map
+
+Marine Drive and Harbour Avenue remain wide main roads. Station Road, Colaba Causeway, Maidan Avenue and Colaba Market Road are two-way, two-lane side corridors throughout. Bazaar Galli, Chawl Lane and Dukaan Lane have gentle bends. Fort Circle follows a circular centreline; traffic, asphalt and collision queries use the same sampled paths. The three inland edges have continuous mixed-use building frontages and pavements; the western seafront retains its seawall. Road-end warning boards have been removed.
+
+The [playable map](maps/mumbai-game-map.svg) is generated from `network.ts` and `boundaries.ts`; it is the authored game environment, not a municipal map.

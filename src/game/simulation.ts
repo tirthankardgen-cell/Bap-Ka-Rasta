@@ -153,8 +153,14 @@ function planTurn(t: Traffic): Turn {
     handle = Math.min(20, margin(g.length), margin(ng.length));
   const points = [
     p0,
-    { x: p0.x + g.dx * handle, z: p0.z + g.dz * handle },
-    { x: p3.x - ng.dx * handle, z: p3.z - ng.dz * handle },
+    {
+      x: p0.x + Math.sin(p0.yaw) * handle,
+      z: p0.z + Math.cos(p0.yaw) * handle,
+    },
+    {
+      x: p3.x - Math.sin(p3.yaw) * handle,
+      z: p3.z - Math.cos(p3.yaw) * handle,
+    },
     p3,
   ];
   // Turn through the junction centre instead of clipping the raised corners,

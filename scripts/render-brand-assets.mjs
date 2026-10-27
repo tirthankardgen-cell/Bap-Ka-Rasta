@@ -91,12 +91,5 @@ faviconParts.forEach((png, i) => {
   offset += png.length;
 });
 await writeFile("public/favicon.ico", Buffer.concat([ico, ...faviconParts]));
-const map = await readFile("docs/research/mumbai/br-mumbai-map.svg", "utf8");
-await render(
-  `<style>${fonts}svg{display:block;width:1600px;height:1400px}</style>${map}`,
-  1600,
-  1400,
-  "docs/research/mumbai/br-mumbai-map.png",
-);
 await browser.close();
-console.log("Rendered social covers, README cover, app icons and Mumbai map.");
+console.log("Rendered social covers, README cover, app icons.");

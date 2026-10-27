@@ -15,9 +15,9 @@ The landing page's tilted **BR inside a yellow circle** is the canonical identit
 | Apple home-screen icon | [apple-touch-icon.png](../../public/brand/apple-touch-icon.png) | 180 × 180 |
 | App icons | [192 px](../../public/brand/icon-192.png), [512 px](../../public/brand/icon-512.png) | 192 / 512 px |
 | Maskable app icon | [maskable-512.png](../../public/brand/maskable-512.png) | 512 px, mark inside safe area |
-| Real Mumbai reference | [PNG](../research/mumbai/br-mumbai-map.png), [SVG](../research/mumbai/br-mumbai-map.svg) | 1600 × 1400 |
+| Playable Mumbai map | [PNG](../maps/mumbai-game-map.png), [SVG](../maps/mumbai-game-map.svg) | 1600 × 1600 |
 
-The covers reuse the existing generated landing artwork, composed with the canonical vector mark and live project fonts. They are promotional imagery, not gameplay screenshots. The map is coordinate-based cartography, not generated geography.
+The covers reuse the existing generated landing artwork, composed with the canonical vector mark and live project fonts. They are promotional imagery, not gameplay screenshots. The map is generated from the playable road network and boundary building layout.
 
 ## Identity rules
 
@@ -45,8 +45,9 @@ python scripts/build_brand_assets.py
 node scripts/render-brand-assets.mjs
 ```
 
-The Python script reads the locally bundled Barlow font and the checked-in GeoJSON. It creates outlined logo masters and the projected map SVG without a live map service. The Node script uses Playwright to rasterize the vector masters and authored cover layouts; it also packages the multi-size ICO. Original landing artwork is left intact.
+The Python script reads the locally bundled Barlow font. It creates outlined logo masters without a live map service. The Node script uses Playwright to rasterize the vector masters and authored cover layouts; it also packages the multi-size ICO. Original landing artwork is left intact.
 
 ## Attribution
 
-Barlow Condensed and DM Sans use the SIL Open Font License; copies are included in [public/brand](../../public/brand/). The map data and derived branded map are **CC BY-SA 2.5 India**, credited to DataMeet Trust, Pune chapter. See [map source notes](../research/mumbai/README.md) for the pinned source and checksum. This does not change the licensing of the game code or other assets.
+Barlow Condensed and DM Sans use the SIL Open Font License; copies are included in [public/brand](../../public/brand/).
+Rebuild the playable map with `node --experimental-strip-types scripts/build-game-map.mts` and `node scripts/render-game-map.mjs`. The real municipal research map is separate from this game guide.

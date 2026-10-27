@@ -36,3 +36,5 @@ Use the current implementation guides for setup and behavior. The original desig
 | [Game plan PDF](../output/pdf/Bap-ka-Rasta-Game-Plan.pdf) / [HTML](../output/Bap-ka-Rasta-Game-Plan.html) | Generated editions of the original plan |
 
 The optional Python utilities are described in the [README](../README.md#optional-documentation-and-research-tools). Keep generated document editions in sync when changing their Markdown source.
+
+The [Mumbai game map](maps/mumbai-game-map.svg) shows the playable streets, sea edge, start point and boundary buildings.

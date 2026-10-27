@@ -14,9 +14,9 @@ Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the 
 
 *The BR brand cover uses the original generated landing artwork. Gameplay uses procedural 3D geometry.*
 
-[![Mumbai's actual municipal ward boundaries in the BR brand colours](docs/research/mumbai/br-mumbai-map.png)](docs/research/mumbai/br-mumbai-map.svg)
+[![Mumbai playable game map in the BR brand style](docs/maps/mumbai-game-map.png)](docs/maps/mumbai-game-map.svg)
 
-*Real geographic reference: 24 Mumbai municipal ward boundaries from DataMeet, CC BY-SA 2.5 India. This source snapshot is not the fictional playable road network or a current navigation map. [Map sources](docs/research/mumbai/README.md) · [Brand assets and covers](docs/branding/README.md).*
+*The actual playable environment: main avenues, two-lane side streets, curved bazaar gallis, Fort Circle, the sea edge and boundary buildings. Generated directly from the game's road and boundary data. [Brand assets](docs/branding/README.md).*
 
 [Quick start](#quick-start) · [How to play](#how-to-play) · [Development](#development) · [Project structure](#project-structure) · [Deployment](#deployment) · [Documentation](#documentation) · [Credits and licensing](#credits-and-licensing)
 

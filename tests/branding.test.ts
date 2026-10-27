@@ -1,7 +1,7 @@
+import { streets } from "../src/game/network.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
-import { createHash } from "node:crypto";
 const file = (path: string) => new URL(`../${path}`, import.meta.url);
 const text = (path: string) => readFileSync(file(path), "utf8");
 
@@ -42,15 +42,14 @@ test("landscape manifest references real local icons and matches the brand palet
   assert.match(text("index.html"), /og:image:width" content="1200"/);
 });
 
-test("branded Mumbai map retains the verified 24-ward source snapshot", () => {
-  const bytes = readFileSync(file("docs/research/mumbai/BMC_Wards.geojson"));
-  const source = JSON.parse(
-    text("docs/research/mumbai/branding-map-source.json"),
+test("branded map documents the playable network rather than municipal wards", () => {
+  const map = text("docs/maps/mumbai-game-map.svg");
+  assert.match(map, /MUMBAI · GAME MAP/);
+  assert.equal(
+    new Set([...map.matchAll(/data-street="(\d+)"/g)].map((m) => Number(m[1])))
+      .size,
+    streets.length,
   );
-  assert.equal(createHash("sha256").update(bytes).digest("hex"), source.sha256);
-  assert.equal(JSON.parse(bytes.toString()).features.length, 24);
-  const map = text("docs/research/mumbai/br-mumbai-map.svg");
-  assert.equal((map.match(/fill-rule="evenodd"/g) || []).length, 24);
-  assert.match(map, /DataMeet Trust/);
-  assert.match(map, /CC BY-SA 2.5 India/);
+  assert.match(map, /Boundary buildings/);
+  assert.doesNotMatch(map, /DataMeet|municipal ward/);
 });

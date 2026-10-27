@@ -1,4 +1,11 @@
-import { streets, junctions, geometry, roadContains } from "./network.ts";
+import {
+  streets,
+  junctions,
+  geometry,
+  roadContains,
+  isCurved,
+  lanePosition,
+} from "./network.ts";
 export const PAVEMENT_TOP = 0.42;
 // Metre cells are merged into strips for rendering. Reject every cell touching
 // the road union, so raised corners cannot obstruct an intersection or turn.
@@ -10,7 +17,7 @@ export function pavementLayout() {
         candidates.add(`${x},${z}`);
   }
   for (const e of streets) {
-    if (e.oneWay) continue;
+    if (isCurved(e.id)) continue;
     const g = geometry(e.id),
       side = e.width / 2 + 3.3;
     if (Math.abs(g.dx) > 0.5)
@@ -68,9 +75,27 @@ export function pavementLayout() {
       start = end = xs[i];
     }
   }
+  // Cache curved pavement heights too: crowd updates must remain O(1), not
+  // project hundreds of pedestrians onto every sampled road each frame.
+  const curveCells = new Set<string>();
+  for (const e of streets.filter((e) => isCurved(e.id))) {
+    const length = geometry(e.id).length;
+    for (let d = 0; d <= length; d += 0.5)
+      for (const side of [-1, 1])
+        for (let offset = 0.25; offset < 3.3; offset += 0.5) {
+          const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + offset));
+          const x = Math.floor(p.x),
+            z = Math.floor(p.z),
+            key = `${x},${z}`;
+          if (!curveCells.has(key) && !roadContains(x + 0.5, z + 0.5, 0))
+            curveCells.add(key);
+        }
+  }
   return {
     strips,
-    heightAt: (x: number, z: number) =>
-      cells.has(`${Math.floor(x)},${Math.floor(z)}`) ? PAVEMENT_TOP : 0,
+    heightAt: (x: number, z: number) => {
+      const key = `${Math.floor(x)},${Math.floor(z)}`;
+      return cells.has(key) || curveCells.has(key) ? PAVEMENT_TOP : 0;
+    },
   };
 }

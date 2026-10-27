@@ -14,8 +14,4 @@ Municipal dataset: DataMeet Trust, Pune chapter, shared under [Creative Commons 
 
 `municipal-reference.svg` is a derived reference illustration: polygons were projected into an SVG viewport, cropped to South Mumbai, and styled with land/water colours and an attribution footer. This illustration is shared under the same CC BY-SA 2.5 India license. The municipal polygons are not bundled into the runtime game.
 
-## Branded full-Mumbai map
-
-The [BR map PNG](br-mumbai-map.png) and [vector SVG](br-mumbai-map.svg) show all 24 municipal ward polygons from the same pinned DataMeet revision, projected in Web Mercator and styled with the landing page's BR identity. Ward labels are source codes. The [GeoJSON snapshot](BMC_Wards.geojson) and [download/checksum record](branding-map-source.json) are checked in for reproducibility. The re-download on 27 October 2026 matches the earlier SHA-256 exactly. This is the dataset's geographic snapshot, not a claim that its ward boundaries are administratively current in 2026.
-
-Derived map illustration and source data: **CC BY-SA 2.5 India**, attribution **DataMeet Trust, Pune chapter**. Modifications: projection, cropping to the full municipal extent, ward colours/labels, BR layout and attribution footer. No road geometry has been invented or presented as fetched map data. Rebuild with `python scripts/build_brand_assets.py` followed by `node scripts/render-brand-assets.mjs`.
+The playable game map is maintained separately in [docs/maps](../../maps/mumbai-game-map.svg), generated from the authored game network.

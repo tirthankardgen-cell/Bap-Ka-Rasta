@@ -6,8 +6,11 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Added
 
+- Continuous land-side building frontages in place of road-end warning barriers; open seafront retained.
+- Smooth Fort Circle and gently curved bazaar streets sharing road, traffic and collision geometry; selected side corridors now have one lane each way.
+
 - Consistent outlined BR identity, SVG/ICO favicons, Apple/app/maskable icons, social and README covers, Open Graph/X metadata, structured data, web manifest, robots and sitemap.
-- Branded full-Mumbai municipal reference map drawn from pinned DataMeet coordinates, with source snapshot, attribution and share-alike license.
+- Branded playable Mumbai map generated from the game road network and boundary buildings.
 - Landscape-only gameplay on touch phones: portrait blocks start, pauses the intro/drive and clears controls; resume remains explicit after rotation.
 
 - Playable driver POV opening: walk from the pavement, enter the kerbside auto, see the handlebar view and transition to driving; skip, pause/resume and reduced-motion support included.

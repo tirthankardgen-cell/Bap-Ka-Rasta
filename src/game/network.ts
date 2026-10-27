@@ -114,12 +114,24 @@ for (const x of [-260, -80, 110, 290]) {
     north,
     junctions.find((n) => n.x === x && n.z === -480)!.id,
     "North Mumbai Link",
-    18,
+    x === -80 ? 10 : 24,
   );
   if (previous !== undefined) link(previous, north, "Chowpatty Backstreet", 10);
   previous = north;
 }
 link(previous!, neighbourhood.get("450,-680")!, "Bazaar Approach", 10);
+// Side streets retain one lane each way for their entire named corridor.
+for (const e of streets)
+  if (
+    [
+      "Station Road",
+      "Colaba Causeway",
+      "Maidan Avenue",
+      "Colaba Market Road",
+    ].includes(e.name)
+  )
+    e.width = 10;
+
 export const WORLD_BOUNDS = { minX: -294, maxX: 648, minZ: -718, maxZ: 658 };
 export function trafficLane(edge: number, preferred = 3) {
   const e = streets[edge];
@@ -152,17 +164,63 @@ export const obstacles = [
   { x: 63, z: -29.5, r: 0.6, kind: "cone" },
   { x: 300.5, z: 100, r: 1.5, kind: "parked" },
 ];
+export const isCurved = (edge: number) =>
+  streets[edge].oneWay ||
+  ["Bazaar Galli", "Chawl Lane", "Dukaan Lane"].includes(streets[edge].name);
+type Sample = Point & { distance: number };
+const paths = new Map<number, Sample[]>();
+const bounds = new Map<
+  number,
+  { minX: number; maxX: number; minZ: number; maxZ: number }
+>();
+export function streetPath(edge: number): Sample[] {
+  if (paths.has(edge)) return paths.get(edge)!;
+  const e = streets[edge],
+    a = junctions[e.a],
+    b = junctions[e.b];
+  const chord = Math.hypot(b.x - a.x, b.z - a.z),
+    steps = isCurved(edge) ? Math.ceil(chord / 2) : 1;
+  const points: Sample[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    let x = a.x + (b.x - a.x) * t,
+      z = a.z + (b.z - a.z) * t;
+    if (e.oneWay) {
+      const angle = Math.atan2(a.z - 180, a.x - 110) + (t * Math.PI) / 4;
+      x = 110 + 34 * Math.cos(angle);
+      z = 180 + 34 * Math.sin(angle);
+    } else if (isCurved(edge)) {
+      const bend = 5 * Math.sin(Math.PI * t) ** 2 * (edge % 2 ? 1 : -1);
+      x += ((b.z - a.z) / chord) * bend;
+      z -= ((b.x - a.x) / chord) * bend;
+    }
+    const last = points.at(-1);
+    points.push({
+      x,
+      z,
+      distance: last ? last.distance + Math.hypot(x - last.x, z - last.z) : 0,
+    });
+  }
+  paths.set(edge, points);
+  bounds.set(edge, {
+    minX: Math.min(...points.map((p) => p.x)),
+    maxX: Math.max(...points.map((p) => p.x)),
+    minZ: Math.min(...points.map((p) => p.z)),
+    maxZ: Math.max(...points.map((p) => p.z)),
+  });
+  return points;
+}
 export function geometry(edge: number, from = streets[edge].a) {
   const e = streets[edge],
     a = junctions[from],
-    b = junctions[e.a === from ? e.b : e.a],
-    length = Math.hypot(b.x - a.x, b.z - a.z);
+    b = junctions[e.a === from ? e.b : e.a];
+  const chord = Math.hypot(b.x - a.x, b.z - a.z);
   return {
     a,
     b,
-    length,
-    dx: (b.x - a.x) / length,
-    dz: (b.z - a.z) / length,
+    length: streetPath(edge).at(-1)!.distance,
+    dx: (b.x - a.x) / chord,
+    dz: (b.z - a.z) / chord,
     width: e.width,
   };
 }
@@ -173,12 +231,60 @@ export function lanePosition(
   progress: number,
   lane: number,
 ) {
-  const g = geometry(edge, from);
+  const path = streetPath(edge),
+    reverse = from !== streets[edge].a,
+    length = path.at(-1)!.distance;
+  const d = Math.max(
+    0,
+    Math.min(length, reverse ? length - progress : progress),
+  );
+  let i = 1;
+  while (i < path.length - 1 && path[i].distance < d) i++;
+  const a = path[i - 1],
+    b = path[i],
+    span = b.distance - a.distance,
+    t = (d - a.distance) / span;
+  const dx = ((b.x - a.x) / span) * (reverse ? -1 : 1),
+    dz = ((b.z - a.z) / span) * (reverse ? -1 : 1);
   return {
-    x: g.a.x + g.dx * progress + g.dz * lane,
-    z: g.a.z + g.dz * progress - g.dx * lane,
-    yaw: Math.atan2(g.dx, g.dz),
+    x: a.x + (b.x - a.x) * t + dz * lane,
+    z: a.z + (b.z - a.z) * t - dx * lane,
+    yaw: Math.atan2(dx, dz),
   };
+}
+function project(edge: number, x: number, z: number) {
+  const path = streetPath(edge);
+  let best = {
+    x: 0,
+    z: 0,
+    progress: 0,
+    offset: 0,
+    distance: Infinity,
+    dx: 0,
+    dz: 0,
+  };
+  for (let i = 1; i < path.length; i++) {
+    const a = path[i - 1],
+      b = path[i],
+      length = b.distance - a.distance,
+      dx = (b.x - a.x) / length,
+      dz = (b.z - a.z) / length;
+    const p = Math.max(0, Math.min(length, (x - a.x) * dx + (z - a.z) * dz));
+    const px = a.x + dx * p,
+      pz = a.z + dz * p,
+      distance = Math.hypot(x - px, z - pz);
+    if (distance < best.distance)
+      best = {
+        x: px,
+        z: pz,
+        progress: a.distance + p,
+        offset: (x - px) * dz - (z - pz) * dx,
+        distance,
+        dx,
+        dz,
+      };
+  }
+  return best;
 }
 export function nearestStreet(x: number, z: number) {
   let best = {
@@ -190,23 +296,8 @@ export function nearestStreet(x: number, z: number) {
     distance: Infinity,
   };
   for (const e of streets) {
-    const g = geometry(e.id);
-    const p = Math.max(
-      0,
-      Math.min(g.length, (x - g.a.x) * g.dx + (z - g.a.z) * g.dz),
-    );
-    const px = g.a.x + g.dx * p,
-      pz = g.a.z + g.dz * p,
-      d = Math.hypot(x - px, z - pz);
-    if (d < best.distance)
-      best = {
-        edge: e.id,
-        x: px,
-        z: pz,
-        offset: (x - px) * g.dz - (z - pz) * g.dx,
-        progress: p,
-        distance: d,
-      };
+    const p = project(e.id, x, z);
+    if (p.distance < best.distance) best = { edge: e.id, ...p };
   }
   return best;
 }
@@ -221,6 +312,14 @@ export function roadContains(x: number, z: number, r = 1) {
     return false;
   if (Math.hypot(x - 110, z - 180) < 22 + r) return false;
   return streets.some((e) => {
+    if (isCurved(e.id)) {
+      streetPath(e.id);
+      const b = bounds.get(e.id)!,
+        w = e.width / 2;
+      if (x < b.minX - w || x > b.maxX + w || z < b.minZ - w || z > b.maxZ + w)
+        return false;
+      return project(e.id, x, z).distance <= w - r;
+    }
     const g = geometry(e.id),
       p = (x - g.a.x) * g.dx + (z - g.a.z) * g.dz,
       o = (x - g.a.x) * g.dz - (z - g.a.z) * g.dx;
@@ -230,25 +329,17 @@ export function roadContains(x: number, z: number, r = 1) {
 export function constrainRoad(x: number, z: number) {
   if (roadContains(x, z)) return { x, z, hit: false };
   let best = { x: SPAWN.x, z: SPAWN.z, d: Infinity };
-  const candidate = (px: number, pz: number) => {
-    if (!roadContains(px, pz)) return;
-    const d = Math.hypot(px - x, pz - z);
-    if (d < best.d) best = { x: px, z: pz, d };
-  };
   for (const e of streets) {
-    const g = geometry(e.id),
-      p = Math.max(
-        0,
-        Math.min(g.length, (x - g.a.x) * g.dx + (z - g.a.z) * g.dz),
-      ),
-      o = Math.max(
-        -e.width / 2 + 1.05,
-        Math.min(e.width / 2 - 1.05, (x - g.a.x) * g.dz - (z - g.a.z) * g.dx),
-      );
-    candidate(g.a.x + g.dx * p + g.dz * o, g.a.z + g.dz * p - g.dx * o);
+    const p = project(e.id, x, z),
+      o = Math.max(-e.width / 2 + 1.05, Math.min(e.width / 2 - 1.05, p.offset));
+    const px = p.x + p.dz * o,
+      pz = p.z - p.dx * o,
+      d = Math.hypot(px - x, pz - z);
+    if (d < best.d && roadContains(px, pz)) best = { x: px, z: pz, d };
   }
   return { x: best.x, z: best.z, hit: true };
 }
+
 export type Light = "green" | "amber" | "red";
 export function signalPhase(id: number, time: number) {
   return (time + (id % 4) * 4) % 46;

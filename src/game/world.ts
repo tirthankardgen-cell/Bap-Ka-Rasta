@@ -1,9 +1,11 @@
+import { boundaryBuildings } from "./boundaries";
 import { makeCrowd } from "./crowd";
 import { pavementLayout, PAVEMENT_TOP } from "./pavements";
 import * as THREE from "three";
 import {
   streets,
-  WORLD_BOUNDS,
+  isCurved,
+  streetPath,
   junctions,
   geometry,
   lanePosition,
@@ -156,6 +158,7 @@ export function makeWorld(scene: THREE.Scene) {
   const geometries = {
     box: new THREE.BoxGeometry(1, 1, 1),
     cylinder: new THREE.CylinderGeometry(1, 1, 1, 12),
+    circle: new THREE.CylinderGeometry(1, 1, 1, 64),
     cone: new THREE.ConeGeometry(1, 1, 12),
     sphere: new THREE.SphereGeometry(1, 12, 8),
     frond: palmFrond(),
@@ -203,18 +206,77 @@ export function makeWorld(scene: THREE.Scene) {
   ) => add("box", c, x, y, z, w, h, d, 0, ry);
   // Narrow coastal land with inland city blocks, not a circular island.
   box("#4b9da5", 0, -1.1, 0, 2400, 1, 2500);
+  box("#c9c5a6", 603, -0.4, 0, 1794, 0.4, 2500);
   box("#c9c5a6", 177, -0.25, -30, 942, 0.5, 1376);
   box("#decba6", -283, PAVEMENT_TOP / 2, -30, 22, PAVEMENT_TOP, 1376);
   for (let z = -718; z < 658; z += 5) {
     box("#aaa890", -294, 0.65, z, 1.2, 1.3, 5);
     add("sphere", "#546d6c", -300, -0.1, z, 2, 1, 2);
   }
+  const ribbonBatches = new Map<string, THREE.BufferGeometry[]>();
+  // Continuous extruded ribbons keep curved asphalt and kerbs smooth.
+  function ribbon(
+    edge: number,
+    inner: number,
+    outer: number,
+    y: number,
+    height: number,
+    color: string,
+  ) {
+    const e = streets[edge],
+      path = streetPath(edge),
+      pieces: THREE.BufferGeometry[] = [];
+    for (let i = 1; i < path.length; i++) {
+      const points = [
+        lanePosition(edge, e.a, path[i - 1].distance, inner),
+        lanePosition(edge, e.a, path[i].distance, inner),
+        lanePosition(edge, e.a, path[i].distance, outer),
+        lanePosition(edge, e.a, path[i - 1].distance, outer),
+      ];
+      // Do not lay a raised outer kerb across a roundabout entrance or junction.
+      if (
+        height === PAVEMENT_TOP &&
+        points.some((p) => roadContains(p.x, p.z, 0.08))
+      )
+        continue;
+      const shape = new THREE.Shape();
+      points.forEach((p, j) =>
+        j ? shape.lineTo(p.x, -p.z) : shape.moveTo(p.x, -p.z),
+      );
+      shape.closePath();
+      const geo = new THREE.ExtrudeGeometry(shape, {
+        depth: height,
+        bevelEnabled: false,
+      });
+      geo.rotateX(-Math.PI / 2);
+      pieces.push(geo);
+    }
+    if (!pieces.length) return;
+    const geo = mergeGeometries(pieces);
+    pieces.forEach((p) => p.dispose());
+    geo.translate(0, y, 0);
+    if (!ribbonBatches.has(color)) ribbonBatches.set(color, []);
+    ribbonBatches.get(color)!.push(geo);
+  }
   for (const e of streets) {
     const g = geometry(e.id),
       mid = lanePosition(e.id, e.a, g.length / 2, 0),
       yaw = mid.yaw;
-    box("#dbd0b5", mid.x, 0, mid.z, e.width + 6.6, 0.06, g.length + 1, yaw);
-    box("#525f65", mid.x, 0.04, mid.z, e.width, 0.06, g.length + 0.2, yaw);
+    if (isCurved(e.id)) {
+      ribbon(e.id, -e.width / 2, e.width / 2, 0.01, 0.06, "#525f65");
+      for (const side of [-1, 1])
+        ribbon(
+          e.id,
+          (side * e.width) / 2,
+          side * (e.width / 2 + 3.3),
+          0,
+          PAVEMENT_TOP,
+          "#dbd0b5",
+        );
+    } else {
+      box("#dbd0b5", mid.x, 0, mid.z, e.width + 6.6, 0.06, g.length + 1, yaw);
+      box("#525f65", mid.x, 0.04, mid.z, e.width, 0.06, g.length + 0.2, yaw);
+    }
     if (e.oneWay) continue;
     for (let d = 23; d < g.length - 23; d += 4) {
       for (const side of [-1, 1]) {
@@ -227,17 +289,17 @@ export function makeWorld(scene: THREE.Scene) {
           0.45,
           PAVEMENT_TOP,
           3.8,
-          yaw,
+          p.yaw,
         );
       }
     }
     for (let d = 28; d < g.length - 28; d += 10) {
       for (const side of e.width > 12 ? [-1, 1] : []) {
         const p = lanePosition(e.id, e.a, d, side * 5);
-        box("#d8dfd2", p.x, 0.085, p.z, 0.16, 0.018, 4, yaw);
+        box("#d8dfd2", p.x, 0.085, p.z, 0.16, 0.018, 4, p.yaw);
       }
       const p = lanePosition(e.id, e.a, d, 0);
-      box("#dfbf63", p.x, 0.085, p.z, 0.18, 0.018, 7, yaw);
+      box("#dfbf63", p.x, 0.085, p.z, 0.18, 0.018, 7, p.yaw);
     }
   }
   for (const n of junctions)
@@ -255,11 +317,11 @@ export function makeWorld(scene: THREE.Scene) {
       PAVEMENT_TOP,
       1,
     );
-  add("cylinder", "#d4c5a2", 110, 0.2, 180, 22, 0.4, 22);
-  add("cylinder", "#7e9c6b", 110, 0.42, 180, 20, 0.35, 20);
-  add("cylinder", "#d3d9bf", 110, 0.8, 180, 8, 1, 8);
-  add("cylinder", "#66a5a9", 110, 1.35, 180, 6, 0.2, 6);
-  add("cylinder", "#c6c7a7", 110, 2, 180, 1.5, 3, 1.5);
+  add("circle", "#d4c5a2", 110, 0.2, 180, 22, 0.4, 22);
+  add("circle", "#7e9c6b", 110, 0.42, 180, 20, 0.35, 20);
+  add("circle", "#d3d9bf", 110, 0.8, 180, 8, 1, 8);
+  add("circle", "#66a5a9", 110, 1.35, 180, 6, 0.2, 6);
+  add("circle", "#c6c7a7", 110, 2, 180, 1.5, 3, 1.5);
   function sign(
     text: string,
     x: number,
@@ -409,8 +471,14 @@ export function makeWorld(scene: THREE.Scene) {
           p.yaw,
         );
         const front = (along: number, out = 0) => ({
-          x: p.x - g.dz * side * (8.6 + out) + g.dx * along,
-          z: p.z + g.dx * side * (8.6 + out) + g.dz * along,
+          x:
+            p.x -
+            Math.cos(p.yaw) * side * (8.6 + out) +
+            Math.sin(p.yaw) * along,
+          z:
+            p.z +
+            Math.sin(p.yaw) * side * (8.6 + out) +
+            Math.cos(p.yaw) * along,
         });
         const face = (
           color: string,
@@ -802,51 +870,59 @@ export function makeWorld(scene: THREE.Scene) {
       }
     }
   }
-  // Continuous visible perimeter: seawall to the west, masonry and buildings inland.
-  const { minX, maxX, minZ, maxZ } = WORLD_BOUNDS;
-  box("#aa8060", maxX, 1.1, (minZ + maxZ) / 2, 1.2, 2.2, maxZ - minZ);
-  for (const z of [minZ, maxZ]) {
-    box("#aa8060", (minX + maxX) / 2, 1.1, z, maxX - minX, 2.2, 1.2);
-    for (let x = minX + 12; x < maxX; x += 24) {
-      box("#d5ad7b", x, 1.5, z, 1.8, 3, 1.8);
-      box("#edc698", x, 3.05, z, 2.2, 0.2, 2.2);
+  // A continuous inhabited land-side edge; the west stays open to the seawall.
+  for (const block of boundaryBuildings) {
+    const { x, z, width, depth, yaw, height: h } = block;
+    const local = (along: number, out: number) => ({
+      x: x + Math.cos(yaw) * along + Math.sin(yaw) * out,
+      z: z - Math.sin(yaw) * along + Math.cos(yaw) * out,
+    });
+    const c = facades[block.id % facades.length];
+    box(c, x, h / 2, z, width, h, depth, yaw);
+    box(
+      "#dbd0b5",
+      x,
+      PAVEMENT_TOP / 2,
+      z,
+      width + 0.2,
+      PAVEMENT_TOP,
+      depth + 5,
+      yaw,
+    );
+    const facade = (
+      color: string,
+      along: number,
+      y: number,
+      w: number,
+      tall: number,
+      d: number,
+      out = 0,
+    ) => {
+      const q = local(along, depth / 2 + out);
+      box(color, q.x, y, q.z, w, tall, d, yaw);
+    };
+    facade("#eee0b7", 0, h, width + 0.3, 0.6, 1);
+    for (let y = 4; y < h - 1; y += 3.4) {
+      facade("#eee0b7", 0, y - 1.1, width, 0.22, 1.1, 0.3);
+      facade("#4d625a", 0, y - 0.5, width, 0.35, 0.1, 0.9);
+      for (let along = -width / 2 + 2; along < width / 2 - 1; along += 3.5) {
+        facade("#385653", along, y, 1.5, 1.8, 0.15, 0.05);
+      }
     }
-  }
-  for (let z = minZ + 10; z < maxZ; z += 24)
-    box("#d5ad7b", maxX, 1.5, z, 1.8, 3, 1.8);
-  for (const n of junctions) {
-    if (n.ring) continue;
-    const incident = streets.filter((e) => e.a === n.id || e.b === n.id);
-    for (const [dx, dz] of [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0],
-    ]) {
-      if (
-        incident.some((e) => {
-          const other = junctions[e.a === n.id ? e.b : e.a];
-          return (other.x - n.x) * dx + (other.z - n.z) * dz > 1;
-        })
-      )
-        continue;
-      const yaw = Math.atan2(dx, dz),
-        x = n.x + dx * 18.8,
-        z = n.z + dz * 18.8;
-      box("#c7ae7d", x, 0.65, z, 32, 1.3, 0.65, yaw);
-      for (let offset = -14; offset <= 14; offset += 4)
-        box(
-          "#3b4340",
-          x + dz * offset,
-          0.7,
-          z - dx * offset,
-          1.5,
-          0.45,
-          0.7,
-          yaw,
-        );
-      sign("RUKO · AAGE RASTA NAHI", x, 2.5, z, yaw + Math.PI, 6, "#875a35");
+    for (let along = -width / 2 + 3; along < width / 2; along += 6) {
+      facade("#4d645c", along, 1.5, 4.5, 2.8, 0.2, 0.1);
+      facade(
+        block.id % 2 ? "#ac613b" : "#d2aa56",
+        along,
+        3.1,
+        5,
+        0.35,
+        1.6,
+        0.6,
+      );
     }
+    const tank = local(width / 3, 0);
+    add("cylinder", "#4a5149", tank.x, h + 1, tank.z, 1.2, 2, 1.2);
   }
   // Gateway-inspired waterfront arch in the south-east, plus a station silhouette inland.
   const gx = 335,
@@ -894,6 +970,13 @@ export function makeWorld(scene: THREE.Scene) {
     box("#eee5c6", x, 0, z, 3, 0.7, 7);
     add("cone", "#f7eed2", x, 4, z, 2.5, 6, 0.15);
   }
+  for (const [color, pieces] of ribbonBatches) {
+    const geo = mergeGeometries(pieces);
+    pieces.forEach((p) => p.dispose());
+    const mesh = new THREE.Mesh(geo, surfaceMaterial(color, grain));
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+  }
   for (const b of batches.values()) {
     const mesh = new THREE.InstancedMesh(b.geo, b.material, b.matrices.length);
     b.matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
@@ -934,7 +1017,6 @@ export function makeWorld(scene: THREE.Scene) {
         });
         if (bulbs.instanceColor) bulbs.instanceColor.needsUpdate = true;
       }
-
     },
   };
 }
