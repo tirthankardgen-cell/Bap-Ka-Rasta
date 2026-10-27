@@ -1,0 +1,1502 @@
+{
+  "research_date_local": "2026-10-27",
+  "timezone": "Asia/Calcutta",
+  "scope": "Efficient browser-first actual Mumbai environment in existing Three.js game; Roblox optional",
+  "implementation_status": "Verified free OSM/Overture preparation, Blender export and isolated Three.js/Chrome streaming preview; production game integration, facade detailing and Roblox import remain future work",
+  "evidence_directory": "output/playwright/city-research (local research artifacts; ignored by repository output rules)",
+  "sources": [
+    {
+      "id": "blosm",
+      "url": "https://github.com/vvoovv/blosm",
+      "requested_url": "https://github.com/vvoovv/blosm",
+      "title": "GitHub - vvoovv/blosm: Blosm addon for Blender. A few clicks import of Google 3D cities, OpenStreetMap, terrain. Global coverage. Source code is in the branch 'release'. · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:30.316636+00:00",
+      "verification": "primary page read",
+      "note": "Base is free and untextured; Pro adds generic texturing; broad terrain resolution is about 30 m.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blosm.txt",
+          "sha256": "cf7e41ca8607cd630b070a874dc37c729abb724855bc7104fb47b60fb0f8e622",
+          "bytes": 2591
+        }
+      ]
+    },
+    {
+      "id": "blosm-osm",
+      "url": "https://github.com/vvoovv/blosm/wiki/Import-OpenStreetMap-(.osm)",
+      "requested_url": "https://github.com/vvoovv/blosm/wiki/Import-OpenStreetMap-(.osm)",
+      "title": "Import OpenStreetMap (.osm) · vvoovv/blosm Wiki · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:30.316636+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blosm-osm.txt",
+          "sha256": "d4e912da47b7dd99e0b0d1fa68a00e5749a6d297ed71f495288b74d1b5be5cf3",
+          "bytes": 5370
+        }
+      ]
+    },
+    {
+      "id": "blender-gis",
+      "url": "https://github.com/domlysz/BlenderGIS",
+      "requested_url": "https://github.com/domlysz/BlenderGIS",
+      "title": "GitHub - domlysz/BlenderGIS: Blender addons to make the bridge between Blender and geographic data · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:30.317635+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blender-gis.txt",
+          "sha256": "4a400dcdaa5e791a9a4525f68056c88a90f4d4801a54a2545de87debf897fc40",
+          "bytes": 1157
+        }
+      ]
+    },
+    {
+      "id": "osm2world",
+      "url": "https://osm2world.org/",
+      "requested_url": "https://osm2world.org/",
+      "title": "OSM2World",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:30.317635+00:00",
+      "verification": "primary page read",
+      "note": "Primary home page verifies GLTF/GLB/OBJ export, supported OSM features, PBR and LOD capabilities.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/osm2world.txt",
+          "sha256": "45e4e5f34a0bdaeff33f13c98cdc50bf8d0f7485f2d65ecc5a471b99176d9c54",
+          "bytes": 1923
+        }
+      ]
+    },
+    {
+      "id": "osm2world-formats",
+      "url": "https://wiki.osm2world.org/wiki/Supported_output_formats",
+      "requested_url": "https://wiki.osm2world.org/wiki/Supported_output_formats",
+      "title": null,
+      "http_status": null,
+      "retrieved_at_utc": "2026-10-27T08:14:30.317635+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [],
+      "error": "HTTPSConnectionPool(host='wiki.osm2world.org', port=443): Max retries exceeded with url: /wiki/Supported_output_formats (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x0000020901463D10>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+    },
+    {
+      "id": "cadmapper",
+      "url": "https://cadmapper.com/",
+      "requested_url": "https://cadmapper.com/",
+      "title": "Worldwide map files for any design program | CADMAPPER",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:30.318635+00:00",
+      "verification": "primary page read",
+      "note": "Free whole-city downloads are simplified 2D DXF road/water networks; Mumbai is explicitly listed; custom areas up to 1 km2 free with account.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cadmapper.txt",
+          "sha256": "ccaf7826973bb34d472d9abcd9b79cbe09384a6fece786d29bccc7c899b2a6ac",
+          "bytes": 4028
+        }
+      ]
+    },
+    {
+      "id": "geofabrik-india",
+      "url": "https://download.geofabrik.de/asia/india.html",
+      "requested_url": "https://download.geofabrik.de/asia/india.html",
+      "title": "Download OpenStreetMap for India | Geofabrik Download Server",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:30.828171+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/geofabrik-india.txt",
+          "sha256": "b619f9ea8fa48cb7be27c5244d48c8ef826b1e1020fff5ba6c4c8265d57d411a",
+          "bytes": 5475
+        }
+      ]
+    },
+    {
+      "id": "osm-license",
+      "url": "https://www.openstreetmap.org/copyright",
+      "requested_url": "https://www.openstreetmap.org/copyright",
+      "title": "Copyright and License | OpenStreetMap",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.056677+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/osm-license.txt",
+          "sha256": "36c0851d7fa2917e8c91019f182db7922f2496bec4277fa303e181bbb3e3d861",
+          "bytes": 5837
+        }
+      ]
+    },
+    {
+      "id": "osm-guidelines",
+      "url": "https://osmfoundation.org/wiki/Licence/Attribution_Guidelines",
+      "requested_url": "https://osmfoundation.org/wiki/Licence/Attribution_Guidelines",
+      "title": "Licence/Attribution Guidelines - OpenStreetMap Foundation",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.317649+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/osm-guidelines.txt",
+          "sha256": "9dd8b91636c09a335d397a625e49eea1c872629afe6b1c1d09ff8da1e0666f0f",
+          "bytes": 12364
+        }
+      ]
+    },
+    {
+      "id": "overpass",
+      "url": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+      "requested_url": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+      "title": "Overpass API - OpenStreetMap Wiki",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.381643+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/overpass.txt",
+          "sha256": "f1ff9ff8de885b644157ae0ec48e402d9d503c8ebd023a7218eadcc6d19cc19d",
+          "bytes": 44172
+        }
+      ]
+    },
+    {
+      "id": "overture-buildings",
+      "url": "https://docs.overturemaps.org/guides/buildings/",
+      "requested_url": "https://docs.overturemaps.org/guides/buildings/",
+      "title": "Overview | Overture Documentation",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.492647+00:00",
+      "verification": "primary page read",
+      "note": "Global buildings/building_parts; ODbL; known ML-derived geometry inaccuracies; does not provide exact photographed facades.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/overture-buildings.txt",
+          "sha256": "ad6b650a36d4175852367f3798ec5ce041ef03a4da562a08d8184bda356ce8e4",
+          "bytes": 8536
+        }
+      ]
+    },
+    {
+      "id": "google-map-terms",
+      "url": "https://cloud.google.com/maps-platform/terms",
+      "requested_url": "https://cloud.google.com/maps-platform/terms",
+      "title": "Google Maps Platform Terms Of Service | Google Cloud",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.556652+00:00",
+      "verification": "primary page read",
+      "note": "Sections 3.2.3 include no scraping, no caching except stated allowances and no creating content from Maps content; review actual use and applicable regional terms.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-map-terms.txt",
+          "sha256": "81acbf17092ac23be1aa30df4951b52b91e14029586190056c7c62a63b2a61f7",
+          "bytes": 107157
+        }
+      ]
+    },
+    {
+      "id": "google-tile-policy",
+      "url": "https://developers.google.com/maps/documentation/tile/policies",
+      "requested_url": "https://developers.google.com/maps/documentation/tile/policies",
+      "title": "Map Tiles API Policies  |  Google Maps Tile API  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.742648+00:00",
+      "verification": "primary page read",
+      "note": "Provider attribution and content extraction/offline storage restrictions apply; own overlays must not be derived from photorealistic tiles.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-policy.txt",
+          "sha256": "5cf127be60a8012410bcc61c4c799a2f358b6271bbf5653397b7767d3ccc70b1",
+          "bytes": 12801
+        }
+      ]
+    },
+    {
+      "id": "roblox-importer",
+      "url": "https://create.roblox.com/docs/studio/importer",
+      "requested_url": "https://create.roblox.com/docs/art/modeling/3d-importer",
+      "title": "Importer | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:31.762652+00:00",
+      "verification": "primary page read in visible Google Chrome",
+      "note": "Redirects to current studio/importer docs: File > Import, GLTF/GLB hierarchy, unit, anchoring and creator/permission settings.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-importer.txt",
+          "sha256": "1f8aba29779a7e29ee0dd0ac056415ee305cb8e4d74a1082faccea3c33321815",
+          "bytes": 12446
+        },
+        {
+          "file": "output/playwright/city-research/roblox-importer-chrome.json",
+          "sha256": "865a3147bd9c66d19d77fb38f03c3b369d4687e65c8e4b8361405aeeb22c78fe",
+          "bytes": 20718
+        }
+      ],
+      "chrome_checked_at_utc": "2026-10-27T08:19:44.729987+00:00"
+    },
+    {
+      "id": "roblox-specs",
+      "url": "https://create.roblox.com/docs/art/modeling/specifications",
+      "requested_url": "https://create.roblox.com/docs/art/modeling/specifications",
+      "title": "General specifications | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:32.346330+00:00",
+      "verification": "primary page read",
+      "note": "Current general geometry specification says individual meshes cannot exceed 20000 triangles.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-specs.txt",
+          "sha256": "269a891c54d3b96540ae3a485a5b35dc9d71caf2520997711be7b112a0e2ea68",
+          "bytes": 4432
+        }
+      ]
+    },
+    {
+      "id": "roblox-units",
+      "url": "https://create.roblox.com/docs/physics/units",
+      "requested_url": "https://create.roblox.com/docs/physics/units",
+      "title": "Roblox units | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:32.639159+00:00",
+      "verification": "primary page read",
+      "note": "Standard conversion: 1 stud equals 28 cm; engine permits other consistent conventions.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-units.txt",
+          "sha256": "a2e4516d8b38f0cf65173c90ce23e138a7783bc7f4407842bdf016eebd4aafc3",
+          "bytes": 1820
+        }
+      ]
+    },
+    {
+      "id": "roblox-streaming",
+      "url": "https://create.roblox.com/docs/workspace/streaming",
+      "requested_url": "https://create.roblox.com/docs/workspace/streaming",
+      "title": "Instance streaming | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:32.689158+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-streaming.txt",
+          "sha256": "f47b1b91aa1e3562cbe05123e95b7cdfcd3dc1cc785b77246f20d2e9a8f8771a",
+          "bytes": 16437
+        }
+      ]
+    },
+    {
+      "id": "roblox-surface",
+      "url": "https://create.roblox.com/docs/art/modeling/surface-appearance",
+      "requested_url": "https://create.roblox.com/docs/art/modeling/surface-appearance",
+      "title": "PBR textures | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:32.996153+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-surface.txt",
+          "sha256": "e2498cede3f2b97d3e5974a3d0f20b2c0a074f6a604919bfe88cfaa00c7d4992",
+          "bytes": 14956
+        }
+      ]
+    },
+    {
+      "id": "roblox-permissions",
+      "url": "https://create.roblox.com/docs/projects/assets/privacy",
+      "requested_url": "https://create.roblox.com/docs/projects/assets/privacy",
+      "title": "Asset privacy | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:32.997156+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-permissions.txt",
+          "sha256": "ff1d03dbbdd783afba207a41b87d71215d7e7b8668e2fae1685d99b01a3e5b32",
+          "bytes": 12977
+        }
+      ]
+    },
+    {
+      "id": "roblox-export",
+      "url": "https://en.help.roblox.com/hc/en-us/articles/203313890-How-to-Export-Models-in-Roblox-Studio",
+      "requested_url": "https://en.help.roblox.com/hc/en-us/articles/203313890-How-to-Export-Models-in-Roblox-Studio",
+      "title": "Just a moment...",
+      "http_status": 403,
+      "retrieved_at_utc": "2026-10-27T08:14:33.068157+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-export.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "three-gltf",
+      "url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "requested_url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "title": "GLTFLoader - Three.js Docs",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:33.071161+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/three-gltf.txt",
+          "sha256": "0ba65ea064746a8a4b6086b31e197800447a5ddf471b86e06bce95d62cbaad88",
+          "bytes": 3169
+        }
+      ]
+    },
+    {
+      "id": "blender-gltf",
+      "url": "https://docs.blender.org/manual/en/latest/addons/import_export/scene_gltf2.html",
+      "requested_url": "https://docs.blender.org/manual/en/latest/addons/import_export/scene_gltf2.html",
+      "title": "Not Found (404) - Blender 5.2 LTS Manual",
+      "http_status": 404,
+      "retrieved_at_utc": "2026-10-27T08:14:33.244662+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blender-gltf.txt",
+          "sha256": "53376acd85f16e4d86c7e76f377719c986ce8a73812a514ee78259b003c31ed6",
+          "bytes": 133
+        }
+      ]
+    },
+    {
+      "id": "sketchfab-license",
+      "url": "https://sketchfab.com/licenses",
+      "requested_url": "https://sketchfab.com/licenses",
+      "title": "License Agreement - Sketchfab",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:33.290037+00:00",
+      "verification": "primary page read",
+      "note": "Stock-license summary prohibits stand-alone model access; editorial license restricts commercial use.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/sketchfab-license.txt",
+          "sha256": "16eab289e944c3b4b135fe8af86746a96747da328d40b581912e34a74466334e",
+          "bytes": 2094
+        }
+      ]
+    },
+    {
+      "id": "cgtrader-license",
+      "url": "https://www.cgtrader.com/",
+      "requested_url": "https://www.cgtrader.com/pages/royalty-free-license",
+      "title": "CGTrader - 3D Models And 3D Printing Marketplace",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:14:33.718255+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cgtrader-license.txt",
+          "sha256": "3a7b1807c58e71094d79b405db0efe818bc91549ea36f6e7141742f396e41c99",
+          "bytes": 266
+        }
+      ]
+    },
+    {
+      "id": "fab-eula",
+      "url": "https://www.fab.com/eula",
+      "requested_url": "https://www.fab.com/eula",
+      "title": "",
+      "http_status": 403,
+      "retrieved_at_utc": "2026-10-27T08:14:33.800722+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/fab-eula.txt",
+          "sha256": "3018b05bb92d82d0f7bad38fddf626408528e276668fd0ac685b2bdfc10f4dfd",
+          "bytes": 35
+        }
+      ]
+    },
+    {
+      "id": "blosm-pro",
+      "url": "https://prochitecture.gumroad.com/l/blosm",
+      "requested_url": "https://prochitecture.gumroad.com/l/blosm",
+      "title": "Blosm for Blender (Pro)",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:15:56.180811+00:00",
+      "verification": "primary page read in visible Google Chrome",
+      "note": "Chrome verified solo/hobby INR 1889.99, no actual per-building textures, and experimental texture export.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blosm-pro.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "output/playwright/city-research/blosm-pro-chrome.json",
+          "sha256": "525bfacad65bf3bb7817dcbf88bd121b9a04ac1413038be6e05123097a024857",
+          "bytes": 4031
+        }
+      ],
+      "chrome_checked_at_utc": "2026-10-27T08:19:01.647489+00:00"
+    },
+    {
+      "id": "blosm-free",
+      "url": "https://prochitecture.gumroad.com/l/blender-osm",
+      "requested_url": "https://prochitecture.gumroad.com/l/blender-osm",
+      "title": "Blosm for Blender: Google 3D cities, OpenStreetMap, terrain",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:15:56.180811+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blosm-free.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "roblox-textures",
+      "url": "https://create.roblox.com/docs/art/modeling/texture-specifications",
+      "requested_url": "https://create.roblox.com/docs/art/modeling/texture-specifications",
+      "title": "Texture specifications | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:15:56.181810+00:00",
+      "verification": "primary page read",
+      "note": "4K support stated near top; lower UV section still mentions 1024, a documentation inconsistency recorded in report.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-textures.txt",
+          "sha256": "d4975a86694f9d700b3a1fce259706900fa57a1734ba19561be6de0574a6ce9a",
+          "bytes": 3213
+        }
+      ]
+    },
+    {
+      "id": "blender-gltf-current",
+      "url": "https://docs.blender.org/manual/en/latest/files/import_export/gltf2.html",
+      "requested_url": "https://docs.blender.org/manual/en/latest/files/import_export/gltf2.html",
+      "title": "Not Found (404) - Blender 5.2 LTS Manual",
+      "http_status": 404,
+      "retrieved_at_utc": "2026-10-27T08:15:56.181810+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blender-gltf-current.txt",
+          "sha256": "53376acd85f16e4d86c7e76f377719c986ce8a73812a514ee78259b003c31ed6",
+          "bytes": 133
+        }
+      ]
+    },
+    {
+      "id": "osm2world-github",
+      "url": "https://github.com/tordanik/OSM2World",
+      "requested_url": "https://github.com/tordanik/OSM2World",
+      "title": "GitHub - tordanik/OSM2World: converter that creates three-dimensional models of the world from OpenStreetMap data · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:15:56.181810+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/osm2world-github.txt",
+          "sha256": "9f698e7ef12f315a92f5a78bc9674af5a8dcd224d2e380846fa730f88fbb2836",
+          "bytes": 304
+        }
+      ]
+    },
+    {
+      "id": "cadmapper-faq",
+      "url": "https://cadmapper.com/faq",
+      "requested_url": "https://cadmapper.com/faq",
+      "title": "Page Not Found | CADMAPPER",
+      "http_status": 404,
+      "retrieved_at_utc": "2026-10-27T08:15:56.182810+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cadmapper-faq.txt",
+          "sha256": "61ec68248ce38b6279dc57b5f94f77a017ce2939e632de63224e66b7aebffff8",
+          "bytes": 134
+        }
+      ]
+    },
+    {
+      "id": "cgtrader-terms",
+      "url": "https://www.cgtrader.com/pages/terms-and-conditions",
+      "requested_url": "https://www.cgtrader.com/pages/terms-and-conditions",
+      "title": "General Terms and Conditions | CGTrader",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:15:56.760426+00:00",
+      "verification": "primary page read",
+      "note": "Incorporated Product definition and section 21A include distribution/extraction constraints; do not assume public raw GLBs satisfy a stock license.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cgtrader-terms.txt",
+          "sha256": "2ea0617dde8b147c7e419f78f1d3e0147362548774e68cfcdc1192861be0c15f",
+          "bytes": 69978
+        }
+      ]
+    },
+    {
+      "id": "worldloader",
+      "url": "https://devforum.roblox.com/t/worldloader-plugin-import-real-life-places-into-studio/3190878",
+      "requested_url": "https://devforum.roblox.com/t/worldloader-plugin-import-real-life-places-into-studio/3190878",
+      "title": "WorldLoader Plugin - Import real life places into studio - Resources / Community Resources - Developer Forum | Roblox",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:17:04.297801+00:00",
+      "verification": "primary page read in visible Google Chrome",
+      "note": "Reports terrain support and recent download/water issues; prototype route was not installed or run.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/worldloader.txt",
+          "sha256": "83f3bbc145f9e5c2e6a03eb579290ad694dcfbd80b818b6987d3bb3f14720e95",
+          "bytes": 2533
+        },
+        {
+          "file": "output/playwright/city-research/worldloader-verified-chrome.json",
+          "sha256": "3afb562e757315cfff5f7871f4f639373c796e62fe570c7083cc149bf85a9ee1",
+          "bytes": 17238
+        }
+      ],
+      "chrome_checked_at_utc": "2026-10-27T08:17:14.233229+00:00"
+    },
+    {
+      "id": "mumbai-models",
+      "url": "https://www.cgtrader.com/3d-models?keywords=mumbai%20city",
+      "requested_url": "https://www.cgtrader.com/3d-models?keywords=mumbai%20city",
+      "title": "",
+      "http_status": 202,
+      "retrieved_at_utc": "2026-10-27T08:17:04.298791+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-models.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "blosm-install",
+      "url": "https://github.com/vvoovv/blosm/wiki/Documentation",
+      "requested_url": "https://github.com/vvoovv/blosm/wiki/Documentation",
+      "title": "Documentation · vvoovv/blosm Wiki · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:17:04.299798+00:00",
+      "verification": "primary page read",
+      "note": "Primary import/setup workflow; historical API preview/billing statements should not supersede current Google pricing.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blosm-install.txt",
+          "sha256": "a431f6ba4aa467009f1165dfa979a6c6d020f5c1416dd64d1c2fe4d43e2fb118",
+          "bytes": 27631
+        }
+      ]
+    },
+    {
+      "id": "osm2world-docs",
+      "url": "https://osm2world.org/docs/",
+      "requested_url": "https://osm2world.org/docs/",
+      "title": "Documentation",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:17:04.299798+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/osm2world-docs.txt",
+          "sha256": "f39124009242cf70974d0ad98106bd8170f7b063cd218bf76acad76fc84da485",
+          "bytes": 973
+        }
+      ]
+    },
+    {
+      "id": "polyhaven-license",
+      "url": "https://polyhaven.com/license",
+      "requested_url": "https://polyhaven.com/license",
+      "title": "License • Poly Haven",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:17:04.300801+00:00",
+      "verification": "primary page read",
+      "note": "Assets are CC0; unrelated specific building photographs are not supplied by this general-material library.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/polyhaven-license.txt",
+          "sha256": "8cde7068674aa3a085fdaf9d855df938c2e5ff5fdea1a3e6e12371cbb3116a2e",
+          "bytes": 5249
+        }
+      ]
+    },
+    {
+      "id": "roblox-collision",
+      "url": "https://create.roblox.com/docs/workspace/collisions",
+      "requested_url": "https://create.roblox.com/docs/workspace/collisions",
+      "title": "Collisions | Documentation - Roblox Creator Hub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:17:04.301796+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-collision.txt",
+          "sha256": "e502a9dfd7b55df0d660388d68f7d2d83c94c02269b5a2cbee2039ab42e06e2d",
+          "bytes": 15866
+        }
+      ]
+    },
+    {
+      "id": "roblox-creator-store",
+      "url": "https://create.roblox.com/store/models?keyword=Mumbai",
+      "requested_url": "https://create.roblox.com/store/models?keyword=Mumbai",
+      "title": "",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:17:04.447798+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/roblox-creator-store.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "worldloader-docs",
+      "url": "https://devforum.roblox.com/t/worldloader-plugin-documentation/3187419",
+      "requested_url": "https://devforum.roblox.com/t/worldloader-plugin-documentation/3187419",
+      "title": "WorldLoader Plugin Documentation - Bulletin Board - Developer Forum | Roblox",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:18:55.680625+00:00",
+      "verification": "primary page read",
+      "note": "OSM-based generation, default 1m=3.57studs; documented 2048x2048 stud selected-Part extent; adjacent chunks via same origin.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/worldloader-docs.txt",
+          "sha256": "ac24e8ffa8bd126d03eef01e8c1830a9d1a9a9a335946f43adcde78ddb938eee",
+          "bytes": 10799
+        }
+      ]
+    },
+    {
+      "id": "worldloader-code",
+      "url": "https://github.com/Klingaac/WorldLoader-Roblox-Plugin",
+      "requested_url": "https://github.com/Klingaac/WorldLoader-Roblox-Plugin",
+      "title": "GitHub - Klingaac/WorldLoader-Roblox-Plugin: Plugin leveraging Openstreetmap and elevation data to generate terrain, buildings, roads and railways inside Roblox Studio · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:18:55.680625+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/worldloader-code.txt",
+          "sha256": "d9b4e65d73f0ad7f3bb79da11f539044a3b129207bb993fbe6dfc58983c756eb",
+          "bytes": 457
+        }
+      ]
+    },
+    {
+      "id": "osm2world-wiki",
+      "url": "https://wiki.openstreetmap.org/wiki/OSM2World",
+      "requested_url": "https://wiki.openstreetmap.org/wiki/OSM2World",
+      "title": "OSM2World - OpenStreetMap Wiki",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:18:55.681625+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/osm2world-wiki.txt",
+          "sha256": "1f2753a3b618686a6237149085801d805d4c59e6338d4a9023cb54b3d02aacd5",
+          "bytes": 11399
+        }
+      ]
+    },
+    {
+      "id": "worldloader-store",
+      "url": "https://create.roblox.com/store/asset/76005743851966/WorldLoader-Import-Real-life-places",
+      "requested_url": "https://create.roblox.com/store/asset/76005743851966/WorldLoader-Import-Real-life-places",
+      "title": "WorldLoader - Import Real life places - Creator Store",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:18:55.682624+00:00",
+      "verification": "primary page read in visible Google Chrome",
+      "note": "Chrome verified author Klingaac, listed update May 3 2026 and connection-error review. Get Plugin displayed; no numeric price recorded.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/worldloader-store.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "output/playwright/city-research/worldloader-store-chrome.json",
+          "sha256": "c0ed1115006824365b031636df3258b0656d9ba6d62550cf6d861660641ea3e8",
+          "bytes": 4982
+        }
+      ],
+      "chrome_checked_at_utc": "2026-10-27T08:25:39.931451+00:00"
+    },
+    {
+      "id": "blender-gltf-stable",
+      "url": "https://docs.blender.org/manual/en/4.5/addons/import_export/scene_gltf2.html",
+      "requested_url": "https://docs.blender.org/manual/en/4.5/addons/import_export/scene_gltf2.html",
+      "title": "glTF 2.0 - Blender 4.5 LTS Manual",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:20:45.543007+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/blender-gltf-stable.txt",
+          "sha256": "d0c46874f4b062d63a5e024dd93581d028e926c02301f96b59c79ccc7184df53",
+          "bytes": 40819
+        }
+      ]
+    },
+    {
+      "id": "overture-access",
+      "url": "https://docs.overturemaps.org/getting-data/overturemaps-py/",
+      "requested_url": "https://docs.overturemaps.org/getting-data/overturemaps-py/",
+      "title": "Python Client | Overture Documentation",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:20:45.543974+00:00",
+      "verification": "primary page read",
+      "note": "CLI supports bbox and GeoJSON output; commands in the plan were not executed.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/overture-access.txt",
+          "sha256": "3fcbd0d18efb68067f51e30c97e7d766c58ff2833073d1a49abc60a672b98b19",
+          "bytes": 2332
+        }
+      ]
+    },
+    {
+      "id": "overture-license",
+      "url": "https://docs.overturemaps.org/attribution/",
+      "requested_url": "https://docs.overturemaps.org/attribution/",
+      "title": "Attribution and Licensing | Overture Documentation",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:20:45.543974+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/overture-license.txt",
+          "sha256": "737dad98fadeb4e265001396466f6d84dab173146463046065f7908b4da5305f",
+          "bytes": 35781
+        }
+      ]
+    },
+    {
+      "id": "datameet-mumbai",
+      "url": "https://github.com/datameet/Municipal_Spatial_Data/blob/master/Mumbai/Readme.md",
+      "requested_url": "https://github.com/datameet/Municipal_Spatial_Data/blob/master/Mumbai/Readme.md",
+      "title": "Municipal_Spatial_Data/Mumbai/Readme.md at master · datameet/Municipal_Spatial_Data · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:20:45.545016+00:00",
+      "verification": "primary page read",
+      "note": "Mumbai municipal ward-boundary reference; not an actual street or detailed building mesh source.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/datameet-mumbai.txt",
+          "sha256": "e8344d9c5dfe77d199aa87bf6ded94d108068b3a96aa84755f019a03ffa1c026",
+          "bytes": 456
+        }
+      ]
+    },
+    {
+      "id": "google-tile-coverage",
+      "url": "https://developers.google.com/maps/documentation/tile/coverage",
+      "requested_url": "https://developers.google.com/maps/documentation/tile/coverage",
+      "title": "404  |  Page Not Found  |  Google for Developers",
+      "http_status": 404,
+      "retrieved_at_utc": "2026-10-27T08:22:29.742338+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-coverage.txt",
+          "sha256": "53e54242aac3142ab85f44b7497e8cbef6e48ad3985c1545e7f6609d502c97ae",
+          "bytes": 95
+        }
+      ]
+    },
+    {
+      "id": "google-3d-overview",
+      "url": "https://developers.google.com/maps/documentation/tile/3d-tiles",
+      "requested_url": "https://developers.google.com/maps/documentation/tile/3d-tiles",
+      "title": "Photorealistic 3D Tiles  |  Google Maps Tile API  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:22:29.743340+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-3d-overview.txt",
+          "sha256": "814ad40806d86c6713024712b5713198f87fa37c23c598eeead13913f8b43f50",
+          "bytes": 3567
+        }
+      ]
+    },
+    {
+      "id": "three-tiles-renderer",
+      "url": "https://github.com/NASA-AMMOS/3DTilesRendererJS",
+      "requested_url": "https://github.com/NASA-AMMOS/3DTilesRendererJS",
+      "title": "GitHub - NASA-AMMOS/3DTilesRendererJS: Renderer for 3D Tiles in Javascript using three.js, Babylon.js, and r3f · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:22:29.743340+00:00",
+      "verification": "primary page read",
+      "note": "Three.js compatible 3D Tiles library; bounded LRU caching; software license does not grant city data rights.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/three-tiles-renderer.txt",
+          "sha256": "b5edad4d75b95ca1777236cecc8f354c01765f38811751a2bfee1e8983e7f254",
+          "bytes": 4163
+        }
+      ]
+    },
+    {
+      "id": "cesium-google",
+      "url": "https://cesium.com/learn/cesiumjs-learn/cesiumjs-photorealistic-3d-tiles/",
+      "requested_url": "https://cesium.com/learn/cesiumjs-learn/cesiumjs-photorealistic-3d-tiles/",
+      "title": "CesiumJS: Photorealistic 3D Tiles from Google Maps Platform â Cesium",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:22:29.744339+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cesium-google.txt",
+          "sha256": "a901fe3b41daa9489b6109fb6fd0c89f7920db7f27c05c889fa067e3e7544d73",
+          "bytes": 3067
+        }
+      ]
+    },
+    {
+      "id": "google-tile-pricing",
+      "url": "https://developers.google.com/maps/documentation/tile/usage-and-billing",
+      "requested_url": "https://developers.google.com/maps/documentation/tile/usage-and-billing",
+      "title": "Map Tiles API Usage and Billing  |  Google Maps Tile API  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:22:29.744339+00:00",
+      "verification": "primary page read",
+      "note": "Root/session mechanics and usage limits; page contains historical USD 200-credit text with a February 2025 end date, not a current recurring benefit.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-pricing.txt",
+          "sha256": "1e37e12d9ed7721cfcd6fd8ca07dac3fa096a9cd197bc5c00cf992b5ff56d90d",
+          "bytes": 4797
+        }
+      ]
+    },
+    {
+      "id": "google-open-buildings",
+      "url": "https://sites.research.google/gr/open-buildings/",
+      "requested_url": "https://sites.research.google/gr/open-buildings/",
+      "title": "Open Buildings - Google Research - Open Buildings",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:22:29.744339+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-open-buildings.txt",
+          "sha256": "bd376a882e5bdff0112edf05ec686c0a824bdd9f9d774c8d0a1285572d907277",
+          "bytes": 19871
+        }
+      ]
+    },
+    {
+      "id": "google-tile-faq",
+      "url": "https://developers.google.com/maps/documentation/tile/faq",
+      "requested_url": "https://developers.google.com/maps/documentation/tile/faq",
+      "title": "404  |  Page Not Found  |  Google for Developers",
+      "http_status": 404,
+      "retrieved_at_utc": "2026-10-27T08:24:57.286953+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-faq.txt",
+          "sha256": "53e54242aac3142ab85f44b7497e8cbef6e48ad3985c1545e7f6609d502c97ae",
+          "bytes": 95
+        }
+      ]
+    },
+    {
+      "id": "google-tile-overview",
+      "url": "https://developers.google.com/maps/documentation/tile/overview",
+      "requested_url": "https://developers.google.com/maps/documentation/tile/overview",
+      "title": "Map Tiles API overview  |  Google Maps Tile API  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:24:57.286953+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-overview.txt",
+          "sha256": "a0cde46470d8af595bea00f2a2f75e18e803dd18a28395745d7e70bf91cba3ce",
+          "bytes": 4887
+        }
+      ]
+    },
+    {
+      "id": "google-tile-global-pricing",
+      "url": "https://developers.google.com/maps/billing-and-pricing/pricing",
+      "requested_url": "https://developers.google.com/maps/billing-and-pricing/pricing",
+      "title": "Google Maps Platform core services pricing list  |  Pricing and Billing  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:24:57.287953+00:00",
+      "verification": "primary page read",
+      "note": "Photorealistic 3D Tiles: 1000-event free cap, USD 6 per 1000 in first paid tier as displayed.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-global-pricing.txt",
+          "sha256": "38518aec8b2690e06834f499eb5c499f433719f3d4933ee0670843004c4eff73",
+          "bytes": 10481
+        }
+      ]
+    },
+    {
+      "id": "mumbai-sketchfab-urban",
+      "url": "https://sketchfab.com/3d-models/mumbai-india-city-and-urban-35661ddb268347c1b2f95f0caf3d9e8a",
+      "requested_url": "https://sketchfab.com/3d-models/mumbai-india-city-and-urban-35661ddb268347c1b2f95f0caf3d9e8a",
+      "title": "Mumbai India - city and urban - Buy Royalty Free 3D model by Jinda (@jindaarch) [35661dd] - Sketchfab Store",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:24:57.287953+00:00",
+      "verification": "primary page read",
+      "note": "Jinda OSM/Blender model; viewer reports 2.5 million triangles; links to Fab; source asset/price/license not purchased or validated.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-sketchfab-urban.txt",
+          "sha256": "156fb6c942ab511a029c53d73c8b6c59b0258e0c10765b1cbf2a5b601657525a",
+          "bytes": 1121
+        }
+      ]
+    },
+    {
+      "id": "mumbai-sketchfab-mass",
+      "url": "https://sketchfab.com/3d-models/mumbai-india-city-and-mass-buildings-2dd627352e3b44ce9513ad0e41fba957",
+      "requested_url": "https://sketchfab.com/3d-models/mumbai-india-city-and-mass-buildings-2dd627352e3b44ce9513ad0e41fba957",
+      "title": "Mumbai India - city and mass buildings - Buy Royalty Free 3D model by Jinda (@jindaarch) [2dd6273] - Sketchfab Store",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:24:57.287953+00:00",
+      "verification": "primary page read",
+      "note": "Jinda OSM/Blender model; viewer reports 1.1 million triangles; links to Fab; source asset not inspected.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-sketchfab-mass.txt",
+          "sha256": "dbefb65af78bcaad0e04eca4a79b5bf8a185b58f6b39f2aaedb00c8ae9515b6c",
+          "bytes": 1140
+        }
+      ]
+    },
+    {
+      "id": "maplibre-buildings",
+      "url": "https://maplibre.org/maplibre-gl-js/docs/examples/display-buildings-in-3d/",
+      "requested_url": "https://maplibre.org/maplibre-gl-js/docs/examples/display-buildings-in-3d/",
+      "title": "Display buildings in 3D - MapLibre GL JS",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:24:57.287953+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/maplibre-buildings.txt",
+          "sha256": "a3c07ad27196033b294a327f29f9f2dcaec36af1d3802f8db7d5dccd79b247bc",
+          "bytes": 4438
+        }
+      ]
+    },
+    {
+      "id": "gltf-transform",
+      "url": "https://gltf-transform.dev/",
+      "requested_url": "https://gltf-transform.dev/",
+      "title": "glTF Transform",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:24:57.419953+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/gltf-transform.txt",
+          "sha256": "ac3f59c32029fa1b85f799844611d58d4ba8f4315491ac10317df88aa9bb75c4",
+          "bytes": 7281
+        }
+      ]
+    },
+    {
+      "id": "genesys",
+      "url": "https://www.igenesys.com/",
+      "requested_url": "https://www.igenesys.com/",
+      "title": "Genesys International — 3D Digital Twin, In Vehicle Navigation & LiDAR Mapping | India",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:25:29.839293+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/genesys.txt",
+          "sha256": "b6d5057eb66f43b9eca2e4df4a342221d0e99aac0c399b734d36ae93934e081a",
+          "bytes": 2506
+        }
+      ]
+    },
+    {
+      "id": "genesys-project",
+      "url": "https://www.igenesys.com/new-project-1",
+      "requested_url": "https://www.igenesys.com/new-project-1",
+      "title": "Genesys International — 3D Digital Twin, In Vehicle Navigation & LiDAR Mapping | India",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:25:29.840310+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/genesys-project.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "google-coverage-detail",
+      "url": "https://developers.google.com/maps/coverage",
+      "requested_url": "https://developers.google.com/maps/coverage",
+      "title": "Google Maps Platform Coverage Details  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:25:29.840310+00:00",
+      "verification": "primary page read",
+      "note": "India has a positive grouped Map Tiles 2D/3D indicator and a dash under Maps JavaScript 3D. Does not verify a live photorealistic Mumbai tileset.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-coverage-detail.txt",
+          "sha256": "4721a5f5c752416d84c02a162627b6e5bc09bfc6aaae136e0e969c2afa365185",
+          "bytes": 17347
+        }
+      ]
+    },
+    {
+      "id": "three-ktx",
+      "url": "https://threejs.org/docs/pages/KTX2Loader.html",
+      "requested_url": "https://threejs.org/docs/pages/KTX2Loader.html",
+      "title": "KTX2Loader - Three.js Docs",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:25:29.840310+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/three-ktx.txt",
+          "sha256": "af6568989c166272ca94772c2ed3fef5c454f229953c0d0b37394fee9a465ac8",
+          "bytes": 2368
+        }
+      ]
+    },
+    {
+      "id": "three-meshopt",
+      "url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "requested_url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "title": "GLTFLoader - Three.js Docs",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:25:29.840310+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/three-meshopt.txt",
+          "sha256": "0ba65ea064746a8a4b6086b31e197800447a5ddf471b86e06bce95d62cbaad88",
+          "bytes": 3169
+        }
+      ]
+    },
+    {
+      "id": "cesium-open",
+      "url": "https://github.com/CesiumGS/cesium",
+      "requested_url": "https://github.com/CesiumGS/cesium",
+      "title": "GitHub - CesiumGS/cesium: An open-source JavaScript library for world-class 3D globes and maps :earth_americas: · GitHub",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:25:29.841301+00:00",
+      "verification": "primary page read",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cesium-open.txt",
+          "sha256": "5fbc5414cab49e266972f422480367b9db383d5e34f7420e873adcb1287fd838",
+          "bytes": 2492
+        }
+      ]
+    },
+    {
+      "id": "genesys-twin",
+      "url": "https://www.igenesys.com/3d-digital-twin",
+      "requested_url": "https://www.igenesys.com/3d-digital-twin",
+      "title": "Genesys International — 3D Digital Twin, In Vehicle Navigation & LiDAR Mapping | India",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:26:55.528379+00:00",
+      "verification": "primary page read",
+      "note": "Primary commercial provider page describes engineering-grade 3D digital twin/reality modelling services. No public Mumbai game-use license/sample or delivery availability established.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/genesys-twin.txt",
+          "sha256": "2bedfb19af28142acf970e07fa54dda462d86993a38c54f2608a84469c44ca52",
+          "bytes": 3047
+        }
+      ]
+    },
+    {
+      "id": "genesys-bmc-announcement",
+      "url": "https://www.igenesys.com/genesys-blog/genesys-wins-record-breaking-contract-for-mumbais-digital-twin-initiative",
+      "requested_url": "https://www.igenesys.com/genesys-blog/genesys-wins-record-breaking-contract-for-mumbais-digital-twin-initiative",
+      "title": "Genesys International — 3D Digital Twin, In Vehicle Navigation & LiDAR Mapping | India",
+      "http_status": 404,
+      "retrieved_at_utc": "2026-10-27T08:26:55.529383+00:00",
+      "verification": "no sufficient primary content; do not rely on HTTP status alone",
+      "note": null,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/genesys-bmc-announcement.txt",
+          "sha256": "786e34040cb6f2569d46800bf8137d5f4fd1001d91474224b2855647adbcbbcb",
+          "bytes": 129
+        }
+      ]
+    },
+    {
+      "id": "google-tile-india-pricing",
+      "url": "https://developers.google.com/maps/billing-and-pricing/pricing-india",
+      "requested_url": "https://developers.google.com/maps/billing-and-pricing/pricing-india",
+      "title": "Google Maps Platform core services pricing list - India  |  Pricing and Billing  |  Google for Developers",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:26:55.530378+00:00",
+      "verification": "primary page read",
+      "note": "Eligible India pricing table: 7000-event free cap, USD 3.30 per 1000 in first paid tier as displayed; eligibility not established for this user.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/google-tile-india-pricing.txt",
+          "sha256": "854a9993e6656024194164d81768b63ce27093a441f4b48a3ad3ad35eb6c5cfc",
+          "bytes": 9411
+        }
+      ]
+    },
+    {
+      "id": "gateway-cyark",
+      "url": "https://sketchfab.com/3d-models/gateway-of-india-mumbai-38a652e9f3bf49039026ef65ef61ac92",
+      "requested_url": "https://www.google.com/goto?url=CAESkwEB6zswFTqAdti_jAWbaSmzVeOv0EeCjZvQR1RFaMusSnz6MQeEK2pOiW52ExFkONJoeM-qnnIbopbqE5LAjWp9-FNmEd7BYNH6K4kCRHuM7MYMQRwtXEsUnYkW4C7NnFQ2JmoqFm_Y_pwP4HFppqs12zedGJOObG7QkUiLa_3Lf6dK12wzCG8oc7LMFbpDjUHwaGs",
+      "title": "Gateway Of India - Mumbai - 3D model by CyArk [38a652e] - Sketchfab",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:36:11.381110+00:00",
+      "verification": "primary page read",
+      "note": "Actual Gateway of India LiDAR/DSLR/drone photogrammetry captured February 2019; 1.5M triangles. Viewer availability is not a verified downloadable commercial game license.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/gateway-cyark.txt",
+          "sha256": "779a72e7b9726d395340e816f62d037769d0507ff5d0f11e8a23b9fa45b27b6d",
+          "bytes": 1695
+        }
+      ]
+    },
+    {
+      "id": "gateway-lowpoly",
+      "url": "https://sketchfab.com/3d-models/gateway-of-india-stylized-low-poly-3d-model-acb12c35de1f42e8a2c4f7fa73102992",
+      "requested_url": "https://www.google.com/goto?url=CAESpwEB6zswFYZMjOlPcaWfptwTAt90y7Q6JuW3WwbrikyiugHxYCd6um_6vm__ZKo_aBdtxiyoPy_Prr5wUrQKRT-M12hcnCLr5g5pf4gNJ7ZZXg32ETzZ_2yg8UbiMoQ3Io-7X7g9MbiCusyxeYcvgv3QZ74htQgfFH00moomHx_0blrPieq4lyLIXMDBiL-IhpPJtdrbkV-InbVjIrAQegCcGd7WkssD8A",
+      "title": "Gateway of India | Stylized Low-Poly 3D Model - Download Free 3D model by RakeshCreates [acb12c3] - Sketchfab",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:36:11.381110+00:00",
+      "verification": "primary page read",
+      "note": "6.5k-triangle downloadable stylized Gateway model, explicitly CC Attribution-NonCommercial. Does not establish commercial use or photorealistic fidelity.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/gateway-lowpoly.txt",
+          "sha256": "bd9903a3348e78bb7be14dc7dbe2913f92dca2268e7c97c876ea25841cb50db4",
+          "bytes": 2214
+        }
+      ]
+    },
+    {
+      "id": "taj-hotel",
+      "url": "https://sketchfab.com/3d-models/taj-hotel-3d-model-iconic-indian-landmark-d57b30000d494bbf93f9b9ab1379f32f",
+      "requested_url": "https://www.google.com/goto?url=CAESpQEB6zswFSon_H2rOw79ZgdQJvfjHOnyiJJMb2r6PzD7D32IzyixSrvZsk31yzjdoNSA_EREAqJpJdJNQLQG49_ORO-XD2wXsAa0Y18fX-p9M22rlnTLE8QXXNgtkdRVvGM21r9cTf6sQxr3QND_d8IWlePCktvLn5_4_BTzjgBqTdgiDEjUwQkTb_rNlIXNBnoOT5rmj8ThIFYKRjpS5AUQWYqULpo",
+      "title": "Taj Hotel 3D Model | Iconic Indian Landmark - 3D model by akshat (@akshatranjan520) [d57b300] - Sketchfab",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-27T08:36:11.382121+00:00",
+      "verification": "primary page read",
+      "note": "Detailed 2023 client model/texturing project shown in viewer with 9.4M triangles. Download and game-reuse permission not established.",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/taj-hotel.txt",
+          "sha256": "267117354c748d1b293de4074fe6a71a1558f6e9e15f6a02176012e6d1645f30",
+          "bytes": 1560
+        }
+      ]
+    },
+    {
+      "id": "mumbai-cgtrader",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-cgtrader-chrome.json",
+          "sha256": "eda39b8f015e4ba61b9f964134efb371fecb8043cb236fdc8ed7a6b800715147",
+          "bytes": 35301
+        }
+      ],
+      "url": "https://www.cgtrader.com/3d-models/exterior/cityscape/mumbai-india-50km",
+      "title": "3D model Mumbai City India VR / AR / low-poly | CGTrader",
+      "verification": "primary page read in visible Google Chrome",
+      "chrome_checked_at_utc": "2026-10-27T08:20:15.793806+00:00",
+      "note": "CityArt Mumbai India 50km listing: USD49.50 sale/USD99 regular; 2022 GIS; flat no elevation; C4D-specific satellite/effects; native 550MB; exchange FBX/OBJ. Descriptive 5M+ polygons conflicts with metadata 1polygon/1vertex; source mesh not bought or inspected."
+    },
+    {
+      "id": "mumbai-3docean",
+      "url": "https://3docean.net/item/mumbai-city-3d-model-50km/28619372",
+      "http_status": 403,
+      "verification": "discovery lead only; product contents not verified",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-3docean.html",
+          "sha256": "11bc0a642ae7d7f976f67f802156def5c54542ee4101c01dfcc2724f7e55d782",
+          "bytes": 5636
+        }
+      ]
+    },
+    {
+      "id": "mumbai-artstation",
+      "url": "https://www.artstation.com/marketplace/p/50Dwx/mumbai-3d-city-model",
+      "http_status": 403,
+      "verification": "discovery lead only; product contents not verified",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-artstation.html",
+          "sha256": "b43e21ecf60b713a60be91ecf75a00bcd11b4f736636b64bff549935bffa14de",
+          "bytes": 25689
+        }
+      ]
+    },
+    {
+      "id": "mumbai-artstation-ai",
+      "url": "https://www.artstation.com/marketplace/p/zD69o/mumbai-india-ai-50km",
+      "http_status": 403,
+      "verification": "discovery lead only; product contents not verified",
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/mumbai-artstation-ai.html",
+          "sha256": "d1d24ac10d0396c28529315ea0245e4af46ab0c92c97217c2b86bc6992e492e3",
+          "bytes": 25689
+        }
+      ]
+    },
+    {
+      "id": "cadmapper-mumbai-zip",
+      "url": "https://cityfiles.cadmapper.com/cityfiles/mumbai.zip",
+      "http_status": 200,
+      "verification": "public ZIP availability checked with HEAD; archive not imported or geometry validated",
+      "content_length_bytes": 3485231,
+      "evidence": [
+        {
+          "file": "output/playwright/city-research/cadmapper-mumbai-download-check.json",
+          "sha256": "43e33cd5265f5f985dc03c7ba2e3b3c8960ff91560fbac52d05f8c92afca16c0",
+          "bytes": 884
+        }
+      ]
+    }
+  ],
+  "coverage_check": {
+    "url": "https://developers.google.com/maps/coverage",
+    "evidence": {
+      "file": "output/playwright/city-research/google-india-coverage-row.json",
+      "sha256": "c52493be7cc18ef6c70f75a92b3e3143ad393a7ef36914c220786e4380faceb0",
+      "bytes": 441
+    },
+    "conclusion": "Grouped country indicators do not confirm photorealistic Mumbai street-level tiles. No live tileset coverage claim."
+  },
+  "osm_pilot_check": {
+    "bbox_west_south_east_north": [
+      72.819,
+      18.93,
+      72.829,
+      18.937
+    ],
+    "outcome": "No usable geographic snapshot retrieved",
+    "attempts": [
+      {
+        "endpoint": "https://overpass-api.de/api/interpreter",
+        "method": "POST",
+        "status": 406
+      },
+      {
+        "endpoint": "https://overpass-api.de/api/interpreter",
+        "method": "GET",
+        "status": 406
+      },
+      {
+        "endpoint": "https://overpass.kumi.systems/api/interpreter",
+        "method": "GET",
+        "status": 429,
+        "note": "Requested identifying User-Agent"
+      },
+      {
+        "endpoint": "https://overpass.kumi.systems/api/interpreter",
+        "method": "GET",
+        "note": "Identifying project User-Agent; timed out after 35 seconds"
+      }
+    ],
+    "query_evidence": {
+      "file": "output/playwright/city-research/mumbai-overpass-query.txt",
+      "sha256": "6f862f468362e08c8f0148326210326079559c013559ac11252f4989129972fc",
+      "bytes": 182
+    }
+  },
+  "unverified": [
+    "Actual Mumbai photorealistic API coverage",
+    "Public/licensable Mumbai reality-mesh delivery from Genesys",
+    "Final Fab product price and exact license",
+    "Native purchased-model contents",
+    "Browser and Roblox imported-city runtime performance",
+    "Independent survey accuracy of supplied/estimated heights",
+    "Actual building facades and roof details"
+  ],
+  "free_pipeline": {
+    "verified_at_utc": "2026-10-27T09:30:13.317615+00:00",
+    "guide": "docs/research/real-city/free-process.md",
+    "preview": "http://127.0.0.1:5173/tools/city-preview/index.html",
+    "osm": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=72.819,18.93,72.829,18.937",
+      "sha256": "ff5bb79fcab57627b69d9570379599a9cf01ddf7340400f41f6c6cf5abab3f75",
+      "preparedAtUtc": "2026-10-27T09:21:09.022911+00:00",
+      "overture": {
+        "release": "2026-10-21.0",
+        "bbox": [
+          72.819,
+          18.93,
+          72.829,
+          18.937
+        ],
+        "source": "https://stac.overturemaps.org/catalog.json",
+        "license": "ODbL-1.0",
+        "bytes": 129968,
+        "sha256": "968a1f7e4ff0ddd6db1ff7c542fef61d566439c5cb0318f44451441ec5e360c4"
+      }
+    },
+    "bbox": [
+      72.819,
+      18.93,
+      72.829,
+      18.937
+    ],
+    "stats": {
+      "rawNodes": 2445,
+      "rawWays": 455,
+      "rawBuildingWays": 139,
+      "buildings": 197,
+      "uniqueBuildingIds": 196,
+      "heightKinds": {
+        "default_estimate": 166,
+        "floor_estimate": 30,
+        "source_height": 1
+      },
+      "roadAndPathWays": 216,
+      "overtureAdded": 46,
+      "overtureDuplicates": 151,
+      "tiles": 80,
+      "coastlineWays": 1
+    },
+    "blender": {
+      "version": "3.5.1",
+      "source": {
+        "file": "output/playwright/free-city/export/churchgate-source.blend",
+        "bytes": 3017352,
+        "sha256": "e43bf12a0e34930ed180e7bf9e5f2c81d51465cd0562e6235ac04ef3ca29884f"
+      }
+    },
+    "export": {
+      "tiles": 80,
+      "glb_bytes": 970636,
+      "tile_grid_metres": 125,
+      "mesh_pieces": 749,
+      "pieces_with_nonpaired_edges": 0
+    },
+    "chrome": {
+      "initial_tiles": 15,
+      "initial_glb_bytes": 266348,
+      "max_resident_in_movement_check": 22,
+      "max_requests": 3,
+      "evictions": 46,
+      "errors": [],
+      "stopped_resident": 0,
+      "held_fetch_movement_metres": 0.9031899999999827
+    },
+    "evidence": [
+      {
+        "file": "output/playwright/free-city/export/manifest.json",
+        "bytes": 21738,
+        "sha256": "af6d83f32aa91b561f782d8a63fb571d2f904f5d91e999712a772373b7ded132"
+      },
+      {
+        "file": "output/playwright/free-city/streaming-validation.json",
+        "bytes": 9455,
+        "sha256": "cbab3b547f1b608d09a632d2cdb3227002f62057a607bfa84429a33e7a881cca"
+      },
+      {
+        "file": "output/playwright/free-city/delayed-validation.json",
+        "bytes": 2335,
+        "sha256": "33c4cc8884b116d3f7c7f8c7af712d9cc4a0a30b6c3827a2a35ab08c401a9878"
+      },
+      {
+        "file": "output/playwright/free-city/geometry-audit.json",
+        "bytes": 490,
+        "sha256": "60385755a7326505e9318acdd5028af5042586e802f5239e1f68aa4ebb137390"
+      },
+      {
+        "file": "output/playwright/free-city/raw-checks/initial-source-checks.json",
+        "bytes": 1552,
+        "sha256": "83a112e544a4b66aac86bbd04f2e2fa6ec1b279e00591ec7388a61ffd0130500"
+      }
+    ],
+    "notes": [
+      "Generic untextured geometry; heights/widths include marked estimates",
+      "Real-road traffic/collision integration is not part of the isolated preview",
+      "Roblox workflow researched, but not executed in Studio",
+      "No paid data, plugin, API key or billing account used"
+    ]
+  },
+  "selected_target": "Curated/compressed Mumbai in the existing Three.js game; optional reuse of the same authored building sources in Roblox",
+  "curated_direction": {
+    "guide": "docs/research/real-city/curated-mumbai.md",
+    "catalog": "docs/research/real-city/curated-assets.json",
+    "verified_reference_assets": 11,
+    "ready_finished_models": 0,
+    "verification": "Commons API metadata checks for selected file licenses; Antilia and Mannat pages read in visible Chrome",
+    "evidence": "output/playwright/free-city/curated-references.json",
+    "limitations": [
+      "References are photographs, not downloadable finished 3D assets",
+      "Jalsa/Ranwar not established by targeted reference searches",
+      "No final detailed asset set or production scenery swap completed"
+    ]
+  },
+  "validation": {
+    "existingUnitTests": "31 passed",
+    "newStreamingRouteTests": "4 passed",
+    "productionBuild": "passed",
+    "existingBrowserTests": "11 passed using Google Chrome",
+    "previewTypeCheck": "passed",
+    "geometryAudit": "749 pieces; all edges paired",
+    "authoredExporter": "80-tile saved-scene export and tagged-root test passed; saved sources unchanged; world transforms verified in Chrome"
+  }
+}

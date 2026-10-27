@@ -1,0 +1,442 @@
+{
+  "version": 1,
+  "verifiedAtUtc": "2026-10-27T09:40:34.541287+00:00",
+  "purpose": "Curated Mumbai real-building reference catalog and Blender modelling brief",
+  "status": "references verified; finished models and production placements not implemented",
+  "layout": "compact authored game map with actual selected landmark identities and recorded geographic/lane edits",
+  "assets": [
+    {
+      "id": "gateway-of-india",
+      "name": "Gateway of India",
+      "district": "Colaba waterfront",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Gateway Of India,Mumbai.JPG",
+          "url": "https://commons.wikimedia.org/wiki/File:Gateway_Of_India,Mumbai.JPG",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Gateway_Of_India%2CMumbai.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Batman7677",
+          "license": "CC BY-SA 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "central arch with real depth",
+        "side pavilions and turrets",
+        "stone ornament and cornice",
+        "reference-matched silhouette"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/gateway-of-india.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "taj-mahal-palace",
+      "name": "Taj Mahal Palace",
+      "district": "Colaba waterfront",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Taj Mahal Palace Hotel.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_Palace_Hotel.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Taj_Mahal_Palace_Hotel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Joe Ravi",
+          "license": "CC BY-SA 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        },
+        {
+          "title": "File:Panoramic view of Taj Palace Hotel and Taj Tower with the iconic Gateway of India in the background.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Panoramic_view_of_Taj_Palace_Hotel_and_Taj_Tower_with_the_iconic_Gateway_of_India_in_the_background.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/df/Panoramic_view_of_Taj_Palace_Hotel_and_Taj_Tower_with_the_iconic_Gateway_of_India_in_the_background.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "iMahesh",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "red main dome",
+        "actual facade rhythm and roofline",
+        "arcades and corner towers",
+        "waterfront frontage"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/taj-mahal-palace.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "cst",
+      "name": "Chhatrapati Shivaji Terminus / CSMT",
+      "district": "Fort / station quarter",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Chhatrapati Shivaji Terminus (Victoria Terminus).jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Chhatrapati_Shivaji_Terminus_(Victoria_Terminus).jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Chhatrapati_Shivaji_Terminus_%28Victoria_Terminus%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Joe Ravi",
+          "license": "CC BY-SA 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "main dome and turrets",
+        "Gothic arches",
+        "stone facade and station frontage"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/cst.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "soona-mahal",
+      "name": "Soona Mahal",
+      "district": "Marine Drive",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Closeup of Soona Mahal, Marine Drive, Mumbai.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Closeup_of_Soona_Mahal,_Marine_Drive,_Mumbai.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Closeup_of_Soona_Mahal%2C_Marine_Drive%2C_Mumbai.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "DesiBoy101",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "actual Art Deco corner",
+        "curved balconies and horizontal bands",
+        "reference-matched facade colours"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/soona-mahal.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "savitribai-hostel",
+      "name": "Savitribai Phule Girls Hostel",
+      "district": "Marine Drive",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Savitribai Phule Girls Hostel, Marine Drive, Mumbai.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Savitribai_Phule_Girls_Hostel,_Marine_Drive,_Mumbai.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Savitribai_Phule_Girls_Hostel%2C_Marine_Drive%2C_Mumbai.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Udaykumar PR",
+          "license": "CC BY 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "identified building frontage",
+        "reference-matched proportions",
+        "coastal street context"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/savitribai-hostel.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "antilia",
+      "name": "Antilia",
+      "district": "Malabar Hill / Pedder Road approach",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Antilia, Mumbai.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Antilia,_Mumbai.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/06/Antilia%2C_Mumbai.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "DesiBoy101",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "offset stacked volumes",
+        "terrace voids and gardens",
+        "exposed structural bays",
+        "actual glass/metal facade rhythm"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/antilia.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "mannat",
+      "name": "Mannat",
+      "district": "Bandra",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Mannat SRK House.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Mannat_SRK_House.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Mannat_SRK_House.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Kushared",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "publicly visible bungalow frontage",
+        "entrance and boundary exterior",
+        "reference-matched distinctive features"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/mannat.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "keshavji-naik-chawl",
+      "name": "Keshavji Naik Chawl",
+      "district": "Girgaum",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Keshav ji naik chawl-Mumbai,Maharashtra (2).jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Keshav_ji_naik_chawl-Mumbai,Maharashtra_(2).jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/51/Keshav_ji_naik_chawl-Mumbai%2CMaharashtra_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Vksaeecool",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        },
+        {
+          "title": "File:Keshava ji naik chawl-Mumbai,Maharashtra (3).jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Keshava_ji_naik_chawl-Mumbai,Maharashtra_(3).jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Keshava_ji_naik_chawl-Mumbai%2CMaharashtra_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Vksaeecool",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "actual courtyard/verandah arrangement",
+        "balcony rails and doors",
+        "stairs and visible facade treatment"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/keshavji-naik-chawl.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "bhendi-bazaar-frontage",
+      "name": "Bhendi Bazaar street frontage",
+      "district": "Bhendi Bazaar",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Old bhendi Bazaar.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Old_bhendi_Bazaar.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/30/Old_bhendi_Bazaar.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Boomchikaboomboom",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "mixed-use frontage from chosen historical reference",
+        "shop shutters and awnings",
+        "balconies and dense street rhythm"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/bhendi-bazaar-frontage.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "colaba-shops",
+      "name": "Colaba Causeway shop frontage",
+      "district": "Colaba",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Colaba Causeway,Mumbai - panoramio.jpg",
+          "url": "https://commons.wikimedia.org/wiki/File:Colaba_Causeway,Mumbai_-_panoramio.jpg",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Colaba_Causeway%2CMumbai_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Udaykumar PR",
+          "license": "CC BY 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "actual storefront rhythm",
+        "pedestrian edge and stalls",
+        "signage and facade depth"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/colaba-shops.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    },
+    {
+      "id": "carter-road-context",
+      "name": "Carter Road coastal context",
+      "district": "Bandra",
+      "modelStatus": "not-built",
+      "freeRoute": "original Blender modelling from licensed exterior references",
+      "references": [
+        {
+          "title": "File:Carter Road, Bandra, Mumbai.tif",
+          "url": "https://commons.wikimedia.org/wiki/File:Carter_Road,_Bandra,_Mumbai.tif",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/57/Carter_Road%2C_Bandra%2C_Mumbai.tif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "author": "Wander-earth",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+          "verification": "Commons imageinfo/extmetadata API returned HTTP 200"
+        }
+      ],
+      "recognizableFeatures": [
+        "promenade and trees",
+        "coastal road character",
+        "reference-based adjoining frontage"
+      ],
+      "sourceDimensions": "not-surveyed; obtain/label dimensions during modelling",
+      "sourceScene": "assets/city-source/curated-mumbai/carter-road-context.blend",
+      "sourceSceneStatus": "proposed path; file not yet created",
+      "expectedExports": [
+        "near GLB",
+        "reduced mid/far GLB",
+        "separate simple collider"
+      ],
+      "gamePlacement": "authored/compressed layout; preserve model proportions"
+    }
+  ],
+  "roads": [
+    {
+      "name": "Marine Drive",
+      "totalGameLanes": 4,
+      "lanesPerDirection": 2,
+      "laneCountStatus": "gameplay choice; not asserted as the count for every real segment",
+      "source": "selected OSM polylines plus licensed street references",
+      "runtimeStatus": "proposed"
+    },
+    {
+      "name": "Pedder Road approach",
+      "totalGameLanes": 4,
+      "lanesPerDirection": 2,
+      "laneCountStatus": "gameplay choice; not asserted as the count for every real segment",
+      "source": "selected OSM polylines plus licensed street references",
+      "runtimeStatus": "proposed"
+    },
+    {
+      "name": "Colaba Causeway",
+      "totalGameLanes": 2,
+      "lanesPerDirection": 1,
+      "laneCountStatus": "gameplay choice; not asserted as the count for every real segment",
+      "source": "selected OSM polylines plus licensed street references",
+      "runtimeStatus": "proposed"
+    },
+    {
+      "name": "Carter Road",
+      "totalGameLanes": 2,
+      "lanesPerDirection": 1,
+      "laneCountStatus": "gameplay choice; not asserted as the count for every real segment",
+      "source": "selected OSM polylines plus licensed street references",
+      "runtimeStatus": "proposed"
+    },
+    {
+      "name": "Girgaum/chawl streets",
+      "totalGameLanes": 2,
+      "lanesPerDirection": 1,
+      "laneCountStatus": "gameplay choice; not asserted as the count for every real segment",
+      "source": "selected OSM polylines plus licensed street references",
+      "runtimeStatus": "proposed"
+    },
+    {
+      "name": "Bhendi Bazaar streets",
+      "totalGameLanes": 2,
+      "lanesPerDirection": 1,
+      "laneCountStatus": "gameplay choice; not asserted as the count for every real segment",
+      "source": "selected OSM polylines plus licensed street references",
+      "runtimeStatus": "proposed"
+    }
+  ],
+  "creditsPolicy": "Retain per-file author/license/link and modification notices; preserve applicable share-alike licenses for derivative art assets",
+  "streaming": {
+    "tileGridMetres": 125,
+    "nearbyMetres": 140,
+    "forwardMetres": 350,
+    "wantedLimit": 18,
+    "residentLimit": 22,
+    "concurrency": 3,
+    "status": "mechanism verified on untextured Churchgate sample; detailed-asset memory/FPS budgets need profiling"
+  }
+}

@@ -30,6 +30,9 @@ Use the current implementation guides for setup and behavior. The original desig
 | [Vehicle carousel reference](../output/design/vehicle-circular-gallery-prompt.md) | Supplied design brief for the implemented oval vehicle chooser |
 | [Visual storyboards](storyboard/README.md) | City, character, vehicle, and player-journey concept art |
 | [Mumbai map reference](research/mumbai/README.md) | Geographic context and municipal-data attribution |
+| [Real-city sources and browser plan](research/real-city/README.md) | Researched options for accurate Mumbai roads/buildings, source rights, progressive browser loading and optional Roblox export |
+| [Tested free city pipeline](research/real-city/free-process.md) | Working OSM/Overture → Blender → streamed Chrome sample, measured limits, commands and Roblox reuse |
+| [Curated Mumbai environment](research/real-city/curated-mumbai.md) | Real landmarks, Antilia/Mannat, licensed façade references, chawls, selected roads and the Blender asset plan |
 | [Mumbai audio research](research/mumbai/audio/README.md) | Recording sources, locations, licenses, and coverage |
 | [Local audio library](../assets/audio/mumbai/README.md) | Downloaded research recordings and listening catalogue |
 | [Primary source checks](research/source-checks.json) | Saved research-verification evidence |

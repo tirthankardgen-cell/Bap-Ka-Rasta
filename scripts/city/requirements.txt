@@ -1,0 +1,4 @@
+overturemaps==1.0.2
+pyproj==3.7.2
+shapely==2.2.0
+requests==2.34.2
