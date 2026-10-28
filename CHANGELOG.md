@@ -1,5 +1,7 @@
 # Changelog
 
+- Kept all 20 character designs and original main names; expanded the crowd to 1,542 distinct identities, added staggered mid-block crossings, and shared pedestrian avoidance positions with vehicle-hit detection.
+
 - Added speed-based pedestrian reactions: Hinglish scolding for slow contact, and a locked-control incident sequence with a side camera, scene photo, newspaper report and return-home button for serious impacts.
 
 - Rebuilt street-front placement around reserved corner lots, with wraparound shop façades and whole-building road/overlap checks.

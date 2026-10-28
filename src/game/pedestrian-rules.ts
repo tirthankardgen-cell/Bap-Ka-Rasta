@@ -1,4 +1,4 @@
-import { actorPose, characters, type Actor } from "./characters.ts";
+import { actorPose, actorIdentity, type Actor } from "./characters.ts";
 import { geometry, junctions, type Point } from "./network.ts";
 
 export const SERIOUS_IMPACT_SPEED = 20 / 3.6;
@@ -90,6 +90,8 @@ export function createPedestrianRules(actors: Actor[]) {
       previousTime: number,
       time: number,
       speed: number,
+      beforePoses?: { x: number; z: number }[],
+      afterPoses?: { x: number; z: number }[],
     ) {
       if (fatal || Math.abs(speed) < 0.3) return null;
       for (let i = 0; i < actors.length; i++) {
@@ -110,20 +112,18 @@ export function createPedestrianRules(actors: Actor[]) {
         )
           continue;
         const p0 =
-          old && time - old.time < 5 ? old : actorPose(a, previousTime);
-        const p1 = old && time - old.time < 5 ? old : actorPose(a, time);
+          old && time - old.time < 5
+            ? old
+            : (beforePoses?.[i] ?? actorPose(a, previousTime));
+        const p1 =
+          old && time - old.time < 5
+            ? old
+            : (afterPoses?.[i] ?? actorPose(a, time));
         if (!sweptPersonContact(before, after, after.yaw, p0, p1)) continue;
-        const c = characters[a.character];
+        const identity = actorIdentity(a);
         const hit: PedestrianHit = {
           actorId: a.id,
-          name: a.named
-            ? c.name
-            : c.name.split(" ")[0] +
-              " " +
-              ["Sawant", "Shaikh", "Patil", "D'Souza", "Shinde", "More"][
-                a.id % 6
-              ],
-          role: c.role,
+          ...identity,
           speed: Math.abs(speed) * 3.6,
           time,
           x: p1.x,

@@ -1,9 +1,9 @@
+import { createCrowdMotion } from "./crowd-motion.ts";
 import { createPedestrianRules, fallPose } from "./pedestrian-rules.ts";
 import * as THREE from "three";
 import {
   characters,
   createActors,
-  actorPose,
   type Character,
   type Actor,
 } from "./characters.ts";
@@ -194,6 +194,10 @@ export function makeCrowd(
 ) {
   const actors = createActors();
   const rules = createPedestrianRules(actors);
+  const motion = createCrowdMotion(actors, (a, time) => {
+    const hit = rules.reactions.get(a.id);
+    return hit && (hit.fatal || time - hit.time < 5) ? hit : undefined;
+  });
   const reduced =
     typeof matchMedia !== "undefined" &&
     matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -232,22 +236,33 @@ export function makeCrowd(
   const spoken = new Map<number, number>();
   return {
     count: actors.length,
-    collide: rules.collide,
+    collide(
+      before: { x: number; z: number },
+      after: { x: number; z: number; yaw: number },
+      previousTime: number,
+      time: number,
+      speed: number,
+    ) {
+      const p0 = motion.sample(previousTime),
+        p1 = motion.sample(time);
+      return rules.collide(before, after, previousTime, time, speed, p0, p1);
+    },
     update(time: number, x: number, z: number, low = false) {
       if (
         low === lastLow &&
-        Math.floor(time * 10) === last &&
+        Math.floor(time * (low ? 10 : 20)) === last &&
         Math.hypot(x - lastX, z - lastZ) < 2
       )
         return;
       lastLow = low;
-      last = Math.floor(time * 10);
+      last = Math.floor(time * (low ? 10 : 20));
       lastX = x;
       lastZ = z;
+      const poses = motion.sample(time);
       let index = 0;
       for (let i = 0; i < actors.length; i++) {
         const a = actors[i],
-          base = actorPose(a, time),
+          base = poses[i],
           reaction = rules.reactions.get(a.id),
           reacting = reaction && (reaction.fatal || time - reaction.time < 5),
           p = reacting

@@ -40,7 +40,7 @@ test("non-crossing characters stay off active roads and clear the entry path", (
   const actors = createActors();
   for (const time of [0, 30, 90, 180])
     for (const a of actors) {
-      if (a.cross >= 0) continue;
+      if (a.cross >= 0 || a.jaywalk !== undefined) continue;
       const p = actorPose(a, time);
       assert.equal(
         roadContains(p.x, p.z, 0),

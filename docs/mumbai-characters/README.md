@@ -44,7 +44,7 @@ Use the descriptions as ElevenLabs voice-selection/design prompts. Each is an or
 
 ## Twelve more street characters
 
-These are visual archetypes for unnamed crowd variants; the named version can have a single home location. Do not spawn multiple copies of the same named person together. Work/age does not restrict which neighbourhood somebody can visit.
+These are visual archetypes for individually named background variants of the same designs; the named version can have a single home location. Do not spawn multiple copies of the same named person together. Work/age does not restrict which neighbourhood somebody can visit.
 
 | ID / character | Appearance / prop | Activity | Optional background voice prompt |
 | --- | --- | --- | --- |
@@ -140,3 +140,5 @@ Mostly natural Hinglish, with perhaps one short Marathi phrase per line. Use fam
 3. **Crowd variety:** implement six neighbourhood kits, 12 shared-rig crowd archetypes, variant selection, seating/queues/browsing and LOD. Review three consecutive blocks and real-phone performance before raising density.
 4. **Reactive speech:** add proximity/event scheduler, subtitles, cooldowns and audio settings; wire approved ambient lines. Keep future interaction rows disabled.
 5. **Optional later interactions:** passenger rides, workshop service and purchases, only after their gameplay states exist. Free roaming remains available throughout.
+
+See [background identities](background-names.md) for examples of distinct names assigned to each existing character type. Main-cast names stay unchanged.

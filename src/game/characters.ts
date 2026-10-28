@@ -278,12 +278,7 @@ export const characters: Character[] = [
   },
 ];
 export type District =
-  | "waterfront"
-  | "station"
-  | "bazaar"
-  | "residential"
-  | "office"
-  | "workshop";
+  "waterfront" | "station" | "bazaar" | "residential" | "office" | "workshop";
 export function districtFor(edge: number): District {
   const g = geometry(edge),
     x = (g.a.x + g.b.x) / 2,
@@ -298,12 +293,12 @@ export function districtFor(edge: number): District {
   ];
 }
 const pools: Record<District, number[]> = {
-  waterfront: [18, 17, 13, 16, 11, 12],
-  station: [8, 10, 12, 11, 14, 19],
-  bazaar: [9, 19, 16, 8, 10, 14],
-  residential: [16, 14, 9, 15, 13, 11],
-  office: [12, 11, 13, 8, 17, 14],
-  workshop: [19, 14, 15, 12, 8, 10],
+  waterfront: [18, 17, 13, 16, 11, 12, 14, 1],
+  station: [8, 10, 12, 11, 14, 19, 4, 5],
+  bazaar: [9, 19, 16, 8, 10, 14, 6, 2],
+  residential: [16, 14, 9, 15, 13, 11, 18, 5],
+  office: [12, 11, 13, 8, 17, 14, 4, 7],
+  workshop: [19, 14, 15, 12, 8, 10, 3, 1],
 };
 export type Actor = {
   id: number;
@@ -315,6 +310,7 @@ export type Actor = {
   variant: number;
   activity: "walk" | "chat" | "browse" | "work";
   cross: number;
+  jaywalk?: number;
   home?: { x: number; z: number; yaw: number };
 };
 export function createActors(): Actor[] {
@@ -369,10 +365,10 @@ export function createActors(): Actor[] {
       pool = pools[district];
     const count =
       district === "bazaar" || district === "station"
-        ? 16
+        ? 22
         : district === "residential"
-          ? 10
-          : 12;
+          ? 16
+          : 18;
     for (let i = 0; i < count; i++) {
       const chatting = i % 6 < 2;
       const phase = chatting
@@ -393,6 +389,23 @@ export function createActors(): Actor[] {
       });
     }
   }
+  for (const e of streets) {
+    if (e.oneWay || geometry(e.id).length < 90) continue;
+    const pool = pools[districtFor(e.id)];
+    for (let i = 0; i < 3; i++)
+      result.push({
+        id: result.length,
+        character: pool[(e.id + i * 3) % pool.length],
+        named: false,
+        edge: e.id,
+        side: i % 2 ? 1 : -1,
+        phase: e.id * 3.17 + i * 19.3,
+        variant: 1 + ((e.id + i * 5) % 12),
+        activity: "walk",
+        cross: -1,
+        jaywalk: 0.2 + i * 0.3,
+      });
+  }
   for (const n of junctions)
     if (n.signal)
       for (let i = 0; i < 2; i++)
@@ -411,6 +424,7 @@ export function createActors(): Actor[] {
 }
 export function actorPose(a: Actor, time: number) {
   if (a.home) return { ...a.home, moving: false };
+  if (a.jaywalk !== undefined) return jaywalkingPose(a, time);
   if (a.cross >= 0)
     return crossingPosition(a.cross, time, a.side, a.phase * 12);
   const e = streets[a.edge],
@@ -448,5 +462,87 @@ export function actorPose(a: Actor, time: number) {
             : Math.PI
           : (a.side * Math.PI) / 2),
     moving: active,
+  };
+}
+
+// Each person follows a continuous loop with independently staggered pauses.
+// Crossings are mid-block and diagonal; traffic lights do not gate this route.
+const jayRoutes = new Map<
+  string,
+  { points: { x: number; z: number }[]; lengths: number[] }
+>();
+function jaywalkingPose(a: Actor, time: number) {
+  const key = a.edge + ":" + a.jaywalk;
+  let route = jayRoutes.get(key);
+  if (!route) {
+    const e = streets[a.edge],
+      length = geometry(a.edge).length;
+    let d = length * a.jaywalk!;
+    const anchor = lanePosition(e.id, e.a, d, 0);
+    if (anchor.x < -245 && anchor.z > 304 && anchor.z < 344)
+      d = Math.min(length - 24, d + 45);
+    const offset = e.width / 2 + 1.6;
+    const points = [
+      lanePosition(e.id, e.a, d - 8, -offset),
+      lanePosition(e.id, e.a, d + 4, offset),
+      lanePosition(e.id, e.a, d + 16, offset),
+      lanePosition(e.id, e.a, d + 8, -offset),
+    ];
+    route = {
+      points,
+      lengths: points.map((p, i) =>
+        Math.hypot(p.x - points[(i + 1) % 4].x, p.z - points[(i + 1) % 4].z),
+      ),
+    };
+    jayRoutes.set(key, route);
+  }
+  const speed = 0.95 + (a.variant % 5) * 0.16,
+    wait = 2 + (a.id % 5);
+  const durations = route.lengths.map((d) => d / speed + wait);
+  let clock = (time + a.phase) % durations.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < 4; i++) {
+    if (clock <= durations[i] || i === 3) {
+      const from = route.points[i],
+        to = route.points[(i + 1) % 4];
+      const u = Math.min(
+        1,
+        Math.max(0, (clock - wait) / (durations[i] - wait)),
+      );
+      return {
+        x: from.x + (to.x - from.x) * u,
+        z: from.z + (to.z - from.z) * u,
+        yaw: Math.atan2(to.x - from.x, to.z - from.z),
+        moving: clock > wait,
+      };
+    }
+    clock -= durations[i];
+  }
+  throw new Error("Invalid pedestrian route");
+}
+
+const maleNames =
+  "Aarav Aditya Akash Amit Aniket Arjun Ashish Avinash Chetan Deepak Devendra Dinesh Farhan Gaurav Harish Irfan Karan Kunal Mahesh Manish Mohan Nikhil Omkar Prakash Rahul Rajesh Rohit Sagar Sameer Sanjay Vishal Yusuf".split(
+    " ",
+  );
+const femaleNames =
+  "Aditi Aishwarya Amruta Anjali Ankita Archana Deepa Divya Fatima Gauri Kavita Kiran Madhuri Manasi Manisha Neha Nisha Padmini Pallavi Poonam Priya Radhika Rashmi Ritu Riya Sakshi Salma Seema Shreya Smita Sonali Vaishali".split(
+    " ",
+  );
+const surnames =
+  "Sawant Shaikh Patil Shinde More Jadhav Pawar Deshmukh Kulkarni Joshi Naik Kadam Chavan Salunkhe Mane Bhosale Khan Ansari Qureshi Merchant Fernandes Dsouza Pereira Dsilva Dmello Shah Mehta Patel Desai Vora Jain Gupta Sharma Verma Mishra Tiwari Singh Yadav Maurya Pandey Iyer Nair Menon Pillai Shetty Kamble Kambli Gaikwad Wagh Rane Mhatre Koli Bhoir Dalvi Parab Gokhale Apte Borkar Sardesai Tendulkar Sutar Lohar Sayed Mirza".split(
+    " ",
+  );
+export function actorIdentity(a: Actor) {
+  const c = characters[a.character];
+  if (a.named) return { name: c.name, role: c.role };
+  const names = [2, 4, 6, 9, 11, 13, 15, 16, 18].includes(a.character)
+    ? femaleNames
+    : maleNames;
+  return {
+    name:
+      names[a.id % names.length] +
+      " " +
+      surnames[Math.floor(a.id / names.length) % surnames.length],
+    role: c.role,
   };
 }
