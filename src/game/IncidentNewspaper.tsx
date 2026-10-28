@@ -54,22 +54,20 @@ export default function IncidentNewspaper({
             <div className="paper-copy" id="incident-summary">
               <p>
                 <strong>MUMBAI, {incident.street.toUpperCase()}:</strong> Auto
-                rickshaw ki takkar mein {incident.name} ki maut ho gayi. Ghatna
-                ke waqt auto ki raftaar lagbhag {Math.round(incident.speed)}{" "}
-                km/h thi.
+                rickshaw ki takkar mein {incident.name} ({incident.role}) ki
+                maut ho gayi. Haadsa sheher ki rozmarra ki aawajaahi ke beech
+                hua.
               </p>
               <p>
-                <strong>Kaun:</strong> {incident.name}
-                <br />
-                <strong>Pehchaan:</strong> {incident.role}
-                <br />
-                <strong>Kahan:</strong> {incident.street}
-                <br />
-                <strong>Kaise:</strong> Tez raftaar auto se takkar.
+                Ghatna ke waqt auto ki raftaar lagbhag{" "}
+                {Math.round(incident.speed)} km/h thi. Takkar lagne ke baad{" "}
+                {incident.name} sadak par gir pade aur unki jaan chali gayi.
+                Ghatnasthal ki tasveer is haadse ka manzar bayaan karti hai.
               </p>
               <p className="paper-closing">
-                Ek pal ki laaparwahi. Ek zindagi khatam. Is ride ka safar yahin
-                ruk gaya.
+                Yeh haadsa sheher ki vyast sadkon par raftaar aur zimmedaari
+                ka sawaal phir saamne laata hai. Ek pal ki laaparwahi kisi ki
+                zindagi ka aakhri safar ban sakti hai.
               </p>
             </div>
           </div>

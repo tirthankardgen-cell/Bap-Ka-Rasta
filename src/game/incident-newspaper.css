@@ -101,7 +101,7 @@
   margin: 0 0 9px;
 }
 .paper-closing {
-  font-weight: bold;
+  text-indent: 1em;
 }
 .incident-paper footer {
   border-top: 2px solid #37362e;
