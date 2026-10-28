@@ -1,3 +1,4 @@
+import { buildingLots } from "./buildings";
 import { boundaryBuildings } from "./boundaries";
 import { makeCrowd } from "./crowd";
 import { pavementLayout, PAVEMENT_TOP } from "./pavements";
@@ -430,232 +431,215 @@ export function makeWorld(scene: THREE.Scene) {
     "#e1cea0",
     "#b5b4ba",
   ];
-  const buildingPositions: { x: number; z: number }[] = [];
-  for (const e of streets) {
-    if (e.oneWay) continue;
-    const g = geometry(e.id);
-    for (let d = 45; d < g.length - 36; d += 23)
-      for (const side of [-1, 1]) {
-        const p = lanePosition(e.id, e.a, d, side * (e.width / 2 + 13));
-        if (
-          p.x < -242 ||
-          p.x > 640 ||
-          p.z > 650 ||
-          roadContains(p.x, p.z, 0) ||
-          buildingPositions.some(
-            (b) => Math.hypot(b.x - p.x, b.z - p.z) < 20,
-          ) ||
-          (p.x > -225 && p.x < -115 && p.z > 0 && p.z < 140)
-        )
-          continue;
-        buildingPositions.push(p);
-        const seed = e.id * 13 + Math.floor(d) + side,
-          style = e.width <= 12 ? 2 : Math.abs(seed) % 4,
-          h =
-            style === 2
-              ? 12 + (Math.abs(seed) % 3) * 3.5
-              : style === 1
-                ? 17 + (Math.abs(seed) % 2) * 4
-                : 16 + (Math.abs(seed) % 4) * 3.5,
-          c = facades[Math.abs(seed) % 6];
-        add(
-          style === 0 ? "rounded" : "box",
-          style === 1 ? "#ad8a61" : c,
-          p.x,
-          h / 2,
-          p.z,
-          17,
-          h,
-          20,
-          0,
-          p.yaw,
-        );
-        const front = (along: number, out = 0) => ({
-          x:
-            p.x -
-            Math.cos(p.yaw) * side * (8.6 + out) +
-            Math.sin(p.yaw) * along,
-          z:
-            p.z +
-            Math.sin(p.yaw) * side * (8.6 + out) +
-            Math.cos(p.yaw) * along,
-        });
-        const face = (
-          color: string,
-          along: number,
-          y: number,
-          wide: number,
-          tall: number,
-          depth = 0.15,
-          out = 0,
-        ) => {
-          const q = front(along, out);
-          box(color, q.x, y, q.z, depth, tall, wide, p.yaw);
-        };
-        // Mumbai's coastal Art Deco, Fort stone arcades, chawls and mixed-use blocks.
-        if (style === 0) {
-          for (let floor = 3; floor < h; floor += 3.5) {
-            face("#eee0b7", 0, floor, 20, 0.25, 1.1, 0.45);
-            const q = front(7, 0.1);
-            add("cylinder", c, q.x, floor + 0.35, q.z, 2.1, 0.8, 2.1);
-          }
-          face("#e4cf9b", -7, h / 2, 1.1, h + 1, 0.5, 0.2);
-          face("#eee0b7", -7, h + 0.5, 3, 1, 0.6, 0.2);
-          face("#b57d54", -7, h + 1.3, 1.8, 0.6, 0.6, 0.2);
-        } else if (style === 1) {
-          for (const along of [-9, -3, 3, 9]) {
-            const q = front(along, 0.2);
-            add("cylinder", "#e0c291", q.x, h / 2, q.z, 0.38, h, 0.38);
-            face("#e9d0a1", along, h - 0.3, 1.2, 0.5, 0.8, 0.25);
-          }
-          add("roof", "#795440", p.x, h + 0.5, p.z, 18, 3, 21, 0, p.yaw);
-          for (const along of [-7, 0, 7])
-            face("#d7bb8c", along, h + 1, 1.2, 2.2, 1.2, 0.2);
-        } else if (style === 2) {
-          add("roof", "#985e40", p.x, h + 0.5, p.z, 19, 2.5, 22, 0, p.yaw);
-          for (let floor = 3; floor < h; floor += 3.5) {
-            face("#565a4b", 0, floor + 0.65, 20, 0.08, 0.08, 1.2);
-            face("#c5ac80", 0, floor, 20, 0.3, 2, 1);
-            for (let along = -9; along <= 9; along += 1.5)
-              face("#565a4b", along, floor + 0.35, 0.05, 0.7, 0.05, 1.2);
-            for (let along = -7; along <= 7; along += 3.5) {
-              face("#5d6c60", along, floor + 1.3, 1.5, 2.1, 0.12, 0.1);
-              face(
-                ["#bd6860", "#d3b653", "#54798a"][
-                  Math.abs(Math.floor(along + floor)) % 3
-                ],
-                along + 0.6,
-                floor + 1.3,
-                0.8,
-                1.1,
-                0.035,
-                1.3,
-              );
-            }
-          }
-        } else {
-          for (let floor = 5; floor < h; floor += 4)
-            for (const along of [-6, 6]) {
-              face("#aab3aa", along, floor, 1.7, 0.7, 0.6, 0.35);
-              face("#526b68", along, floor, 1.35, 0.45, 0.65, 0.37);
-            }
-          for (let along = -9; along <= 9; along += 6)
-            face("#e3cda5", along, h / 2, 0.35, h, 0.3, 0.1);
-        }
-        if (Math.abs(seed) % 3 === 0) {
-          const q = front(0, 0.5);
-          sign(
-            ["SAGAR MAHAL", "FORT CHAMBERS", "GANESH NIWAS", "MUMBAI SADAN"][
-              style
+  const lots = buildingLots();
+  for (const p of lots) {
+    const e = streets[p.edge],
+      d = p.distance,
+      side = p.side;
+    const g = { dx: Math.sin(p.yaw), dz: Math.cos(p.yaw) };
+    const seed = e.id * 31 + Math.floor(d * 1.618) + side * 7,
+      style = e.width <= 12 ? 2 : Math.abs(seed) % 4,
+      h =
+        style === 2
+          ? 12 + (Math.abs(seed) % 3) * 3.5
+          : style === 1
+            ? 17 + (Math.abs(seed) % 2) * 4
+            : 16 + (Math.abs(seed) % 4) * 3.5,
+      c = facades[Math.abs(seed) % 6];
+    add(
+      style === 0 ? "rounded" : "box",
+      style === 1 ? "#ad8a61" : c,
+      p.x,
+      h / 2,
+      p.z,
+      17,
+      h,
+      20,
+      0,
+      p.yaw,
+    );
+    const front = (along: number, out = 0) => ({
+      x: p.x - Math.cos(p.yaw) * side * (8.6 + out) + Math.sin(p.yaw) * along,
+      z: p.z + Math.sin(p.yaw) * side * (8.6 + out) + Math.cos(p.yaw) * along,
+    });
+    const face = (
+      color: string,
+      along: number,
+      y: number,
+      wide: number,
+      tall: number,
+      depth = 0.15,
+      out = 0,
+    ) => {
+      const q = front(along, out);
+      box(color, q.x, y, q.z, depth, tall, wide, p.yaw);
+    };
+    // Mumbai's coastal Art Deco, Fort stone arcades, chawls and mixed-use blocks.
+    if (style === 0) {
+      for (let floor = 3; floor < h; floor += 3.5) {
+        face("#eee0b7", 0, floor, 20, 0.25, 1.1, 0.45);
+        const q = front(7, 0.1);
+        add("cylinder", c, q.x, floor + 0.35, q.z, 2.1, 0.8, 2.1);
+      }
+      face("#e4cf9b", -7, h / 2, 1.1, h + 1, 0.5, 0.2);
+      face("#eee0b7", -7, h + 0.5, 3, 1, 0.6, 0.2);
+      face("#b57d54", -7, h + 1.3, 1.8, 0.6, 0.6, 0.2);
+    } else if (style === 1) {
+      for (const along of [-9, -3, 3, 9]) {
+        const q = front(along, 0.2);
+        add("cylinder", "#e0c291", q.x, h / 2, q.z, 0.38, h, 0.38);
+        face("#e9d0a1", along, h - 0.3, 1.2, 0.5, 0.8, 0.25);
+      }
+      add("roof", "#795440", p.x, h + 0.5, p.z, 18, 3, 21, 0, p.yaw);
+      for (const along of [-7, 0, 7])
+        face("#d7bb8c", along, h + 1, 1.2, 2.2, 1.2, 0.2);
+    } else if (style === 2) {
+      add("roof", "#985e40", p.x, h + 0.5, p.z, 19, 2.5, 22, 0, p.yaw);
+      for (let floor = 3; floor < h; floor += 3.5) {
+        face("#565a4b", 0, floor + 0.65, 20, 0.08, 0.08, 1.2);
+        face("#c5ac80", 0, floor, 20, 0.3, 2, 1);
+        for (let along = -9; along <= 9; along += 1.5)
+          face("#565a4b", along, floor + 0.35, 0.05, 0.7, 0.05, 1.2);
+        for (let along = -7; along <= 7; along += 3.5) {
+          face("#5d6c60", along, floor + 1.3, 1.5, 2.1, 0.12, 0.1);
+          face(
+            ["#bd6860", "#d3b653", "#54798a"][
+              Math.abs(Math.floor(along + floor)) % 3
             ],
-            q.x,
-            h - 0.9,
-            q.z,
-            Math.atan2(-g.dz * side, g.dx * side),
-            5,
-            style === 1 ? "#614d3c" : "#31645e",
+            along + 0.6,
+            floor + 1.3,
+            0.8,
+            1.1,
+            0.035,
+            1.3,
           );
-        }
-        box("#eee1bf", p.x, h + 0.25, p.z, 18, 0.5, 21, p.yaw);
-        for (let floor = 3.6; floor < h; floor += 3.5)
-          for (const shift of [-5, 0, 5]) {
-            const wx = p.x - g.dz * side * 8.6 + g.dx * shift,
-              wz = p.z + g.dx * side * 8.6 + g.dz * shift;
-            if (style === 1) {
-              add(
-                "arch",
-                "#e3c99a",
-                wx,
-                floor - 0.95,
-                wz,
-                0.22,
-                2.4,
-                3,
-                0,
-                p.yaw,
-              );
-              const q = front(shift, 0.25);
-              add(
-                "arch",
-                "#344a47",
-                q.x,
-                floor - 0.8,
-                q.z,
-                0.25,
-                1.9,
-                2.4,
-                0,
-                p.yaw,
-              );
-            } else if (style !== 2)
-              box("#4d7480", wx, floor, wz, 0.15, 1.65, 2.3, p.yaw);
-            if (style === 1 || style === 2) continue;
-            // Window mullions and iron balcony rails soften the repeated facades.
-            box("#d5cab5", wx, floor, wz, 0.19, 1.7, 0.075, p.yaw);
-            const railX = wx - g.dz * side * 0.72,
-              railZ = wz + g.dx * side * 0.72;
-            box(
-              "#596365",
-              railX,
-              floor - 0.35,
-              railZ,
-              0.055,
-              0.055,
-              2.8,
-              p.yaw,
-            );
-            for (const offset of [-1.2, -0.6, 0, 0.6, 1.2])
-              box(
-                "#596365",
-                railX + g.dx * offset,
-                floor - 0.65,
-                railZ + g.dz * offset,
-                0.05,
-                0.65,
-                0.05,
-                p.yaw,
-              );
-
-            box(
-              "#e6d8b4",
-              wx - g.dz * side * 0.35,
-              floor - 1,
-              wz + g.dx * side * 0.35,
-              0.8,
-              0.17,
-              2.8,
-              p.yaw,
-            );
-          }
-        const shop = lanePosition(e.id, e.a, d, side * (e.width / 2 + 4));
-        box(
-          seed % 2 ? "#be713c" : "#437e70",
-          shop.x,
-          2.65,
-          shop.z,
-          2,
-          0.3,
-          16,
-          p.yaw,
-        );
-        box("#444f49", shop.x, 1.35, shop.z, 0.15, 2.4, 13, p.yaw);
-        if (Math.abs(seed) % 3 === 0)
-          sign(
-            ["CHAI & CHILL", "VADA PAV", "MUMBAI STORES", "PAPA KI GARAGE"][
-              Math.abs(seed) % 4
-            ],
-            shop.x - g.dz * side * 0.2,
-            3.2,
-            shop.z + g.dx * side * 0.2,
-            Math.atan2(-g.dz * side, g.dx * side),
-            6,
-            seed % 2 ? "#a45a35" : "#255e5b",
-          );
-        if (Math.abs(seed) % 5 === 0) {
-          box("#eee4bc", p.x, h + 1.2, p.z, 3, 2, 3, p.yaw);
-          add("cylinder", "#2e4148", p.x + 3, h + 1.5, p.z + 2, 1.5, 2.4, 1.5);
         }
       }
+    } else {
+      for (let floor = 5; floor < h; floor += 4)
+        for (const along of [-6, 6]) {
+          face("#aab3aa", along, floor, 1.7, 0.7, 0.6, 0.35);
+          face("#526b68", along, floor, 1.35, 0.45, 0.65, 0.37);
+        }
+      for (let along = -9; along <= 9; along += 6)
+        face("#e3cda5", along, h / 2, 0.35, h, 0.3, 0.1);
+    }
+    if (Math.abs(seed) % 3 === 0) {
+      const q = front(0, 0.5);
+      sign(
+        ["SAGAR MAHAL", "FORT CHAMBERS", "GANESH NIWAS", "MUMBAI SADAN"][style],
+        q.x,
+        h - 0.9,
+        q.z,
+        Math.atan2(-g.dz * side, g.dx * side),
+        5,
+        style === 1 ? "#614d3c" : "#31645e",
+      );
+    }
+    box("#eee1bf", p.x, h + 0.25, p.z, 18, 0.5, 21, p.yaw);
+    for (let floor = 3.6; floor < h; floor += 3.5)
+      for (const shift of [-5, 0, 5]) {
+        const wx = p.x - g.dz * side * 8.6 + g.dx * shift,
+          wz = p.z + g.dx * side * 8.6 + g.dz * shift;
+        if (style === 1) {
+          add("arch", "#e3c99a", wx, floor - 0.95, wz, 0.22, 2.4, 3, 0, p.yaw);
+          const q = front(shift, 0.25);
+          add(
+            "arch",
+            "#344a47",
+            q.x,
+            floor - 0.8,
+            q.z,
+            0.25,
+            1.9,
+            2.4,
+            0,
+            p.yaw,
+          );
+        } else if (style !== 2)
+          box("#4d7480", wx, floor, wz, 0.15, 1.65, 2.3, p.yaw);
+        if (style === 1 || style === 2) continue;
+        // Window mullions and iron balcony rails soften the repeated facades.
+        box("#d5cab5", wx, floor, wz, 0.19, 1.7, 0.075, p.yaw);
+        const railX = wx - g.dz * side * 0.72,
+          railZ = wz + g.dx * side * 0.72;
+        box("#596365", railX, floor - 0.35, railZ, 0.055, 0.055, 2.8, p.yaw);
+        for (const offset of [-1.2, -0.6, 0, 0.6, 1.2])
+          box(
+            "#596365",
+            railX + g.dx * offset,
+            floor - 0.65,
+            railZ + g.dz * offset,
+            0.05,
+            0.65,
+            0.05,
+            p.yaw,
+          );
+
+        box(
+          "#e6d8b4",
+          wx - g.dz * side * 0.35,
+          floor - 1,
+          wz + g.dx * side * 0.35,
+          0.8,
+          0.17,
+          2.8,
+          p.yaw,
+        );
+      }
+    const shop = front(0, 0.4);
+    box(
+      seed % 2 ? "#be713c" : "#437e70",
+      shop.x,
+      2.65,
+      shop.z,
+      2,
+      0.3,
+      16,
+      p.yaw,
+    );
+    box("#444f49", shop.x, 1.35, shop.z, 0.15, 2.4, 13, p.yaw);
+    if (Math.abs(seed) % 3 === 0)
+      sign(
+        ["CHAI & CHILL", "VADA PAV", "MUMBAI STORES", "PAPA KI GARAGE"][
+          Math.abs(seed) % 4
+        ],
+        shop.x - g.dz * side * 0.2,
+        3.2,
+        shop.z + g.dx * side * 0.2,
+        Math.atan2(-g.dz * side, g.dx * side),
+        6,
+        seed % 2 ? "#a45a35" : "#255e5b",
+      );
+    if (Math.abs(seed) % 5 === 0) {
+      box("#eee4bc", p.x, h + 1.2, p.z, 3, 2, 3, p.yaw);
+      add("cylinder", "#2e4148", p.x + 3, h + 1.5, p.z + 2, 1.5, 2.4, 1.5);
+    }
+    if (p.corner) {
+      // Corners are seen from two roads: wrap windows, cornices and shops
+      // onto the end walls rather than exposing a blank box.
+      for (const end of [-1, 1]) {
+        const local = (across: number, along: number) => ({
+          x: p.x + Math.cos(p.yaw) * across + Math.sin(p.yaw) * along,
+          z: p.z - Math.sin(p.yaw) * across + Math.cos(p.yaw) * along,
+        });
+        for (let floor = 3.6; floor < h; floor += 3.5) {
+          const ledge = local(0, end * 10.2);
+          box("#eee0b7", ledge.x, floor - 1, ledge.z, 17, 0.22, 0.65, p.yaw);
+          for (const across of [-5, 0, 5]) {
+            const q = local(across, end * 10.1);
+            box("#4d7480", q.x, floor, q.z, 2.3, 1.65, 0.16, p.yaw);
+            box("#d5cab5", q.x, floor, q.z, 0.08, 1.7, 0.2, p.yaw);
+          }
+        }
+        const q = local(0, end * 10.2);
+        box("#437e70", q.x, 2.65, q.z, 13, 0.3, 1.2, p.yaw);
+        for (const across of [-4, 0, 4]) {
+          const door = local(across, end * 10.1);
+          box("#444f49", door.x, 1.3, door.z, 3, 2.4, 0.16, p.yaw);
+        }
+      }
+    }
   }
   // Central maidan and street furniture break up the dense urban blocks.
   box("#88a36e", -170, 0.08, 70, 90, 0.15, 140);
@@ -1071,7 +1055,11 @@ function scooterModel() {
   return g;
 }
 
-export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[], autoModel: THREE.Group) {
+export function trafficVisuals(
+  scene: THREE.Scene,
+  traffic: Traffic[],
+  autoModel: THREE.Group,
+) {
   const batches: { mesh: THREE.InstancedMesh; ids: number[] }[] = [];
   const transform = new THREE.Object3D();
   for (let kind = 0; kind < 6; kind++) {
@@ -1102,9 +1090,8 @@ export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[], autoModel
       const key = kind === 4 ? mat.uuid : mat.color.getHexString();
       if (!groups.has(key))
         groups.set(key, { geos: [], material: mat.clone() });
-      const geometry = (o.geometry.index
-        ? o.geometry.toNonIndexed()
-        : o.geometry.clone()
+      const geometry = (
+        o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()
       ).applyMatrix4(o.matrixWorld);
       // Imported body surfaces and wheel primitives can have different UV sets.
       // These untextured traffic batches only need positions and normals.
@@ -1132,11 +1119,12 @@ export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[], autoModel
     // The imported traffic template borrows the player's mesh resources.
     // Only its baked instance geometries belong to traffic; engine disposal owns originals.
     if (kind !== 4) originalGeos.forEach((g) => g.dispose());
-    if (kind !== 4) originalMats.forEach((m) => {
-      const map = (m as THREE.MeshStandardMaterial).map;
-      map?.dispose();
-      m.dispose();
-    });
+    if (kind !== 4)
+      originalMats.forEach((m) => {
+        const map = (m as THREE.MeshStandardMaterial).map;
+        map?.dispose();
+        m.dispose();
+      });
   }
   return (x: number, z: number) => {
     for (const b of batches) {

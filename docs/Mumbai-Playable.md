@@ -102,3 +102,5 @@ The [playable map](maps/mumbai-game-map.svg) is generated from `network.ts` and 
 Palm trees are restricted to the western beach promenade. Inland street lights and other street furniture remain in place.
 
 The speed display is centered at the top in a translucent glass panel. Braking takes priority over simultaneous throttle, and the GLB front wheel steers with the physics. Player speed is not automatically limited by signals or crossing pedestrians; vehicle, curb and obstacle collisions still apply. Nearby traffic honks when the player directly blocks its lane, with per-car and shared cooldowns. These directional honks reuse the credited runtime horn recording with a lower pitch; they are not new car-specific recordings.
+
+Street-front buildings reserve junction corners before filling the rest of each block. Corner façades wrap windows, cornices and ground-floor shops onto the end walls. Placement checks the full rotated building envelope, including balconies and eaves, against roads, other buildings, the maidan and the perimeter; the seaside stays open. Curved-street façades follow the local road direction.
