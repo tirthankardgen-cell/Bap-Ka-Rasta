@@ -11,6 +11,7 @@ import LandscapeStage from "./LandscapeStage";
 import Selection, { cities } from "./selection/Selection";
 
 import GameLoader from "./GameLoader";
+import { mobileFullscreen } from "./fullscreen";
 
 function App() {
   const [screen, setScreen] = useState<"home" | "city" | "vehicle" | "game">(
@@ -19,10 +20,15 @@ function App() {
   const [selectedCity, setSelectedCity] = useState(0);
   const [selectedVehicle, setSelectedVehicle] = useState(0);
 
+  function navigate(next: typeof screen) {
+    mobileFullscreen(next !== "home");
+    setScreen(next);
+  }
+
   if (screen === "game")
     return (
       <LandscapeStage>
-        <GameLoader onExit={() => setScreen("home")} />
+        <GameLoader onExit={() => navigate("home")} />
       </LandscapeStage>
     );
 
@@ -35,17 +41,17 @@ function App() {
           selected={screen === "city" ? selectedCity : selectedVehicle}
           onSelect={screen === "city" ? setSelectedCity : setSelectedVehicle}
           city={cities[selectedCity].name}
-          onBack={() => setScreen(screen === "city" ? "home" : "city")}
+          onBack={() => navigate(screen === "city" ? "home" : "city")}
           onConfirm={() => {
             if (screen === "city" && selectedCity === 0) {
               setSelectedVehicle(0);
-              setScreen("vehicle");
+              navigate("vehicle");
             } else if (
               screen === "vehicle" &&
               selectedCity === 0 &&
               selectedVehicle === 0
             )
-              setScreen("game");
+              navigate("game");
           }}
         />
       </LandscapeStage>
@@ -91,7 +97,7 @@ function App() {
             <br />
             Aur full-on <strong>“bhai, side de!”</strong>
           </p>
-          <button className="primary" onClick={() => setScreen("city")}>
+          <button className="primary" onClick={() => navigate("city")}>
             Mera Bap Ka Rasta{" "}
             <span>
               <ArrowUpRight size={24} />
