@@ -524,9 +524,9 @@
 }
 .intro-story h2 {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(28px, 5cqw, 54px);
+  font-size: clamp(22px, 3cqw, 32px);
   line-height: 1.05;
-  margin: 12px 0 20px;
+  margin: 0 0 12px;
 }
 .intro-story button {
   display: flex;

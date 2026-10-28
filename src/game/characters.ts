@@ -25,7 +25,7 @@ export const characters: Character[] = [
   {
     id: "sachin",
     name: "Sachin",
-    role: "Apna driver",
+    role: "Auto driver",
     shirt: "#ad956d",
     trousers: "#ac9365",
     skin: "#bd8755",
@@ -38,7 +38,7 @@ export const characters: Character[] = [
   {
     id: "raju",
     name: "Raju Kaka",
-    role: "Auto stand",
+    role: "Auto driver",
     shirt: "#b39a70",
     trousers: "#a68e65",
     skin: "#a77550",
@@ -51,7 +51,7 @@ export const characters: Character[] = [
   {
     id: "meera",
     name: "Meera Tai",
-    role: "Cutting chai",
+    role: "Chai seller",
     shirt: "#34724c",
     trousers: "#743843",
     skin: "#a7704c",
@@ -64,7 +64,7 @@ export const characters: Character[] = [
   {
     id: "sameer",
     name: "Sameer",
-    role: "Auto workshop",
+    role: "Mechanic",
     shirt: "#39638a",
     trousers: "#394148",
     skin: "#b77b4d",
@@ -76,7 +76,7 @@ export const characters: Character[] = [
   {
     id: "aarti",
     name: "Aarti",
-    role: "Office jaane ka time",
+    role: "Office commuter",
     shirt: "#36628b",
     trousers: "#e7dac0",
     skin: "#b78057",
@@ -89,7 +89,7 @@ export const characters: Character[] = [
   {
     id: "imran",
     name: "Imran",
-    role: "College gang",
+    role: "College student",
     shirt: "#873a44",
     trousers: "#4b5968",
     skin: "#b77c56",
@@ -101,7 +101,7 @@ export const characters: Character[] = [
   {
     id: "lata",
     name: "Lata Mavshi",
-    role: "Taaze phool",
+    role: "Flower seller",
     shirt: "#82528e",
     trousers: "#ce8346",
     skin: "#a7714b",
@@ -114,7 +114,7 @@ export const characters: Character[] = [
   {
     id: "patil",
     name: "Constable Patil",
-    role: "Traffic police",
+    role: "Traffic constable",
     shirt: "#f1eee2",
     trousers: "#a78b59",
     skin: "#b17b51",
@@ -142,7 +142,7 @@ export const characters: Character[] = [
   {
     id: "farah",
     name: "Farah",
-    role: "Fruit stall",
+    role: "Fruit seller",
     shirt: "#287b79",
     trousers: "#b79572",
     skin: "#b47c55",
@@ -155,7 +155,7 @@ export const characters: Character[] = [
   {
     id: "suresh",
     name: "Suresh",
-    role: "Aaj ka akhbaar",
+    role: "Newspaper seller",
     shirt: "#bca784",
     trousers: "#626155",
     skin: "#a87850",
@@ -168,7 +168,7 @@ export const characters: Character[] = [
   {
     id: "pooja",
     name: "Pooja",
-    role: "Shift khatam",
+    role: "Nurse",
     shirt: "#a78bc0",
     trousers: "#9280b0",
     skin: "#c28c63",
@@ -192,7 +192,7 @@ export const characters: Character[] = [
   {
     id: "zoya",
     name: "Zoya",
-    role: "Sketchbook wali",
+    role: "Artist",
     shirt: "#b75d3d",
     trousers: "#3d3a37",
     skin: "#b68058",
@@ -229,7 +229,7 @@ export const characters: Character[] = [
   {
     id: "shanta",
     name: "Shanta Aaji",
-    role: "Apni padosan",
+    role: "Local resident",
     shirt: "#7f9cb8",
     trousers: "#d0c6a9",
     skin: "#ba8c65",
@@ -242,7 +242,7 @@ export const characters: Character[] = [
   {
     id: "dev",
     name: "Dev",
-    role: "Sheher ki tasveerein",
+    role: "Photographer",
     shirt: "#617b55",
     trousers: "#c1ad7f",
     skin: "#b8825c",
@@ -254,7 +254,7 @@ export const characters: Character[] = [
   {
     id: "asha",
     name: "Asha",
-    role: "Morning run",
+    role: "Jogger",
     shirt: "#8b56a3",
     trousers: "#414349",
     skin: "#b98157",
@@ -266,7 +266,7 @@ export const characters: Character[] = [
   {
     id: "ganesh",
     name: "Ganesh",
-    role: "Dukaan ka saamaan",
+    role: "Shop worker",
     shirt: "#b58a46",
     trousers: "#6c6c60",
     skin: "#a47450",

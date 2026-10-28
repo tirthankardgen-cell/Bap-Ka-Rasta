@@ -21,12 +21,9 @@ import {
   STEP,
   type Input,
 } from "./simulation";
-import { followCamera, type CameraMode } from "./camera";
-import {
-  AUTO_DRIVER_EYE_HEIGHT,
-  AUTO_PASSENGER_EYE_HEIGHT,
-  AUTO_WHEEL_RADIUS,
-} from "./auto-model";
+import { landscapeDelta } from "../LandscapeStage";
+import { createCameraLook, followCamera, type CameraMode } from "./camera";
+import { AUTO_DRIVER_EYE_HEIGHT, AUTO_WHEEL_RADIUS } from "./auto-model";
 export type { CameraMode } from "./camera";
 export type Stats = {
   incident: IncidentReport | null;
@@ -115,6 +112,12 @@ export function createEngine(
   let incidentTime = 0;
   const incidentCameraStart = new THREE.Vector3();
   const incidentLookStart = new THREE.Vector3();
+  const look = createCameraLook();
+  const followPosition = new THREE.Vector3();
+  const orbit = new THREE.Spherical();
+  let lookPointer: number | null = null,
+    lookX = 0,
+    lookY = 0;
   let cameraMode: CameraMode = "third-person";
   const cameraTarget = new THREE.Vector3(),
     lookTarget = new THREE.Vector3();
@@ -157,21 +160,9 @@ export function createEngine(
     player.root.rotation.y = state.yaw;
     const portrait = host.clientHeight > host.clientWidth;
     const outside = cameraMode === "third-person";
-    const distance = outside
-      ? portrait
-        ? 9
-        : 7.5
-      : cameraMode === "behind-driver"
-        ? 0.95
-        : -0.08;
-    const lateral = outside ? 1.8 : cameraMode === "behind-driver" ? 0.48 : 0;
-    const height = outside
-      ? portrait
-        ? 5.8
-        : 4.4
-      : cameraMode === "behind-driver"
-        ? AUTO_PASSENGER_EYE_HEIGHT
-        : AUTO_DRIVER_EYE_HEIGHT;
+    const distance = outside ? (portrait ? 9 : 7.5) : -0.08;
+    const lateral = outside ? 1.8 : 0;
+    const height = outside ? (portrait ? 5.8 : 4.4) : AUTO_DRIVER_EYE_HEIGHT;
     camera.near = outside ? 0.1 : 0.04;
     camera.fov = outside ? 55 : 70;
     camera.updateProjectionMatrix();
@@ -180,13 +171,30 @@ export function createEngine(
       height,
       state.z - Math.cos(state.yaw) * distance - Math.sin(state.yaw) * lateral,
     );
-    followCamera(camera.position, cameraTarget, cameraMode, dt, snap);
+    followCamera(followPosition, cameraTarget, cameraMode, dt, snap);
+    camera.position.copy(followPosition);
     lookTarget.set(
       state.x + Math.sin(state.yaw) * 8,
       outside ? 1.1 : 1.5,
       state.z + Math.cos(state.yaw) * 8,
     );
+    if (outside && (look.yaw || look.pitch)) {
+      camera.position.sub(lookTarget);
+      orbit.setFromVector3(camera.position);
+      orbit.theta += look.yaw;
+      orbit.phi = THREE.MathUtils.clamp(
+        orbit.phi - look.pitch,
+        0.15,
+        Math.PI / 2,
+      );
+      camera.position.setFromSpherical(orbit).add(lookTarget);
+    }
     camera.lookAt(lookTarget);
+    if (!outside) {
+      camera.rotateY(look.yaw);
+      camera.rotateX(look.pitch);
+    }
+    renderer.domElement.dataset.lookYaw = look.yaw.toFixed(3);
     placeTraffic(state.x, state.z);
     lighting.update(state.x, state.z, state.time);
     world.update(state.time, state.x, state.z, lowQuality);
@@ -198,7 +206,7 @@ export function createEngine(
     player.root.traverse((o) => {
       if (o.userData.driver)
         o.visible = seated && (introActive || cameraMode !== "driver");
-      if (o.userData.cabinRoof) o.visible = cameraMode !== "behind-driver";
+      if (o.userData.cabinRoof) o.visible = true;
     });
   }
   function placeIntro() {
@@ -268,6 +276,8 @@ export function createEngine(
     for (const action of touch.values()) input[action] = true;
   }
   function clear() {
+    look.reset();
+    lookPointer = null;
     keys.clear();
     touch.clear();
     Object.assign(input, emptyInput());
@@ -358,18 +368,51 @@ export function createEngine(
   window.addEventListener("blur", blur);
   document.addEventListener("visibilitychange", visibility);
   renderer.domElement.addEventListener("webglcontextlost", lost);
+  const canvas = renderer.domElement;
+  canvas.style.touchAction = "none";
+  function lookDown(e: PointerEvent) {
+    if (
+      paused ||
+      introActive ||
+      incident ||
+      lookPointer !== null ||
+      e.button !== 0
+    )
+      return;
+    lookPointer = e.pointerId;
+    look.dragging = true;
+    lookX = e.clientX;
+    lookY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+  function lookMove(e: PointerEvent) {
+    if (e.pointerId !== lookPointer) return;
+    const d = landscapeDelta(canvas, e.clientX - lookX, e.clientY - lookY);
+    look.drag(d.dx, d.dy);
+    lookX = e.clientX;
+    lookY = e.clientY;
+  }
+  function lookUp(e: PointerEvent) {
+    if (e.pointerId !== lookPointer) return;
+    lookPointer = null;
+    look.dragging = false;
+    if (canvas.hasPointerCapture(e.pointerId))
+      canvas.releasePointerCapture(e.pointerId);
+  }
+  canvas.addEventListener("pointerdown", lookDown);
+  canvas.addEventListener("pointermove", lookMove);
+  canvas.addEventListener("pointerup", lookUp);
+  canvas.addEventListener("pointercancel", lookUp);
+  canvas.addEventListener("lostpointercapture", lookUp);
+
   function cycleCamera() {
     if (introActive || incident) return;
-    cameraMode =
-      cameraMode === "third-person"
-        ? "behind-driver"
-        : cameraMode === "behind-driver"
-          ? "driver"
-          : "third-person";
+    look.reset();
+    cameraMode = cameraMode === "third-person" ? "driver" : "third-person";
     player.root.traverse((o) => {
       if (o.userData.driver) o.visible = cameraMode !== "driver";
-      // Cut away the roof only for the rear-seat camera to keep the road visible.
-      if (o.userData.cabinRoof) o.visible = cameraMode !== "behind-driver";
+      if (o.userData.cabinRoof) o.visible = true;
     });
     renderer.domElement.dataset.cameraMode = cameraMode;
     place(true);
@@ -431,6 +474,7 @@ export function createEngine(
     const elapsed = Math.max(0, (now - last) / 1000);
     const dt = Math.min(elapsed, 0.1);
     last = now;
+    look.update(elapsed);
     if (incident) {
       if (incident.phase === "cinematic" && !document.hidden) {
         incidentTime += Math.min(elapsed, 0.1);
@@ -544,6 +588,11 @@ export function createEngine(
       disposed = true;
       cancelAnimationFrame(raf);
       observer.disconnect();
+      canvas.removeEventListener("pointerdown", lookDown);
+      canvas.removeEventListener("pointermove", lookMove);
+      canvas.removeEventListener("pointerup", lookUp);
+      canvas.removeEventListener("pointercancel", lookUp);
+      canvas.removeEventListener("lostpointercapture", lookUp);
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
       window.removeEventListener("blur", blur);

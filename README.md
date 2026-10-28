@@ -38,7 +38,7 @@ The current build includes:
 - **Arcade driving:** acceleration, steering, braking, delayed reverse, vehicle and roadside collisions, and safe vehicle reset. The auto reaches approximately 65 km/h.
 - **Driver opening:** a skippable, subtitled walk to the auto, cabin entry and camera handoff, with reduced-motion support. Character voice recordings can be linked later.
 - **Landscape mobile experience:** city selection, vehicle selection and driving automatically use a landscape canvas, even when a phone is upright. No rotate-phone prompt or orientation pause. The home page follows the phone normally.
-- **Desktop and touch controls:** simultaneous steering and acceleration, responsive galleries, three camera views (third person, behind driver and driver eye), and a HUD with speed, street names, and signal warnings.
+- **Desktop and touch controls:** simultaneous steering and acceleration, responsive galleries, two camera views (third person and driver eye) with drag-to-look and smooth return, and a HUD with speed, street names, and signal warnings.
 - **Recorded street audio:** an engine loop, horn, traffic, and market ambience, with driving-sensitive engine sound and nearby activity mixing.
 - **Session controls:** pause/resume, sound toggle, Standard/Low graphics, automatic pause on focus loss, and a retry screen for graphics context loss.
 
@@ -81,7 +81,7 @@ The city and vehicle galleries support arrow buttons, Left/Right arrow keys, swi
 | Steer left / right | `A` / `D` or `ArrowLeft` / `ArrowRight` | Hold the steering arrows |
 | Handbrake | `Space` | Use the brake/reverse pedal for touch braking |
 | Horn | `H` | Horn button |
-| Cycle camera | `C` | Camera button: **3P / BACK / 1P** |
+| Cycle camera | `C` | Camera button: **3P / 1P** |
 | Reset to a safe road position | `R` | Reset button |
 | Pause | `Escape` / `P` | Pause button |
 | Resume | Select the resume button | **Chal, phir niklein** in the pause panel |
@@ -131,7 +131,7 @@ npm run test:e2e
 The browser installation is needed on first setup and may be needed after a Playwright upgrade. Build before running browser tests: Playwright starts `npm run preview -- --port 4175` and uses the existing `dist/` directory; it does not build the app itself.
 
 - **Simulation and layout tests** cover road connectivity, pavements, speed limits, braking/reverse, steering, collisions, safe resets, signal phases, pedestrian yielding, and extended simulated traffic and driving.
-- **Browser tests** cover city/vehicle selection, responsive galleries, driving controls, touch input, the opening/skip/reduced-motion flow, three camera modes, pause/reset/exit, audio loading and lifecycle, and graphics context-loss recovery.
+- **Browser tests** cover city/vehicle selection, responsive galleries, driving controls, touch input, the opening/skip/reduced-motion flow, two camera modes, pause/reset/exit, audio loading and lifecycle, and graphics context-loss recovery.
 
 The browser configuration uses Chromium with software WebGL. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can point to an installed Chromium-compatible browser. See [playwright.config.ts](playwright.config.ts) for the server, timeout, and browser settings. Screenshots and test output are written to `test-results/`.
 

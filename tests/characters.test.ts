@@ -4,6 +4,7 @@ import {
   characters,
   createActors,
   actorPose,
+  actorIdentity,
   districtFor,
 } from "../src/game/characters.ts";
 import { streets, roadContains } from "../src/game/network.ts";
@@ -122,4 +123,12 @@ test("serious crowd impacts render a grounded mark above the road and zebra cros
         m.dispose();
     }
   });
+});
+
+test("shop-worker identities describe a person, not the goods they carry", () => {
+  const shopWorker = characters.findIndex((c) => c.id === "ganesh");
+  const actors = createActors().filter((a) => a.character === shopWorker);
+  assert.ok(actors.some((a) => a.named) && actors.some((a) => !a.named));
+  for (const actor of actors)
+    assert.equal(actorIdentity(actor).role, "Shop worker");
 });

@@ -267,7 +267,7 @@ test("graphics context loss pauses and can restart the drive", async ({
   ).toBeVisible();
 });
 
-test("three camera views switch by keyboard and button without resetting the drive", async ({
+test("two camera views switch by keyboard and button without resetting the drive", async ({
   page,
 }) => {
   test.setTimeout(150_000);
@@ -283,15 +283,31 @@ test("three camera views switch by keyboard and button without resetting the dri
   const canvas = page.locator("canvas"),
     game = page.locator(".game");
   const position = await game.getAttribute("data-position");
+  const bounds = (await canvas.boundingBox())!;
+  await page.mouse.move(
+    bounds.x + bounds.width * 0.4,
+    bounds.y + bounds.height * 0.45,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    bounds.x + bounds.width * 0.6,
+    bounds.y + bounds.height * 0.4,
+    { steps: 4 },
+  );
+  await expect
+    .poll(async () =>
+      Math.abs(Number(await canvas.getAttribute("data-look-yaw"))),
+    )
+    .toBeGreaterThan(0.2);
+  await page.mouse.up();
+  await expect(canvas).toHaveAttribute("data-look-yaw", "0.000", {
+    timeout: 60000,
+  });
   await expect(canvas).toHaveAttribute("data-camera-mode", "third-person");
   await page.keyboard.press("c");
-  await expect(canvas).toHaveAttribute("data-camera-mode", "behind-driver");
-  await page.getByRole("button", { name: "Pause drive" }).click();
-  // Freeze the scene for consistent camera previews; hide only the pause panel.
-  await page.addStyleTag({ content: ".game-overlay { visibility: hidden; }" });
-  await page.screenshot({ path: "test-results/camera-behind-driver.png" });
-  await page.getByRole("button", { name: "Change camera view" }).click();
   await expect(canvas).toHaveAttribute("data-camera-mode", "driver");
+  await page.getByRole("button", { name: "Pause drive" }).click();
+  await page.addStyleTag({ content: ".game-overlay { visibility: hidden; }" });
   await page.screenshot({ path: "test-results/camera-driver.png" });
   await page.getByRole("button", { name: "Change camera view" }).click();
   await expect(canvas).toHaveAttribute("data-camera-mode", "third-person");

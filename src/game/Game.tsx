@@ -193,18 +193,13 @@ export default function Game({ onExit }: { onExit: () => void }) {
               title={
                 {
                   "third-person": "Bahar se",
-                  "behind-driver": "Driver ke peeche",
                   driver: "Driver ki nazar",
                 }[stats.cameraMode]
               }
             >
               <Camera size={20} />
               <span style={{ fontSize: 10 }}>
-                {stats.cameraMode === "third-person"
-                  ? "3P"
-                  : stats.cameraMode === "behind-driver"
-                    ? "BACK"
-                    : "1P"}
+                {stats.cameraMode === "third-person" ? "3P" : "1P"}
               </span>
             </button>
             <button
@@ -231,7 +226,6 @@ export default function Game({ onExit }: { onExit: () => void }) {
         )}
         {introducing && (
           <div className="intro-story">
-            <span className="intro-chapter">APNI SHIFT, APNA SHEHER</span>
             <h2>
               {stats.introStage === "approach"
                 ? "Subah ki chai. Phir Mumbai."
@@ -255,7 +249,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
           >
             <strong>{stats.speaker}</strong>
             <span>{stats.subtitle}</span>
-            {stats.meaning && <small>{stats.meaning}</small>}
+            {!introducing && stats.meaning && <small>{stats.meaning}</small>}
           </div>
         )}
         <div
@@ -349,33 +343,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     <br />
                     <em>Tension down.</em>
                   </h1>
-                  <p>
-                    Raju Kaka stand pe hain, Meera Tai ki chai ready hai. Apne
-                    auto mein baitho, galiyon mein ghoom, signal pe ruk, phir
-                    samundar ki hawa kha. Na race, na deadline — bas apni ride.
-                  </p>
-                  <div className="ride-spec">
-                    <span>AUTO RICKSHAW</span>
-                    <span>65 KM/H</span>
-                    <span>BINDASS GHUMO</span>
-                  </div>
-                  <div className="control-guide">
-                    <div>
-                      <strong>Keyboard</strong>
-                      <span>
-                        WASD / arrows se chalao · Space se brake
-                        <br />H horn · R reset · Esc pause · C se nazar badlo
-                      </span>
-                    </div>
-                    <div>
-                      <strong>Phone / tablet</strong>
-                      <span>
-                        Steering aur pedal daba ke rakho.
-                        <br />
-                        Reverse ke liye ruk ke brake dabaao.
-                      </span>
-                    </div>
-                  </div>
+                  <p>Auto mein baitho. Mumbai apne andaaz mein ghoomo.</p>
                   <button
                     className="game-primary"
                     disabled={!loaded}
