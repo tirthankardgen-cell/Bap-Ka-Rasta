@@ -1,3 +1,4 @@
+import { createPedestrianRules, fallPose } from "./pedestrian-rules.ts";
 import * as THREE from "three";
 import {
   characters,
@@ -16,6 +17,7 @@ type Part = {
   d: number;
   color: THREE.Color;
   limb: number;
+  fixed?: boolean;
 };
 function partsFor(c: Character, a: Actor): Part[] {
   const parts: Part[] = [];
@@ -165,6 +167,7 @@ function partsFor(c: Character, a: Actor): Part[] {
     a.named &&
     ["meera", "lata", "farah", "suresh", "sameer"].includes(c.id)
   ) {
+    const stationStart = parts.length;
     // Each named shopkeeper gets a recognizable station on the outer pavement.
     box(0, 0.7, -1, 1.55, 0.12, 0.7, "#99784f");
     for (const s of [-1, 1]) box(s * 0.65, 0.35, -1, 0.1, 0.7, 0.5, "#475e52");
@@ -181,6 +184,7 @@ function partsFor(c: Character, a: Actor): Part[] {
         0.24,
         ["#c4c6b7", "#deb943", "#b8724f", "#9baf69"][i],
       );
+    for (const part of parts.slice(stationStart)) part.fixed = true;
   }
   return parts;
 }
@@ -189,6 +193,21 @@ export function makeCrowd(
   heightAt: (x: number, z: number) => number,
 ) {
   const actors = createActors();
+  const rules = createPedestrianRules(actors);
+  const reduced =
+    typeof matchMedia !== "undefined" &&
+    matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const stain = new THREE.Mesh(
+    new THREE.CircleGeometry(0.45, 24),
+    new THREE.MeshBasicMaterial({
+      color: "#782e2b",
+      transparent: true,
+      opacity: 0.7,
+      depthWrite: false,
+    }),
+  );
+  stain.rotation.x = -Math.PI / 2;
+  stain.visible = false;
   const rigs = actors.map((a) => partsFor(characters[a.character], a));
   const mesh = new THREE.InstancedMesh(
     new THREE.BoxGeometry(1, 1, 1),
@@ -199,6 +218,8 @@ export function makeCrowd(
   mesh.frustumCulled = false;
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   scene.add(mesh);
+  stain.name = "Incident blood mark";
+  scene.add(stain);
   const root = new THREE.Object3D(),
     part = new THREE.Object3D(),
     matrix = new THREE.Matrix4();
@@ -211,6 +232,7 @@ export function makeCrowd(
   const spoken = new Map<number, number>();
   return {
     count: actors.length,
+    collide: rules.collide,
     update(time: number, x: number, z: number, low = false) {
       if (
         low === lastLow &&
@@ -225,21 +247,77 @@ export function makeCrowd(
       let index = 0;
       for (let i = 0; i < actors.length; i++) {
         const a = actors[i],
-          p = actorPose(a, time);
+          base = actorPose(a, time),
+          reaction = rules.reactions.get(a.id),
+          reacting = reaction && (reaction.fatal || time - reaction.time < 5),
+          p = reacting
+            ? {
+                x: reaction.x,
+                z: reaction.z,
+                moving: false,
+                yaw: reaction.fatal
+                  ? reaction.yaw
+                  : Math.atan2(x - reaction.x, z - reaction.z),
+              }
+            : base;
         if (Math.hypot(p.x - x, p.z - z) > (low ? 90 : 150)) continue;
         const size = a.named ? 1 : 0.94 + (a.variant % 5) * 0.025;
         root.position.set(p.x, heightAt(p.x, p.z), p.z);
-        root.rotation.set(0, p.yaw, 0);
+        root.rotation.set(0, p.yaw, 0, "YXZ");
         root.scale.setScalar(size);
         root.updateMatrix();
+        const standing = root.matrix.clone();
+        if (reacting) {
+          const position = root.position.clone(),
+            rotation = root.quaternion.clone();
+          root.position.set(base.x, heightAt(base.x, base.z), base.z);
+          root.rotation.set(0, base.yaw, 0, "YXZ");
+          root.updateMatrix();
+          standing.copy(root.matrix);
+          root.position.copy(position);
+          root.quaternion.copy(rotation);
+          root.updateMatrix();
+        }
+        if (reacting && reaction.fatal) {
+          const fall = fallPose(reaction, time, reduced);
+          root.position.set(
+            fall.x,
+            Math.max(0.14, heightAt(fall.x, fall.z)) + fall.lift,
+            fall.z,
+          );
+          root.rotation.x = fall.tilt;
+          root.updateMatrix();
+          stain.visible = fall.blood > 0;
+          stain.position.set(
+            fall.x +
+              Math.sin(reaction.yaw) * 0.8 -
+              Math.cos(reaction.yaw) * 0.32,
+            Math.max(0.14, heightAt(fall.x, fall.z) + 0.015),
+            fall.z +
+              Math.cos(reaction.yaw) * 0.8 +
+              Math.sin(reaction.yaw) * 0.32,
+          );
+          stain.scale.set(fall.blood, fall.blood * 0.7, 1);
+        }
         const swing = p.moving ? Math.sin(time * 5.6 + i) * 0.3 : 0;
         for (const b of rigs[i]) {
           part.position.set(b.x, b.y, b.z);
           part.scale.set(b.w, b.h, b.d);
           part.rotation.set(b.limb ? swing * Math.sign(b.limb) : 0, 0, 0);
-          if (!p.moving && a.activity === "work" && Math.abs(b.limb) === 2)
+          if (
+            !reacting &&
+            !p.moving &&
+            a.activity === "work" &&
+            Math.abs(b.limb) === 2
+          )
             part.rotation.x = Math.sin(time * 2 + i) * 0.13 - 0.2;
-          if (a.named && a.character === 1 && time < 6 && b.limb === -2) {
+          if (
+            !reacting &&
+            a.named &&
+            a.character === 1 &&
+            time < 6 &&
+            b.limb === -2
+          ) {
             const wave = 2.2 + Math.sin(time * 5) * 0.15;
             const offset = b.y - 1.5;
             part.position.set(
@@ -249,8 +327,13 @@ export function makeCrowd(
             );
             part.rotation.set(0, 0, wave);
           }
+          if (reacting && !reaction.fatal && Math.abs(b.limb) === 2)
+            part.rotation.x = -0.9 + Math.sin(time * 9) * 0.16;
           part.updateMatrix();
-          matrix.multiplyMatrices(root.matrix, part.matrix);
+          matrix.multiplyMatrices(
+            b.fixed ? standing : root.matrix,
+            part.matrix,
+          );
           mesh.setMatrixAt(index, matrix);
           mesh.setColorAt(index, b.color);
           index++;
@@ -261,6 +344,14 @@ export function makeCrowd(
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     },
     greeting(time: number, x: number, z: number, speed: number) {
+      for (const hit of rules.reactions.values())
+        if (!hit.fatal && time - hit.time < 5)
+          return {
+            name: hit.name,
+            text: hit.line,
+            clipId: "",
+            until: hit.time + 5,
+          };
       if (time >= nextSpeech && Math.abs(speed) < 3.3) {
         const actor = actors.find(
           (a) =>

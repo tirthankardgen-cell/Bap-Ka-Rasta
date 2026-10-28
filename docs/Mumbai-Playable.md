@@ -104,3 +104,12 @@ Palm trees are restricted to the western beach promenade. Inland street lights a
 The speed display is centered at the top in a translucent glass panel. Braking takes priority over simultaneous throttle, and the GLB front wheel steers with the physics. Player speed is not automatically limited by signals or crossing pedestrians; vehicle, curb and obstacle collisions still apply. Nearby traffic honks when the player directly blocks its lane, with per-car and shared cooldowns. These directional honks reuse the credited runtime horn recording with a lower pitch; they are not new car-specific recordings.
 
 Street-front buildings reserve junction corners before filling the rest of each block. Corner façades wrap windows, cornices and ground-floor shops onto the end walls. Placement checks the full rotated building envelope, including balconies and eaves, against roads, other buildings, the maidan and the perimeter; the seaside stays open. Curved-street façades follow the local road direction.
+
+
+## Pedestrian encounters
+
+Actual contact below 20 km/h makes a pedestrian stop briefly, face the auto and scold the driver in a Hinglish subtitle. Repeated slow contact has an eight-second cooldown. There is no automatic slowing before pedestrians or signals.
+
+Contact at 20 km/h or above ends the drive. Controls lock immediately; the affected character moves about 55 cm, falls, and a small stylized blood mark appears. A side-view camera pan leads into a folded-paper “Mumbai Ki Khabar” report with the character's identity, role, street, recorded impact speed and a locally captured frame of the actual scene. The button returns directly to the landing page. This is fictional gameplay reporting, not an external news service. Character scoldings remain text-only until voice clips are supplied.
+
+The cinematic respects reduced motion, stops advancing in a hidden tab, and cannot be bypassed with reset/camera/pedal keys. Road and vehicle collisions still apply. The speed cutoff is a gameplay setting in `src/game/pedestrian-rules.ts`, not a real-world injury prediction.

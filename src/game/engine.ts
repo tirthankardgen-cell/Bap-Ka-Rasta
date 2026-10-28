@@ -1,3 +1,4 @@
+import { type IncidentReport, type PedestrianHit } from "./pedestrian-rules";
 import {
   introFrame,
   advanceIntro,
@@ -28,6 +29,7 @@ import {
 } from "./auto-model";
 export type { CameraMode } from "./camera";
 export type Stats = {
+  incident: IncidentReport | null;
   introStage: IntroStage;
   introFade: number;
   speaker: string;
@@ -54,6 +56,7 @@ export function createEngine(
   onPause: () => void,
   onError: (message: string) => void,
   autoModel: THREE.Group,
+  initialDrive = newDrive(),
 ) {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -80,7 +83,7 @@ export function createEngine(
   renderer.domElement.dataset.vehicleModel = "mumbai-auto";
   renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
-  const state = newDrive();
+  const state = initialDrive;
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
   scene.add(camera);
   const hands = driverHands(camera);
@@ -108,6 +111,10 @@ export function createEngine(
     audioStatus = status;
     renderer.domElement.dataset.audioStatus = status;
   });
+  let incident: IncidentReport | null = null;
+  let incidentTime = 0;
+  const incidentCameraStart = new THREE.Vector3();
+  const incidentLookStart = new THREE.Vector3();
   let cameraMode: CameraMode = "third-person";
   const cameraTarget = new THREE.Vector3(),
     lookTarget = new THREE.Vector3();
@@ -123,6 +130,7 @@ export function createEngine(
     renderer.domElement.dataset.introStage = stage;
     renderer.domElement.dataset.characterCount = String(world.crowd.count);
     onStats({
+      incident,
       introStage: stage,
       introFade: introActive ? frame.fade : 0,
       speaker: introActive ? frame.speaker : greeting.name,
@@ -184,6 +192,7 @@ export function createEngine(
     world.update(state.time, state.x, state.z, lowQuality);
     hands.update(cameraMode === "driver", false, state.time, reducedMotion);
     if (introActive) placeIntro();
+    if (incident) placeIncident();
   }
   function driverVisibility(seated: boolean) {
     player.root.traverse((o) => {
@@ -264,6 +273,10 @@ export function createEngine(
     Object.assign(input, emptyInput());
   }
   function setPaused(value: boolean) {
+    if (incident) {
+      clear();
+      return;
+    }
     paused = value;
     clear();
     accumulator = 0;
@@ -272,7 +285,7 @@ export function createEngine(
     publish();
   }
   function horn() {
-    if (paused || introActive) return;
+    if (paused || introActive || incident) return;
     lastHorn = performance.now();
     streetAudio.horn();
   }
@@ -288,7 +301,7 @@ export function createEngine(
     "Space",
   ]);
   function down(e: KeyboardEvent) {
-    if (paused) return;
+    if (paused || incident) return;
     if (introActive && e.code === "Enter") {
       e.preventDefault();
       finishIntro();
@@ -326,7 +339,7 @@ export function createEngine(
     }
   }
   function blur() {
-    if (!paused) {
+    if (!paused && !incident) {
       setPaused(true);
       onPause();
     }
@@ -346,7 +359,7 @@ export function createEngine(
   document.addEventListener("visibilitychange", visibility);
   renderer.domElement.addEventListener("webglcontextlost", lost);
   function cycleCamera() {
-    if (introActive) return;
+    if (introActive || incident) return;
     cameraMode =
       cameraMode === "third-person"
         ? "behind-driver"
@@ -364,6 +377,7 @@ export function createEngine(
     renderer.render(scene, camera);
   }
   function reset() {
+    if (incident) return;
     if (introActive) finishIntro();
     resetDrive(state, traffic);
     clear();
@@ -371,13 +385,68 @@ export function createEngine(
     publish();
     renderer.render(scene, camera);
   }
+  function beginIncident(hit: PedestrianHit) {
+    // Commit the impact tick to the rendered auto before freezing the scene.
+    player.root.position.set(state.x, 0, state.z);
+    player.root.rotation.y = state.yaw;
+    placeTraffic(state.x, state.z);
+    incident = { ...hit, street: state.street, phase: "cinematic", photo: "" };
+    incidentTime = 0;
+    incidentCameraStart.copy(camera.position);
+    camera
+      .getWorldDirection(incidentLookStart)
+      .multiplyScalar(6)
+      .add(camera.position);
+    cameraMode = "third-person";
+    driverVisibility(true);
+    hands.update(false, false, state.time, true);
+    clear();
+    state.speed = 0;
+    accumulator = 0;
+    streetAudio.pause(true);
+    publish();
+  }
+  function placeIncident() {
+    if (!incident) return;
+    const u = reducedMotion ? 1 : Math.min(1, incidentTime / 1.8);
+    const ease = u * u * (3 - 2 * u);
+    const yaw = incident.yaw;
+    cameraTarget.set(
+      incident.x - Math.cos(yaw) * 5 + Math.sin(yaw) * 3,
+      3.7,
+      incident.z + Math.sin(yaw) * 5 + Math.cos(yaw) * 3,
+    );
+    camera.position.lerpVectors(incidentCameraStart, cameraTarget, ease);
+    lookTarget.set(incident.x, 0.65, incident.z);
+    lookTarget.lerpVectors(incidentLookStart, lookTarget, ease);
+    camera.lookAt(lookTarget);
+    camera.near = 0.1;
+    camera.fov = 55;
+    camera.updateProjectionMatrix();
+    world.update(incident.time + incidentTime, state.x, state.z, lowQuality);
+  }
   function loop(now: number) {
     if (disposed) return;
     raf = requestAnimationFrame(loop);
     const elapsed = Math.max(0, (now - last) / 1000);
     const dt = Math.min(elapsed, 0.1);
     last = now;
-    if (!paused && introActive) {
+    if (incident) {
+      if (incident.phase === "cinematic" && !document.hidden) {
+        incidentTime += Math.min(elapsed, 0.1);
+        placeIncident();
+        renderer.render(scene, camera);
+        if (incidentTime >= 3.2) {
+          // Capture immediately after rendering: this is the actual scene at the incident.
+          let photo = "";
+          try {
+            photo = renderer.domElement.toDataURL("image/jpeg", 0.85);
+          } catch {}
+          incident = { ...incident, phase: "report", photo };
+          publish();
+        }
+      }
+    } else if (!paused && introActive) {
       introTime = advanceIntro(introTime, Math.min(elapsed, 0.5), false);
       placeIntro();
       lighting.update(state.x, state.z, introTime);
@@ -387,11 +456,29 @@ export function createEngine(
       accumulator += dt;
       let ticks = 0;
       while (accumulator >= STEP && ticks < 5) {
+        const before = { x: state.x, z: state.z };
+        const previousTime = state.time;
         step(state, input, traffic);
+        const hit = world.crowd.collide(
+          before,
+          state,
+          previousTime,
+          state.time,
+          state.speed,
+        );
+        if (hit?.fatal) {
+          beginIncident(hit);
+          break;
+        }
         accumulator -= STEP;
         ticks++;
       }
       if (ticks === 5) accumulator %= STEP;
+      if (incident) {
+        placeIncident();
+        renderer.render(scene, camera);
+        return;
+      }
       place(false, dt);
       player.steering.rotation.y = steeringAngleFor(state.steer, state.speed);
       const honking = trafficHorn(traffic, state, state.time);
@@ -438,7 +525,7 @@ export function createEngine(
     setPaused,
     reset,
     pointer(id: number, action: keyof Input | null) {
-      if (action && !paused && !introActive) touch.set(id, action);
+      if (action && !paused && !introActive && !incident) touch.set(id, action);
       else touch.delete(id);
       updateInput();
     },

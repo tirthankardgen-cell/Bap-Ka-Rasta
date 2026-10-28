@@ -1,3 +1,4 @@
+import IncidentNewspaper from "./IncidentNewspaper";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -19,6 +20,7 @@ import { loadAutoRickshaw, disposeAutoModel } from "./auto-model";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
+  incident: null,
   introStage: "ready",
   introFade: 0,
   speaker: "",
@@ -58,37 +60,39 @@ export default function Game({ onExit }: { onExit: () => void }) {
     setSound(true);
     setLow(false);
     setStats(initial);
-    void loadAutoRickshaw().then((model) => {
-      if (!active) {
-        disposeAutoModel(model);
-        return;
-      }
-      try {
-        engine.current = createEngine(
-          host.current!,
-          (s) => {
-            if (active) setStats(s);
-          },
-          () => {
-            if (active) setStatus("paused");
-          },
-          (message) => {
-            if (active) setError(message);
-          },
-          model,
+    void loadAutoRickshaw()
+      .then((model) => {
+        if (!active) {
+          disposeAutoModel(model);
+          return;
+        }
+        try {
+          engine.current = createEngine(
+            host.current!,
+            (s) => {
+              if (active) setStats(s);
+            },
+            () => {
+              if (active) setStatus("paused");
+            },
+            (message) => {
+              if (active) setError(message);
+            },
+            model,
+          );
+          setLoaded(true);
+        } catch (e) {
+          disposeAutoModel(model);
+          throw e;
+        }
+      })
+      .catch((e: unknown) => {
+        if (!active) return;
+        setError(
+          "Auto ya scene load nahi hua, bhidu. Connection check karke phir try karo. WebGL 2 aur hardware acceleration bhi chalu hona chahiye.",
         );
-        setLoaded(true);
-      } catch (e) {
-        disposeAutoModel(model);
-        throw e;
-      }
-    }).catch((e: unknown) => {
-      if (!active) return;
-      setError(
-        "Auto ya scene load nahi hua, bhidu. Connection check karke phir try karo. WebGL 2 aur hardware acceleration bhi chalu hona chahiye.",
-      );
-      console.error(e);
-    });
+        console.error(e);
+      });
     return () => {
       active = false;
       engine.current?.dispose();
@@ -108,6 +112,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
     (document.activeElement as HTMLElement)?.blur();
   }
   function pause() {
+    if (stats.incident) return;
     engine.current?.setPaused(true);
     setStatus("paused");
   }
@@ -166,6 +171,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
         className="game"
         aria-label="Mumbai auto rickshaw game"
         data-status={status}
+        data-incident={stats.incident?.phase ?? "none"}
         data-stage={stats.introStage}
         data-distance={stats.distance.toFixed(2)}
         data-speed={stats.speed.toFixed(2)}
@@ -181,7 +187,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
             <button
               onClick={() => engine.current?.cycleCamera()}
               aria-label="Change camera view"
-              disabled={introducing}
+              disabled={introducing || !!stats.incident}
               title={
                 {
                   "third-person": "Bahar se",
@@ -209,7 +215,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
             <button
               onClick={pause}
               aria-label="Pause drive"
-              disabled={status !== "driving"}
+              disabled={status !== "driving" || !!stats.incident}
             >
               <Pause size={21} />
             </button>
@@ -239,7 +245,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
             </button>
           </div>
         )}
-        {status === "driving" && stats.subtitle && (
+        {status === "driving" && !stats.incident && stats.subtitle && (
           <div
             className="character-subtitle"
             aria-live="polite"
@@ -254,7 +260,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
           className="intro-fade"
           style={{ opacity: introducing ? stats.introFade : 0 }}
         />
-        {status === "driving" && !introducing && (
+        {status === "driving" && !introducing && !stats.incident && (
           <>
             <div className="driving-message" aria-live="polite">
               {sound && stats.audioStatus === "loading"
@@ -299,6 +305,9 @@ export default function Game({ onExit }: { onExit: () => void }) {
               </div>
             </div>
           </>
+        )}
+        {stats.incident?.phase === "report" && !error && (
+          <IncidentNewspaper incident={stats.incident} onExit={exit} />
         )}
         {(status !== "driving" || error) && (
           <div className="game-overlay">

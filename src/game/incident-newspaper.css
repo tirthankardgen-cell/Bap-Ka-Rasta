@@ -1,0 +1,209 @@
+.incident-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: #111b1766;
+  backdrop-filter: blur(3px);
+}
+.incident-dialog {
+  width: min(780px, 88%);
+  max-height: 94cqh;
+  overflow: auto;
+  padding: 6px 8px 10px;
+}
+.incident-paper {
+  position: relative;
+  color: #28271f;
+  padding: 18px 24px 12px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 49.5%,
+      #81715324 50%,
+      #fff8de77 50.6%,
+      transparent 51.4%
+    ),
+    linear-gradient(
+      0deg,
+      transparent 48%,
+      #81715320 49%,
+      #fff9e9a1 50%,
+      transparent 51%
+    ),
+    #eee5cc;
+  box-shadow:
+    5px 7px 0 #c6bca3,
+    0 16px 45px #0006;
+  border: 1px solid #a59c83;
+  transform: rotate(-1deg);
+  font-family: Georgia, "Times New Roman", serif;
+}
+.paper-edition,
+.paper-rule {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font:
+    700 9px/1.3 "DM Sans",
+    sans-serif;
+  letter-spacing: 0.8px;
+}
+.paper-masthead {
+  font-size: clamp(26px, 4.5cqw, 48px);
+  font-weight: 900;
+  text-align: center;
+  border-bottom: 4px double #37362e;
+  line-height: 1.2;
+  padding: 4px 0;
+}
+.paper-rule {
+  padding: 5px 0;
+  border-bottom: 1px solid #37362e;
+}
+.incident-paper h1 {
+  font-size: clamp(22px, 3cqw, 34px);
+  line-height: 1.05;
+  margin: 12px 0;
+}
+.paper-columns {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+}
+.paper-columns figure {
+  margin: 0;
+  align-self: start;
+}
+.paper-columns img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  filter: grayscale(1) sepia(0.25) contrast(1.1);
+  border: 1px solid #6a6557;
+}
+.paper-columns figcaption {
+  font-size: 11px;
+  line-height: 1.3;
+  margin-top: 5px;
+  font-style: italic;
+}
+.paper-copy {
+  font-size: 13px;
+  line-height: 1.4;
+  border-left: 1px solid #99917e;
+  padding-left: 15px;
+}
+.paper-copy p {
+  margin: 0 0 9px;
+}
+.paper-closing {
+  font-weight: bold;
+}
+.incident-paper footer {
+  border-top: 2px solid #37362e;
+  padding-top: 7px;
+  font:
+    700 10px/1.3 "DM Sans",
+    sans-serif;
+  letter-spacing: 0.6px;
+}
+.paper-photo-fallback {
+  padding: 30px;
+  background: #c6bea9;
+}
+.incident-restart {
+  display: block;
+  min-height: 44px;
+  margin: 18px auto 0;
+  padding: 10px 24px;
+  border: 2px solid #1d342c;
+  border-radius: 8px;
+  background: #ffce36;
+  color: #172c24;
+  font:
+    800 14px "DM Sans",
+    sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #142d24;
+}
+.incident-restart:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 4px;
+}
+.game[data-incident="cinematic"] .game-top,
+.game[data-incident="cinematic"] .speedometer,
+.game[data-incident="report"] .game-top,
+.game[data-incident="report"] .speedometer {
+  visibility: hidden;
+}
+@container playfield (max-height:500px) {
+  .incident-dialog {
+    width: min(800px, 90%);
+    max-height: 95cqh;
+  }
+  .incident-paper {
+    padding: 9px 16px 7px;
+  }
+  .paper-masthead {
+    font-size: 27px;
+    padding: 0;
+  }
+  .incident-paper h1 {
+    font-size: 21px;
+    margin: 6px 0;
+  }
+  .paper-copy {
+    font-size: 11px;
+    line-height: 1.25;
+    padding-left: 10px;
+  }
+  .paper-copy p {
+    margin-bottom: 6px;
+  }
+  .paper-columns {
+    grid-template-columns: 0.95fr 1.3fr;
+    gap: 12px;
+  }
+  .paper-columns img {
+    aspect-ratio: 2/1;
+    max-height: 30cqh;
+    object-fit: contain;
+    background: #c7bfa9;
+  }
+  .paper-columns figcaption {
+    font-size: 9px;
+  }
+  .paper-edition,
+  .paper-rule {
+    font-size: 7px;
+  }
+  .incident-paper footer {
+    font-size: 8px;
+    padding-top: 4px;
+  }
+  .incident-restart {
+    margin-top: 12px;
+    min-height: 44px;
+    font-size: 12px;
+    padding: 6px 18px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .incident-paper {
+    animation: paper-unfold 0.55s ease-out both;
+  }
+  @keyframes paper-unfold {
+    from {
+      opacity: 0;
+      transform: perspective(900px) rotateX(22deg) rotate(-3deg) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(-1deg);
+    }
+  }
+}

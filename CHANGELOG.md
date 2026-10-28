@@ -1,5 +1,7 @@
 # Changelog
 
+- Added speed-based pedestrian reactions: Hinglish scolding for slow contact, and a locked-control incident sequence with a side camera, scene photo, newspaper report and return-home button for serious impacts.
+
 - Rebuilt street-front placement around reserved corner lots, with wraparound shop façades and whole-building road/overlap checks.
 
 - Centered glass speed display, brake-priority controls and steering animation for the new Mumbai auto; player-controlled speed through crossings and cooldown-based horns from blocked traffic.

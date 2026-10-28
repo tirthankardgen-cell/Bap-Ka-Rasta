@@ -91,3 +91,35 @@ test("crowd models produce finite transforms and Low graphics reduces visible in
   mesh.geometry.dispose();
   if (!Array.isArray(mesh.material)) mesh.material.dispose();
 });
+
+test("serious crowd impacts render a grounded mark above the road and zebra crossing", async () => {
+  const { Scene, Mesh } = await import("three");
+  const { makeCrowd } = await import("../src/game/crowd.ts");
+  const scene = new Scene(),
+    crowd = makeCrowd(scene, () => 0);
+  const actor = createActors().find((a) => a.cross >= 0)!;
+  const time = 35 - (actor.cross % 4) * 4;
+  const p = actorPose(actor, time);
+  const hit = crowd.collide(
+    { x: p.x, z: p.z + 3 },
+    { x: p.x, z: p.z, yaw: Math.PI },
+    time,
+    time,
+    10,
+  );
+  assert.ok(hit?.fatal);
+  crowd.update(time + 3, p.x, p.z);
+  const mark = scene.getObjectByName("Incident blood mark")!;
+  assert.ok(mark.visible);
+  assert.ok(
+    mark.position.y > 0.1325,
+    "mark must not be hidden beneath zebra geometry",
+  );
+  scene.traverse((o) => {
+    if (o instanceof Mesh) {
+      o.geometry.dispose();
+      for (const m of Array.isArray(o.material) ? o.material : [o.material])
+        m.dispose();
+    }
+  });
+});

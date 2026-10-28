@@ -13,9 +13,16 @@ export default defineConfig({
       args: ["--enable-unsafe-swiftshader"],
     },
   },
-  webServer: {
-    command: "npm run preview -- --port 4175",
-    url: "http://127.0.0.1:4175",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: "npm run preview -- --port 4175",
+      url: "http://127.0.0.1:4175",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: "npm run dev -- --port 4176",
+      url: "http://127.0.0.1:4176",
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });
