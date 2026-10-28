@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import "@fontsource/barlow-condensed/latin-700.css";
@@ -10,7 +10,7 @@ import "./style.css";
 import LandscapeStage from "./LandscapeStage";
 import Selection, { cities } from "./selection/Selection";
 
-const Game = lazy(() => import("./game/Game"));
+import GameLoader from "./GameLoader";
 
 function App() {
   const [screen, setScreen] = useState<"home" | "city" | "vehicle" | "game">(
@@ -22,16 +22,7 @@ function App() {
   if (screen === "game")
     return (
       <LandscapeStage>
-        <Suspense
-          fallback={
-            <div className="game-loading">
-              Road taiyaar ho raha hai…
-              <small>Mumbai ki kaali-peeli aa rahi hai, bhidu</small>
-            </div>
-          }
-        >
-          <Game onExit={() => setScreen("home")} />
-        </Suspense>
+        <GameLoader onExit={() => setScreen("home")} />
       </LandscapeStage>
     );
 

@@ -55,12 +55,13 @@ export default function Game({ onExit }: { onExit: () => void }) {
   const hornTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
     setLoaded(false);
     setError("");
     setSound(true);
     setLow(false);
     setStats(initial);
-    void loadAutoRickshaw()
+    void loadAutoRickshaw(controller.signal)
       .then((model) => {
         if (!active) {
           disposeAutoModel(model);
@@ -95,6 +96,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
       });
     return () => {
       active = false;
+      controller.abort();
       engine.current?.dispose();
       engine.current = null;
       if (hornTimer.current) clearTimeout(hornTimer.current);

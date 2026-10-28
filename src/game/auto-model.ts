@@ -7,8 +7,23 @@ export const AUTO_DRIVER_EYE_HEIGHT = 1.52;
 export const AUTO_PASSENGER_EYE_HEIGHT = 1.72;
 
 /** Each game owns a fresh scene and its GPU resources, including after a retry. */
-export async function loadAutoRickshaw() {
-  const { scene } = await new GLTFLoader().loadAsync(AUTO_MODEL_URL);
+export async function loadAutoRickshaw(signal?: AbortSignal) {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  if (signal?.aborted) abort();
+  signal?.addEventListener("abort", abort, { once: true });
+  const timer = setTimeout(abort, 30000);
+  let data: ArrayBuffer;
+  try {
+    const response = await fetch(AUTO_MODEL_URL, { signal: controller.signal });
+    if (!response.ok)
+      throw new Error(`Auto model download failed: ${response.status}`);
+    data = await response.arrayBuffer();
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", abort);
+  }
+  const { scene } = await new GLTFLoader().parseAsync(data, "/models/");
   scene.name = "Mumbai kaali-peeli";
   scene.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;

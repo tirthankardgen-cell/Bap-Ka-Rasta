@@ -471,3 +471,14 @@ h3 {
 .game-loading small {
   font-weight: 400;
 }
+.game-loading button {
+  justify-self: center;
+  min-height: 44px;
+  padding: 10px 24px;
+  border: 2px solid #1d342c;
+  border-radius: 8px;
+  background: #ffce36;
+  color: #172c24;
+  font: inherit;
+  cursor: pointer;
+}
