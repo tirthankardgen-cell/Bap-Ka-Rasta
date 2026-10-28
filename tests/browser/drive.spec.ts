@@ -4,7 +4,9 @@ async function enter(page: Page) {
   await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
   await page.getByRole("button", { name: "Yahin Chalao" }).click();
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
-  await page.getByRole("button", { name: "Drive without intro", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Drive without intro", exact: true })
+    .click();
   await expect(page.locator(".game")).toHaveAttribute("data-status", "driving");
 }
 
@@ -54,8 +56,25 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
   await page.getByRole("button", { name: "Mumbai", exact: true }).click();
   await page.getByRole("button", { name: "Yahin Chalao" }).click();
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
-  await page.getByRole("button", { name: "Drive without intro", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Drive without intro", exact: true })
+    .click();
   const game = page.locator(".game");
+  const speedBounds = await page.locator(".speedometer").boundingBox();
+  const gameBounds = await game.boundingBox();
+  expect(
+    Math.abs(
+      speedBounds!.x +
+        speedBounds!.width / 2 -
+        (gameBounds!.x + gameBounds!.width / 2),
+    ),
+  ).toBeLessThan(2);
+  expect(speedBounds!.y - gameBounds!.y).toBeLessThan(30);
+  expect(
+    await page
+      .locator(".speedometer")
+      .evaluate((el) => getComputedStyle(el).backdropFilter),
+  ).toContain("blur");
   await expect(page.locator(".mini-map")).toHaveCount(0);
   await expect(page.getByText(/AREAS|LOCAL BEST/)).toHaveCount(0);
   expect(

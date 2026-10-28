@@ -1,5 +1,7 @@
 # Changelog
 
+- Centered glass speed display, brake-priority controls and steering animation for the new Mumbai auto; player-controlled speed through crossings and cooldown-based horns from blocked traffic.
+
 Changes are recorded here for contributors and maintainers. Entries under Unreleased describe work on the development branch and do not imply a published release or tag.
 
 ## Unreleased

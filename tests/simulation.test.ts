@@ -1,6 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  createTrafficHornScheduler,
+  playerBlocksTraffic,
   newDrive,
   newTraffic,
   emptyInput,
@@ -236,7 +238,7 @@ test("five-minute free drive can choose cross streets without a finish condition
   assert.ok(s.topSpeed <= 65.01);
 });
 
-test("auto slows for pedestrians using the shared crossing positions", () => {
+test("free driving does not automatically brake at pedestrians or red signals", () => {
   const n = junctions.find((n) => n.signal)!,
     s = newDrive(),
     time = 35 - (n.id % 4) * 4,
@@ -248,9 +250,9 @@ test("auto slows for pedestrians using the shared crossing positions", () => {
     speed: 10,
     time: time - 1 / 60,
   });
-  step(s, emptyInput(), []);
-  assert.ok(s.speed < 5);
-  assert.equal(s.signal, "pedestrian");
+  step(s, { ...emptyInput(), throttle: true }, []);
+  assert.ok(s.speed > 10);
+  assert.notEqual(s.signal, "pedestrian");
 });
 
 test("expanded neighbourhood lanes carry opposing traffic and stay inside the visible city perimeter", () => {
@@ -279,4 +281,29 @@ test("expanded neighbourhood lanes carry opposing traffic and stay inside the vi
   for (let i = 0; i < 600; i++) step(drive, input, []);
   assert.ok(drive.distance > 50);
   assert.ok(roadContains(drive.x, drive.z));
+});
+
+test("brake takes priority over held throttle without reversing", () => {
+  const s = newDrive();
+  s.speed = 5;
+  const input = { ...emptyInput(), throttle: true, brake: true };
+  for (let i = 0; i < 120; i++) step(s, input, []);
+  assert.equal(s.speed, 0);
+});
+
+test("traffic honks at a blocking player with cooldown, not adjacent or shielded traffic", () => {
+  const t = { ...newTraffic()[0], x: 0, z: 0, yaw: 0 };
+  const player = { x: 0, z: 6 };
+  const schedule = createTrafficHornScheduler();
+  assert.equal(playerBlocksTraffic(t, { x: 4, z: 6 }, [t]), false);
+  assert.equal(playerBlocksTraffic(t, { x: 0, z: -6 }, [t]), false);
+  assert.equal(
+    playerBlocksTraffic(t, player, [t, { ...t, id: 999, z: 3 }]),
+    false,
+  );
+  assert.equal(schedule([t], player, 0), t);
+  assert.equal(schedule([t], player, 0.5), null);
+  assert.equal(schedule([t], player, 3), null);
+  assert.equal(schedule([t], player, 7), t);
+  assert.equal(schedule([t], { x: 20, z: 20 }, 15), null);
 });

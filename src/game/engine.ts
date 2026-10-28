@@ -10,6 +10,8 @@ import * as THREE from "three";
 import { atmosphere } from "./atmosphere";
 import { makeWorld, autoRickshaw, trafficVisuals } from "./world";
 import {
+  createTrafficHornScheduler,
+  steeringAngleFor,
   emptyInput,
   newDrive,
   newTraffic,
@@ -73,6 +75,7 @@ export function createEngine(
   const player = autoRickshaw(autoModel);
   scene.add(player.root);
   const traffic = newTraffic();
+  const trafficHorn = createTrafficHornScheduler();
   const placeTraffic = trafficVisuals(scene, traffic, autoModel);
   renderer.domElement.dataset.vehicleModel = "mumbai-auto";
   renderer.domElement.dataset.cameraMode = "third-person";
@@ -390,6 +393,16 @@ export function createEngine(
       }
       if (ticks === 5) accumulator %= STEP;
       place(false, dt);
+      player.steering.rotation.y = steeringAngleFor(state.steer, state.speed);
+      const honking = trafficHorn(traffic, state, state.time);
+      if (honking) {
+        const x = honking.x - state.x,
+          z = honking.z - state.z;
+        streetAudio.trafficHorn(
+          Math.hypot(x, z),
+          -(x * Math.cos(state.yaw) - z * Math.sin(state.yaw)) / 10,
+        );
+      }
       player.wheels.forEach((w) => {
         w.rotation.x += (state.speed * dt) / AUTO_WHEEL_RADIUS;
       });

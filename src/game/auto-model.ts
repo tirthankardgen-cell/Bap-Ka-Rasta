@@ -41,7 +41,18 @@ export function autoRickshaw(root: THREE.Group) {
       return wheel;
     },
   );
-  return { root, wheels };
+  // Separate yaw from axle roll: rotating the spinning wheel itself on Y tilts it.
+  let steering = root.getObjectByName("runtime_front_steering");
+  if (!steering) {
+    const front = wheels[2];
+    steering = new THREE.Group();
+    steering.name = "runtime_front_steering";
+    steering.position.copy(front.position);
+    front.parent!.add(steering);
+    steering.add(front);
+    front.position.set(0, 0, 0);
+  }
+  return { root, wheels, steering };
 }
 
 /** Used when an async load completes after leaving the game screen. */

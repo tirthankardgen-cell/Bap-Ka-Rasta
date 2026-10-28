@@ -79,10 +79,18 @@
 }
 .speedometer {
   position: absolute;
-  left: 25px;
-  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: max(25px, var(--play-safe-top, 0px));
   color: #243c35;
-  background: #faf8f0ed;
+  background: linear-gradient(135deg, #faf8f0bf, #faf8f070);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid #ffffffa8;
+  box-shadow:
+    0 8px 28px #142d3326,
+    inset 0 1px 0 #ffffffb3;
+  text-align: center;
   padding: 14px 18px 10px;
   border-radius: 8px;
   min-width: 130px;
@@ -357,8 +365,8 @@
     height: 39px;
   }
   .speedometer {
-    left: 14px;
-    top: 86px;
+    left: 50%;
+    top: max(14px, var(--play-safe-top, 0px));
     padding: 10px 13px;
     min-width: 108px;
   }
@@ -439,7 +447,7 @@
 }
 @container playfield (max-height: 500px) {
   .speedometer {
-    top: 78px;
+    top: max(10px, var(--play-safe-top, 0px));
   }
   .speedometer > strong {
     font-size: 34px;
@@ -603,8 +611,8 @@
     height: 44px;
   }
   .speedometer {
-    left: 14px;
-    top: 72px;
+    left: 50%;
+    top: max(10px, var(--play-safe-top, 0px));
     min-width: 72px;
     padding: 8px 12px;
   }

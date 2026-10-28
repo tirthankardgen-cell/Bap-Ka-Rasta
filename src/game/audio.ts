@@ -156,6 +156,27 @@ export function createStreetAudio(report: (state: string) => void) {
       };
       source.start();
     },
+    trafficHorn(distance: number, pan: number) {
+      if (!context || !hornBuffer || !enabled || paused || disposed) return;
+      const source = context.createBufferSource();
+      const gain = context.createGain();
+      const stereo = context.createStereoPanner();
+      source.buffer = hornBuffer;
+      source.playbackRate.value = 0.85;
+      gain.gain.value = 0.55 * Math.max(0, 1 - distance / 24);
+      stereo.pan.value = Math.max(-1, Math.min(1, pan));
+      source.connect(gain);
+      gain.connect(stereo);
+      stereo.connect(context.destination);
+      shots.add(source);
+      source.onended = () => {
+        shots.delete(source);
+        source.disconnect();
+        gain.disconnect();
+        stereo.disconnect();
+      };
+      source.start(0, 0, Math.min(0.65, hornBuffer.duration));
+    },
     dispose() {
       disposed = true;
       abort.abort();

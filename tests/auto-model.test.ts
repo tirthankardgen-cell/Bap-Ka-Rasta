@@ -15,7 +15,7 @@ test("exported auto fits the game and has grounded, independent wheel pivots", a
   const { scene } = await new GLTFLoader().parseAsync(
     file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength), "",
   );
-  const { wheels } = autoRickshaw(scene);
+  const { wheels, steering } = autoRickshaw(scene);
   const bounds = new Box3().setFromObject(scene);
   const size = bounds.getSize(new Vector3());
   assert.ok(Math.abs(bounds.min.y) < 0.015, "tires must meet the ground");
@@ -31,7 +31,14 @@ test("exported auto fits the game and has grounded, independent wheel pivots", a
     const after = new Box3().setFromObject(wheel).getCenter(new Vector3());
     assert.ok(before.distanceTo(after) < 0.005, "wheel spins around its axle, not the origin");
   }
-  assert.ok(wheels[2].position.z > .9, "front wheel points toward game +Z");
+  assert.ok(wheels[2].getWorldPosition(new Vector3()).z > .9, "front wheel points toward game +Z");
+  const axle = wheels[2].getWorldPosition(new Vector3());
+  steering.rotation.y = 0.4;
+  wheels[2].rotation.x += 12;
+  scene.updateMatrixWorld(true);
+  assert.ok(wheels[2].getWorldPosition(new Vector3()).distanceTo(axle) < 1e-6,
+    "steering and spinning preserve the front axle position");
+  assert.equal(autoRickshaw(scene).steering, steering, "binding is idempotent");
   let driver = 0, canopy = 0, triangles = 0;
   scene.traverse((object) => {
     if (object.userData.driver) driver++;

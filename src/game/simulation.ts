@@ -12,7 +12,6 @@ import {
   roadContains,
   SPAWN,
   obstacles,
-  crossingPosition,
   type Point,
 } from "./network.ts";
 export const STEP = 1 / 60;
@@ -291,14 +290,15 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
   s.impact = Math.max(0, s.impact - dt);
   const oldX = s.x,
     oldZ = s.z;
-  if (input.brake && !input.throttle) {
+  if (input.brake) {
     if (s.speed > 0.12) {
       s.speed = Math.max(0, s.speed - 9 * dt);
       s.reverseWait = 0;
     } else {
       if (s.speed > 0) s.speed = 0;
       s.reverseWait += dt;
-      if (s.reverseWait >= 0.4) s.speed = Math.max(-3.3, s.speed - 3 * dt);
+      if (!input.throttle && s.reverseWait >= 0.4)
+        s.speed = Math.max(-3.3, s.speed - 3 * dt);
     }
   } else if (input.throttle && !input.brake) {
     s.reverseWait = 0;
@@ -312,7 +312,7 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
   if (input.handbrake) s.speed *= Math.exp(-3 * dt);
   const targetSteer = Number(input.left) - Number(input.right);
   s.steer += (targetSteer - s.steer) * (1 - Math.exp(-8 * dt));
-  const steeringAngle = s.steer * (0.46 / (1 + Math.abs(s.speed) * 0.24));
+  const steeringAngle = steeringAngleFor(s.steer, s.speed);
   s.yaw += (s.speed / 1.8) * Math.tan(steeringAngle) * dt;
   s.x += Math.sin(s.yaw) * s.speed * dt;
   s.z += Math.cos(s.yaw) * s.speed * dt;
@@ -352,28 +352,6 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
       }
     }
   }
-  let yielding = false;
-  for (const n of junctions)
-    if (n.signal)
-      for (const side of [-1, 1]) {
-        const p = crossingPosition(n.id, s.time, side, side === 1 ? 0.72 : 0);
-        if (!p.moving) continue;
-        const dx = p.x - s.x,
-          dz = p.z - s.z,
-          d = Math.hypot(dx, dz),
-          ahead = dx * Math.sin(s.yaw) + dz * Math.cos(s.yaw),
-          across = Math.abs(dx * Math.cos(s.yaw) - dz * Math.sin(s.yaw));
-        if (ahead > 0 && ahead < 8 && across < 2.5) {
-          s.speed = Math.min(s.speed, Math.max(0, (d - 2.5) * 1.2));
-          yielding = true;
-        }
-        if (d < 2.2) {
-          s.x -= (dx / Math.max(0.001, d)) * (2.2 - d);
-          s.z -= (dz / Math.max(0.001, d)) * (2.2 - d);
-          s.speed = 0;
-          yielding = true;
-        }
-      }
   const final = constrainRoad(s.x, s.z);
   s.x = final.x;
   s.z = final.z;
@@ -385,9 +363,9 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
   s.topSpeed = Math.max(s.topSpeed, Math.abs(s.speed) * 3.6);
   const near = nearestStreet(s.x, s.z);
   s.street = streets[near.edge].name;
-  s.signal = yielding ? "pedestrian" : "";
+  s.signal = "";
   for (const n of junctions)
-    if (n.signal && !yielding) {
+    if (n.signal) {
       const dx = n.x - s.x,
         dz = n.z - s.z,
         forward = dx * Math.sin(s.yaw) + dz * Math.cos(s.yaw),
@@ -403,4 +381,54 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
     traffic.every((t) => Math.hypot(t.x - s.x, t.z - s.z) > 14)
   )
     s.checkpoint = { x: s.x, z: s.z, yaw: s.yaw };
+}
+
+/** Shared by physics and the GLB front-wheel steering pivot. */
+export function steeringAngleFor(steer: number, speed: number) {
+  return steer * (0.46 / (1 + Math.abs(speed) * 0.24));
+}
+
+/** Only honk at the player when they are the immediate obstruction. */
+export function playerBlocksTraffic(
+  t: Traffic,
+  player: Point,
+  traffic: Traffic[],
+) {
+  const dx = Math.sin(t.yaw),
+    dz = Math.cos(t.yaw);
+  const forward = (p: Point) => (p.x - t.x) * dx + (p.z - t.z) * dz;
+  const lateral = (p: Point) => Math.abs((p.x - t.x) * dz - (p.z - t.z) * dx);
+  const gap = forward(player);
+  return (
+    gap > 0 &&
+    gap < 10 &&
+    lateral(player) < 2.3 &&
+    !traffic.some(
+      (other) =>
+        other !== t &&
+        forward(other) > 0 &&
+        forward(other) < gap &&
+        lateral(other) < 2.3,
+    )
+  );
+}
+
+/** Simulation-time cooldowns freeze on pause; at most one nearby horn per beat. */
+export function createTrafficHornScheduler() {
+  const next = new Map<number, number>();
+  let nextGlobal = 0;
+  return (traffic: Traffic[], player: Point, time: number) => {
+    if (time < nextGlobal) return null;
+    for (const t of traffic) {
+      if (
+        time < (next.get(t.id) ?? 0) ||
+        !playerBlocksTraffic(t, player, traffic)
+      )
+        continue;
+      next.set(t.id, time + 4 + (t.id % 3));
+      nextGlobal = time + 1.2;
+      return t;
+    }
+    return null;
+  };
 }
