@@ -19,6 +19,11 @@ import {
   type Input,
 } from "./simulation";
 import { followCamera, type CameraMode } from "./camera";
+import {
+  AUTO_DRIVER_EYE_HEIGHT,
+  AUTO_PASSENGER_EYE_HEIGHT,
+  AUTO_WHEEL_RADIUS,
+} from "./auto-model";
 export type { CameraMode } from "./camera";
 export type Stats = {
   introStage: IntroStage;
@@ -46,6 +51,7 @@ export function createEngine(
   onStats: (s: Stats) => void,
   onPause: () => void,
   onError: (message: string) => void,
+  autoModel: THREE.Group,
 ) {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -64,10 +70,11 @@ export function createEngine(
   const scene = new THREE.Scene();
   const lighting = atmosphere(renderer, scene);
   const world = makeWorld(scene);
-  const player = autoRickshaw();
+  const player = autoRickshaw(autoModel);
   scene.add(player.root);
   const traffic = newTraffic();
-  const placeTraffic = trafficVisuals(scene, traffic);
+  const placeTraffic = trafficVisuals(scene, traffic, autoModel);
+  renderer.domElement.dataset.vehicleModel = "mumbai-auto";
   renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = newDrive();
@@ -152,8 +159,8 @@ export function createEngine(
         ? 5.8
         : 4.4
       : cameraMode === "behind-driver"
-        ? 2.03
-        : 1.83;
+        ? AUTO_PASSENGER_EYE_HEIGHT
+        : AUTO_DRIVER_EYE_HEIGHT;
     camera.near = outside ? 0.1 : 0.04;
     camera.fov = outside ? 55 : 70;
     camera.updateProjectionMatrix();
@@ -384,7 +391,7 @@ export function createEngine(
       if (ticks === 5) accumulator %= STEP;
       place(false, dt);
       player.wheels.forEach((w) => {
-        w.rotation.x += (state.speed * dt) / 0.34;
+        w.rotation.x += (state.speed * dt) / AUTO_WHEEL_RADIUS;
       });
       streetAudio.update(
         state.speed,

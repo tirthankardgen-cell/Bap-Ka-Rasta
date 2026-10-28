@@ -17,8 +17,8 @@ import {
 import type { Traffic } from "./simulation";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
-import { autoRickshaw, trafficCar } from "./vehicles";
-export { autoRickshaw } from "./vehicles";
+import { trafficCar } from "./vehicles";
+export { autoRickshaw } from "./auto-model";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 function palmFrond() {
@@ -1071,7 +1071,7 @@ function scooterModel() {
   return g;
 }
 
-export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[]) {
+export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[], autoModel: THREE.Group) {
   const batches: { mesh: THREE.InstancedMesh; ids: number[] }[] = [];
   const transform = new THREE.Object3D();
   for (let kind = 0; kind < 6; kind++) {
@@ -1080,7 +1080,7 @@ export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[]) {
       .filter((i) => i >= 0);
     if (!ids.length) continue;
     let model: THREE.Group;
-    if (kind === 4) model = autoRickshaw().root;
+    if (kind === 4) model = autoModel.clone(true);
     else if (kind === 5) {
       model = scooterModel();
     } else {
@@ -1099,17 +1099,20 @@ export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[]) {
       originalGeos.add(o.geometry);
       originalMats.add(mat);
       if (mat.transparent || ("map" in mat && mat.map)) return;
-      const key = mat.color.getHexString();
+      const key = kind === 4 ? mat.uuid : mat.color.getHexString();
       if (!groups.has(key))
         groups.set(key, { geos: [], material: mat.clone() });
-      groups
-        .get(key)!
-        .geos.push(
-          (o.geometry.index
-            ? o.geometry.toNonIndexed()
-            : o.geometry.clone()
-          ).applyMatrix4(o.matrixWorld),
-        );
+      const geometry = (o.geometry.index
+        ? o.geometry.toNonIndexed()
+        : o.geometry.clone()
+      ).applyMatrix4(o.matrixWorld);
+      // Imported body surfaces and wheel primitives can have different UV sets.
+      // These untextured traffic batches only need positions and normals.
+      if (kind === 4)
+        for (const attribute of Object.keys(geometry.attributes))
+          if (attribute !== "position" && attribute !== "normal")
+            geometry.deleteAttribute(attribute);
+      groups.get(key)!.geos.push(geometry);
     });
     for (const group of groups.values()) {
       const geometry = mergeGeometries(group.geos);
@@ -1126,8 +1129,10 @@ export function trafficVisuals(scene: THREE.Scene, traffic: Traffic[]) {
       scene.add(mesh);
       batches.push({ mesh, ids });
     }
-    originalGeos.forEach((g) => g.dispose());
-    originalMats.forEach((m) => {
+    // The imported traffic template borrows the player's mesh resources.
+    // Only its baked instance geometries belong to traffic; engine disposal owns originals.
+    if (kind !== 4) originalGeos.forEach((g) => g.dispose());
+    if (kind !== 4) originalMats.forEach((m) => {
       const map = (m as THREE.MeshStandardMaterial).map;
       map?.dispose();
       m.dispose();

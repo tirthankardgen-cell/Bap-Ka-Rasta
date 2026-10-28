@@ -15,6 +15,7 @@ import {
   Camera,
 } from "lucide-react";
 import { createEngine, type Engine, type Stats } from "./engine";
+import { loadAutoRickshaw, disposeAutoModel } from "./auto-model";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
@@ -57,26 +58,37 @@ export default function Game({ onExit }: { onExit: () => void }) {
     setSound(true);
     setLow(false);
     setStats(initial);
-    try {
-      engine.current = createEngine(
-        host.current!,
-        (s) => {
-          if (active) setStats(s);
-        },
-        () => {
-          if (active) setStatus("paused");
-        },
-        (message) => {
-          if (active) setError(message);
-        },
-      );
-      setLoaded(true);
-    } catch (e) {
+    void loadAutoRickshaw().then((model) => {
+      if (!active) {
+        disposeAutoModel(model);
+        return;
+      }
+      try {
+        engine.current = createEngine(
+          host.current!,
+          (s) => {
+            if (active) setStats(s);
+          },
+          () => {
+            if (active) setStatus("paused");
+          },
+          (message) => {
+            if (active) setError(message);
+          },
+          model,
+        );
+        setLoaded(true);
+      } catch (e) {
+        disposeAutoModel(model);
+        throw e;
+      }
+    }).catch((e: unknown) => {
+      if (!active) return;
       setError(
-        "Scene load nahi hua, bhidu. WebGL 2 aur hardware acceleration wala browser try karo.",
+        "Auto ya scene load nahi hua, bhidu. Connection check karke phir try karo. WebGL 2 aur hardware acceleration bhi chalu hona chahiye.",
       );
       console.error(e);
-    }
+    });
     return () => {
       active = false;
       engine.current?.dispose();

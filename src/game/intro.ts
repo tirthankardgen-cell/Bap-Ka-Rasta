@@ -29,7 +29,7 @@ export function introFrame(time: number, reducedMotion = false) {
     z = mix(331, 325, t / 3);
   if (t >= 3) {
     x = mix(-275.5, SPAWN.x, (t - 3) / 3);
-    y = mix(2.05, 1.83, (t - 3) / 3);
+    y = mix(2.05, 1.52, (t - 3) / 3);
     z = mix(325, SPAWN.z - 0.08, (t - 3) / 3);
   }
   // Reduced motion uses held shots and fades, never a forced moving viewpoint.

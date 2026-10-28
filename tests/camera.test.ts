@@ -9,7 +9,7 @@ for (const mode of ["driver", "behind-driver"] as const) {
     const vehicle = new Vector3();
     const offset = new Vector3(
       mode === "driver" ? 0 : 0.48,
-      mode === "driver" ? 1.83 : 2.03,
+      mode === "driver" ? 1.52 : 1.72,
       mode === "driver" ? 0.08 : -0.95,
     );
     const up = new Vector3(0, 1, 0);

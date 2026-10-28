@@ -1,0 +1,9 @@
+{
+  "triangles": 37552,
+  "meshes": 34,
+  "bytes": 1667468,
+  "wheel_radius": 0.265,
+  "source": "original Blender geometry",
+  "front": "+Z",
+  "up": "+Y"
+}

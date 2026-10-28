@@ -62,7 +62,7 @@ test("intro progresses through approach, entry, seat and masked handoff, with st
   assert.equal(introFrame(9).fade, 1);
   assert.equal(introFrame(9).exterior, true);
   const seat = introFrame(7);
-  assert.equal(seat.y, 1.83);
+  assert.equal(seat.y, 1.52);
   assert.equal(seat.x, -270);
   for (const t of [0, 1, 2, 3, 4, 5]) {
     assert.equal(introFrame(t, true).x, introFrame(0, true).x);

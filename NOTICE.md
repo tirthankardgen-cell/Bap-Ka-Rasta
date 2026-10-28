@@ -25,6 +25,8 @@ The runtime street network is independently authored gameplay geometry. Municipa
 
 ## Artwork
 
+The [Mumbai auto rickshaw](assets/vehicles/mumbai-auto/README.md) is original Blender geometry created for this project. Its editable source and runtime GLB contain no third-party meshes or textures. Visual reference provenance and the export contract are recorded with the asset; no separate reuse license is granted.
+
 The landing image, gallery previews, and storyboards are generated concept artwork created for this project. See the [storyboard provenance](docs/storyboard/README.md#image-provenance) for the source context. They are promotional and design references; a separate artwork reuse license has not been declared in this repository.
 
 ## Fonts and software dependencies

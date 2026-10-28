@@ -32,6 +32,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Changed
 
+- Replaced the primitive auto with an original Blender-authored Mumbai kaali-peeli GLB for the player and instanced traffic, including rounded bodywork, open cabin, fare meter, windscreen, independent wheels and matching interior camera heights. Loading waits for the asset and disposes late loads on exit; editable Blender source and export scripts are included.
+
 - Rebuilt vehicle selection around the circular gallery reference: large selected ride, scaled side previews, oval selection arc, centered details and yellow drive button, with drag, preview clicks, keyboard navigation and responsive layouts. Only the auto remains playable.
 
 - Anchored first-person and behind-driver cameras to the cabin during acceleration, steering and reverse; retained smooth following for the third-person view.
