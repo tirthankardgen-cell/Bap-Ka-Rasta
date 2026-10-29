@@ -40,7 +40,7 @@ export function atmosphere(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   pmrem.dispose();
   scene.background = texture;
   scene.environment = environment.texture;
-  scene.fog = new THREE.Fog("#e8c386", 150, 480);
+  scene.fog = new THREE.Fog("#e8c386", 140, 320);
   const fill = new THREE.HemisphereLight("#ffe6ad", "#84623e", 1.1);
   scene.add(fill);
   const sun = new THREE.DirectionalLight("#ffd087", 3.6);
@@ -75,7 +75,7 @@ export function atmosphere(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
       low = value;
       renderer.shadowMap.enabled = !value;
       renderer.shadowMap.needsUpdate = true;
-      scene.fog = new THREE.Fog("#e8c386", value ? 90 : 150, value ? 300 : 480);
+      scene.fog = new THREE.Fog("#e8c386", value ? 90 : 140, value ? 240 : 320);
     },
     dispose() {
       texture.dispose();

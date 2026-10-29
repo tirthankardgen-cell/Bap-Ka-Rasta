@@ -126,3 +126,11 @@ There are 43 movable cones in small roadside work zones. Player impacts use swep
 ### Four-speed automatic-clutch gears
 
 Start in first gear. Select **1 / 2 / 3 / 4** with the centre buttons, number-row keys or numpad. The arcade speed limits are **12 / 25 / 45 / 65 km/h**. Holding the accelerator gradually reaches the selected limit; release to coast, or use the existing brake/reverse control. Upshifts preserve current speed and downshifts apply gradual engine braking, including while accelerating. No clutch button or stalling is required. Engine pitch follows speed within the chosen gear. Reset returns to first gear; gear changes are disabled during the intro, pause and incident sequence.
+
+### Rendering and frame pacing
+
+Static city batches keep only nearby instances on the GPU, refreshing after 12 metres of travel and preserving large overlapping ground/road surfaces. Standard and Low draw radii are 350/270 metres, beyond their fog ranges. Instance buffers upload only their populated ranges. Crowd separation uses numeric spatial keys instead of repeatedly allocating strings; the full cast and collision behaviour remain active.
+
+Standard graphics adapts pixel density to sustained frame time, recovering gradually when there is headroom. Mobile starts at at most native CSS-pixel resolution with dynamic shadows disabled; desktop starts at at most 1.25× and disables shadows if sustained frame times are high. Low remains an explicit fixed-quality option. The auto and its camera share an interpolated pose between physics steps, while collisions remain fixed-step.
+
+For a repeatable city-scene benchmark, run the development server on port 4176, then `node scripts/measure-rendering.mjs` (set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` if needed). It reports submitted triangles, calls, scene-update time and render time at a fixed coastal viewpoint. The measured change was 1,967,036 → 460,204 submitted triangles (about 77% fewer); timing and playable FPS depend on the device. This development fixture is not included in the production build.

@@ -1,5 +1,7 @@
 # Changelog
 
+- Reduced distant city rendering and instance uploads, optimized crowd spatial lookups, added adaptive resolution/shadows and interpolated vehicle/camera motion to improve frame pacing.
+
 - Added four automatic-clutch gears with 12/25/45/65 km/h limits, centre touch buttons, number-row/numpad shortcuts, gentle downshifts and gear-aware engine pitch.
 
 - Added an animated road-worker loading screen and 43 knockable roadside cones, with speed-based tosses, tumbling, ground settling and reset support.

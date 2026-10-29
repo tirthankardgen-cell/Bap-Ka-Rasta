@@ -1,3 +1,5 @@
+import { renderPose } from "./render-pose";
+import { createRenderBudget } from "./render-budget";
 import { type Gear } from "./gears";
 import { type IncidentReport, type PedestrianHit } from "./pedestrian-rules";
 import {
@@ -61,7 +63,11 @@ export function createEngine(
     antialias: true,
     powerPreference: "high-performance",
   });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  const mobile = matchMedia("(any-pointer: coarse)").matches;
+  const maxPixelRatio = Math.min(devicePixelRatio, mobile ? 1 : 1.25);
+  const renderBudget = createRenderBudget(maxPixelRatio);
+  let automaticShadows = !mobile;
+  renderer.setPixelRatio(maxPixelRatio);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.95;
@@ -73,6 +79,7 @@ export function createEngine(
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   const lighting = atmosphere(renderer, scene);
+  lighting.quality(!automaticShadows);
   const world = makeWorld(scene);
   const player = autoRickshaw(autoModel);
   scene.add(player.root);
@@ -83,6 +90,7 @@ export function createEngine(
   renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = initialDrive;
+  const previousPose = { x: state.x, z: state.z, yaw: state.yaw };
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
   scene.add(camera);
   const hands = driverHands(camera);
@@ -159,8 +167,13 @@ export function createEngine(
     });
   }
   function place(snap = false, dt = 0) {
-    player.root.position.set(state.x, 0, state.z);
-    player.root.rotation.y = state.yaw;
+    if (snap)
+      Object.assign(previousPose, { x: state.x, z: state.z, yaw: state.yaw });
+    const pose = snap
+      ? state
+      : renderPose(previousPose, state, accumulator / STEP);
+    player.root.position.set(pose.x, 0, pose.z);
+    player.root.rotation.y = pose.yaw;
     const portrait = host.clientHeight > host.clientWidth;
     const outside = cameraMode === "third-person";
     const distance = outside ? (portrait ? 9 : 7.5) : -0.08;
@@ -170,16 +183,16 @@ export function createEngine(
     camera.fov = outside ? 55 : 70;
     camera.updateProjectionMatrix();
     cameraTarget.set(
-      state.x - Math.sin(state.yaw) * distance + Math.cos(state.yaw) * lateral,
+      pose.x - Math.sin(pose.yaw) * distance + Math.cos(pose.yaw) * lateral,
       height,
-      state.z - Math.cos(state.yaw) * distance - Math.sin(state.yaw) * lateral,
+      pose.z - Math.cos(pose.yaw) * distance - Math.sin(pose.yaw) * lateral,
     );
     followCamera(followPosition, cameraTarget, cameraMode, dt, snap);
     camera.position.copy(followPosition);
     lookTarget.set(
-      state.x + Math.sin(state.yaw) * 8,
+      pose.x + Math.sin(pose.yaw) * 8,
       outside ? 1.1 : 1.5,
-      state.z + Math.cos(state.yaw) * 8,
+      pose.z + Math.cos(pose.yaw) * 8,
     );
     if (outside && (look.yaw || look.pitch)) {
       camera.position.sub(lookTarget);
@@ -198,9 +211,9 @@ export function createEngine(
       camera.rotateX(look.pitch);
     }
     renderer.domElement.dataset.lookYaw = look.yaw.toFixed(3);
-    placeTraffic(state.x, state.z);
-    lighting.update(state.x, state.z, state.time);
-    world.update(state.time, state.x, state.z, lowQuality);
+    placeTraffic(pose.x, pose.z);
+    lighting.update(pose.x, pose.z, state.time);
+    world.update(state.time, pose.x, pose.z, lowQuality);
     hands.update(cameraMode === "driver", false, state.time, reducedMotion);
     if (introActive) placeIntro();
     if (incident) placeIncident();
@@ -293,6 +306,7 @@ export function createEngine(
     paused = value;
     clear();
     accumulator = 0;
+    Object.assign(previousPose, { x: state.x, z: state.z, yaw: state.yaw });
     last = performance.now();
     streetAudio.pause(value);
     publish();
@@ -511,11 +525,25 @@ export function createEngine(
       if (introTime >= INTRO_DURATION) finishIntro();
       renderer.render(scene, camera);
     } else if (!paused) {
+      if (!lowQuality) {
+        const budget = renderBudget.sample(elapsed);
+        if (budget) {
+          if (automaticShadows && !budget.shadows) {
+            automaticShadows = false;
+            lighting.quality(true);
+          }
+          if (budget.changed) {
+            renderer.setPixelRatio(budget.ratio);
+            renderer.setSize(host.clientWidth, host.clientHeight);
+          }
+        }
+      }
       accumulator += dt;
       let ticks = 0;
       while (accumulator >= STEP && ticks < 5) {
         const before = { x: state.x, z: state.z };
         const previousTime = state.time;
+        Object.assign(previousPose, { x: state.x, z: state.z, yaw: state.yaw });
         step(state, input, traffic);
         world.cones.step(before, state, state.speed, STEP);
         const hit = world.crowd.collide(
@@ -568,7 +596,7 @@ export function createEngine(
       frames = 0;
       lastFps = now;
     }
-    if (now - lastHud > 100) {
+    if (!paused && now - lastHud > 100) {
       publish();
       lastHud = now;
     }
@@ -597,8 +625,10 @@ export function createEngine(
     },
     quality(low: boolean) {
       lowQuality = low;
-      renderer.setPixelRatio(low ? 0.65 : Math.min(devicePixelRatio, 1.5));
-      lighting.quality(low);
+      renderBudget.reset();
+      automaticShadows = !mobile;
+      renderer.setPixelRatio(low ? 0.65 : maxPixelRatio);
+      lighting.quality(low || !automaticShadows);
       resize();
     },
     dispose() {

@@ -1,3 +1,4 @@
+import { localInstances } from "./static-visibility";
 import { makeCones } from "./cone-visuals";
 import { buildingLots } from "./buildings";
 import { boundaryBuildings } from "./boundaries";
@@ -959,9 +960,15 @@ export function makeWorld(scene: THREE.Scene) {
     mesh.receiveShadow = true;
     scene.add(mesh);
   }
+  const localBatches: {
+    mesh: THREE.InstancedMesh;
+    matrices: THREE.Matrix4[];
+  }[] = [];
   for (const b of batches.values()) {
     const mesh = new THREE.InstancedMesh(b.geo, b.material, b.matrices.length);
     b.matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    localBatches.push({ mesh, matrices: b.matrices });
     mesh.castShadow = !["53595b", "4b9da5", "c9c5a6", "decba6"].includes(
       (b.material as THREE.MeshStandardMaterial).color.getHexString(),
     );
@@ -971,7 +978,10 @@ export function makeWorld(scene: THREE.Scene) {
   }
   const crowd = makeCrowd(scene, pavement.heightAt);
   const cones = makeCones(scene, pavement.heightAt);
-  let lastLights = -1;
+  let lastLights = -1,
+    lastViewX = Infinity,
+    lastViewZ = Infinity,
+    lastLow = false;
   return {
     crowd,
     cones,
@@ -982,6 +992,13 @@ export function makeWorld(scene: THREE.Scene) {
       return Math.max(0, 1 - nearest / 38);
     },
     update(time: number, x: number, z: number, low = false) {
+      if (low !== lastLow || Math.hypot(x - lastViewX, z - lastViewZ) > 12) {
+        for (const batch of localBatches)
+          localInstances(batch.mesh, batch.matrices, x, z, low ? 270 : 350);
+        lastViewX = x;
+        lastViewZ = z;
+        lastLow = low;
+      }
       crowd.update(time, x, z, low);
       cones.update(x, z);
       cityTime.value = time;
@@ -1140,6 +1157,8 @@ export function trafficVisuals(
         b.mesh.setMatrixAt(i, transform.matrix);
       });
       b.mesh.count = visible;
+      b.mesh.instanceMatrix.clearUpdateRanges();
+      if (visible) b.mesh.instanceMatrix.addUpdateRange(0, visible * 16);
       b.mesh.instanceMatrix.needsUpdate = true;
     }
   };

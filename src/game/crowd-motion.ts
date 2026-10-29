@@ -13,12 +13,13 @@ export function createCrowdMotion(
   let last = -Infinity;
   let current: CrowdPose[] = [];
   const gridSize = 2;
+  const keyFor = (x: number, z: number) => x * 65536 + z;
   function resolve(poses: CrowdPose[], fixed: boolean[]) {
     for (let pass = 0; pass < 8; pass++) {
-      const grid = new Map<string, number[]>();
+      const grid = new Map<number, number[]>();
       for (let i = 0; i < poses.length; i++) {
         const p = poses[i],
-          key = Math.floor(p.x / gridSize) + "," + Math.floor(p.z / gridSize);
+          key = keyFor(Math.floor(p.x / gridSize), Math.floor(p.z / gridSize));
         const bucket = grid.get(key);
         if (bucket) bucket.push(i);
         else grid.set(key, [i]);
@@ -30,7 +31,7 @@ export function createCrowdMotion(
           gz = Math.floor(p.z / gridSize);
         for (let x = gx - 1; x <= gx + 1; x++)
           for (let z = gz - 1; z <= gz + 1; z++)
-            for (const j of grid.get(x + "," + z) ?? []) {
+            for (const j of grid.get(keyFor(x, z)) ?? []) {
               if (j <= i || (fixed[i] && fixed[j])) continue;
               const q = poses[j],
                 dx = q.x - p.x,
@@ -56,10 +57,10 @@ export function createCrowdMotion(
   function tick(time: number, dt: number, reset: boolean) {
     const desired = actors.map((a) => actorPose(a, time));
     const fixed = actors.map((a) => !!a.home || !!hold(a, time));
-    const neighbours = new Map<string, number[]>();
+    const neighbours = new Map<number, number[]>();
     if (!reset)
       current.forEach((p, i) => {
-        const key = Math.floor(p.x / 2) + "," + Math.floor(p.z / 2);
+        const key = keyFor(Math.floor(p.x / 2), Math.floor(p.z / 2));
         const bucket = neighbours.get(key);
         if (bucket) bucket.push(i);
         else neighbours.set(key, [i]);
@@ -83,7 +84,7 @@ export function createCrowdMotion(
         let blocked = false;
         for (let x = gx - 1; x <= gx + 1; x++)
           for (let z = gz - 1; z <= gz + 1; z++)
-            for (const j of neighbours.get(x + "," + z) ?? []) {
+            for (const j of neighbours.get(keyFor(x, z)) ?? []) {
               if (j === i) continue;
               const px = current[j].x - old.x,
                 pz = current[j].z - old.z;

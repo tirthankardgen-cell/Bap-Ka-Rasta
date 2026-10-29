@@ -243,6 +243,7 @@ export function makeCrowd(
       time: number,
       speed: number,
     ) {
+      if (Math.abs(speed) < 0.3) return null;
       const p0 = motion.sample(previousTime),
         p1 = motion.sample(time);
       return rules.collide(before, after, previousTime, time, speed, p0, p1);
@@ -355,8 +356,14 @@ export function makeCrowd(
         }
       }
       mesh.count = index;
+      mesh.instanceMatrix.clearUpdateRanges();
+      if (index) mesh.instanceMatrix.addUpdateRange(0, index * 16);
       mesh.instanceMatrix.needsUpdate = true;
-      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      if (mesh.instanceColor) {
+        mesh.instanceColor.clearUpdateRanges();
+        if (index) mesh.instanceColor.addUpdateRange(0, index * 3);
+        mesh.instanceColor.needsUpdate = true;
+      }
     },
     greeting(time: number, x: number, z: number, speed: number) {
       for (const hit of rules.reactions.values())
