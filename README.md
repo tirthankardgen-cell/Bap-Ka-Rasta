@@ -27,7 +27,7 @@ The project is an early playable prototype. Mumbai and the auto rickshaw are ava
 | Content | Playable now | Planned content shown in the galleries |
 | --- | --- | --- |
 | Cities | Mumbai | Delhi, Kolkata, Chennai, Bangalore |
-| Player vehicles | Auto rickshaw | Thar, Fortuner, Scooty, KTM |
+| Player vehicles | Auto rickshaw | Thar, Fortuner, Scooty, KTM, Toto e-rickshaw |
 
 The current build includes:
 

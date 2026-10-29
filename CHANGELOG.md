@@ -1,5 +1,7 @@
 # Changelog
 
+- Added a reference-inspired Toto e-rickshaw preview as the sixth vehicle, marked Coming soon, with six-item gallery navigation.
+
 - Reduced distant city rendering and instance uploads, optimized crowd spatial lookups, added adaptive resolution/shadows and interpolated vehicle/camera motion to improve frame pacing.
 
 - Added four automatic-clutch gears with 12/25/45/65 km/h limits, centre touch buttons, number-row/numpad shortcuts, gentle downshifts and gear-aware engine pitch.

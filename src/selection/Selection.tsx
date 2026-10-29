@@ -103,6 +103,16 @@ export const vehicles = [
     x: 512,
     y: 512,
   },
+  {
+    name: "Toto e-rickshaw",
+    subtitle: "Electric sawaari, apna saathi.",
+    description:
+      "Neela Toto, khuli hawa aur electric wali ride. Yeh nayi sawaari abhi taiyaar ho rahi hai — coming soon!",
+    detail: "ELECTRIC RICKSHAW · COMING SOON",
+    image: "/images/toto-erickshaw.png",
+    x: 0,
+    y: 0,
+  },
 ];
 type Props = {
   kind: "city" | "vehicle";

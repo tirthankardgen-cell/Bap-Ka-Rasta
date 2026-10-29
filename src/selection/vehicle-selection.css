@@ -747,3 +747,10 @@
     padding-inline: 18px;
   }
 }
+.ride-vehicle[hidden] {
+  display: none;
+}
+.ride-art.ride-cutout {
+  object-fit: contain;
+  mix-blend-mode: normal;
+}

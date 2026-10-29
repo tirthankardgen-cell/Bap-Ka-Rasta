@@ -108,7 +108,7 @@ test("circular vehicle chooser selects previews, wraps, drags and keeps future r
   await page.goto("/");
   await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
   await page.getByRole("button", { name: "Yahin Chalao" }).click();
-  await expect(page.locator(".ride-vehicle")).toHaveCount(5);
+  await expect(page.locator(".ride-vehicle")).toHaveCount(6);
   await page.screenshot({
     path: "test-results/vehicle-orbit-reference.png",
     animations: "disabled",
@@ -145,7 +145,7 @@ test("circular vehicle chooser selects previews, wraps, drags and keeps future r
   await expect(
     page.getByRole("heading", { name: "Thar", exact: true }),
   ).toBeVisible();
-  for (const name of ["Fortuner", "KTM", "Scooty"]) {
+  for (const name of ["Fortuner", "Toto e-rickshaw", "KTM", "Scooty"]) {
     await page.getByRole("button", { name, exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Coming soon", exact: true }),
@@ -160,4 +160,34 @@ test("circular vehicle chooser selects previews, wraps, drags and keeps future r
   await expect(
     page.getByRole("button", { name: "Drive Mumbai" }),
   ).toBeEnabled();
+});
+
+test("Toto preview uses its own image and stays locked on mobile", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 667, height: 375 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
+  await page.getByRole("button", { name: "Yahin Chalao" }).click();
+  await page
+    .getByRole("button", { name: "Toto e-rickshaw", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Toto e-rickshaw", exact: true }),
+  ).toBeVisible();
+  const image = page.getByRole("img", {
+    name: "Toto e-rickshaw vehicle concept art",
+  });
+  await expect(image).toBeVisible();
+  await expect
+    .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+  await expect(
+    page.getByRole("button", { name: "Coming soon", exact: true }),
+  ).toBeDisabled();
+  await expect(page.locator(".ride-count")).toContainText("04 / 06");
+  await page.screenshot({
+    path: "test-results/toto-mobile.png",
+    animations: "disabled",
+  });
 });

@@ -17,6 +17,7 @@ type Vehicle = {
   detail: string;
   x: number;
   y: number;
+  image?: string;
 };
 type Props = {
   vehicles: Vehicle[];
@@ -26,8 +27,8 @@ type Props = {
   onConfirm: () => void;
   city: string;
 };
-// Clockwise around the oval: auto, Thar, Fortuner, KTM, Scooty.
-const order = [0, 1, 2, 4, 3];
+// Five visible positions; additional rides rotate in from the back of the gallery.
+const order = [0, 1, 2, 5, 4, 3];
 export default function VehicleSelection({
   vehicles,
   selected,
@@ -150,11 +151,13 @@ export default function VehicleSelection({
             <path d="M 420 268 Q 600 292 780 268" />
           </svg>
           {order.map((id, index) => {
-            const offset = ((index - current + 7) % 5) - 2;
+            const offset =
+              ((index - current + order.length + 2) % order.length) - 2;
             const item = vehicles[id];
             return (
               <button
                 key={item.name}
+                hidden={Math.abs(offset) > 2}
                 type="button"
                 data-vehicle={id}
                 data-offset={offset}
@@ -166,30 +169,39 @@ export default function VehicleSelection({
                   if (e.detail === 0) onSelect(id);
                 }}
               >
-                <svg
-                  className="ride-art"
-                  viewBox={`${item.x + 12} ${item.y + 45} 488 440`}
-                  preserveAspectRatio="xMidYMid meet"
-                  role="img"
-                  aria-label={`${item.name} vehicle concept art`}
-                >
-                  <defs>
-                    <clipPath id={`ride-crop-${id}`}>
-                      <rect
-                        x={item.x + 12}
-                        y={item.y + 45}
-                        width="488"
-                        height="440"
-                      />
-                    </clipPath>
-                  </defs>
-                  <image
-                    href="/images/vehicle-gallery.webp"
-                    width="1536"
-                    height="1024"
-                    clipPath={`url(#ride-crop-${id})`}
+                {item.image ? (
+                  <img
+                    className="ride-art ride-cutout"
+                    src={item.image}
+                    alt={`${item.name} vehicle concept art`}
+                    draggable={false}
                   />
-                </svg>
+                ) : (
+                  <svg
+                    className="ride-art"
+                    viewBox={`${item.x + 12} ${item.y + 45} 488 440`}
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    aria-label={`${item.name} vehicle concept art`}
+                  >
+                    <defs>
+                      <clipPath id={`ride-crop-${id}`}>
+                        <rect
+                          x={item.x + 12}
+                          y={item.y + 45}
+                          width="488"
+                          height="440"
+                        />
+                      </clipPath>
+                    </defs>
+                    <image
+                      href="/images/vehicle-gallery.webp"
+                      width="1536"
+                      height="1024"
+                      clipPath={`url(#ride-crop-${id})`}
+                    />
+                  </svg>
+                )}
                 <span className="ride-preview-label" aria-hidden={offset === 0}>
                   <strong>{item.name}</strong>
                   <small>
@@ -265,7 +277,8 @@ export default function VehicleSelection({
       </section>
       <footer className="ride-footer">
         <span className="ride-count">
-          {String(current + 1).padStart(2, "0")} / 05
+          {String(current + 1).padStart(2, "0")} /{" "}
+          {String(order.length).padStart(2, "0")}
         </span>
         <div className="ride-dots" role="group" aria-label="Choose a vehicle">
           {order.map((id) => (
@@ -286,7 +299,7 @@ export default function VehicleSelection({
       </footer>
       <span className="sr-only" aria-live="polite" aria-atomic="true">
         {vehicle.name}. {selected === 0 ? "Available now." : "Coming soon."}{" "}
-        {current + 1} of 5.
+        {current + 1} of {order.length}.
       </span>
     </main>
   );
