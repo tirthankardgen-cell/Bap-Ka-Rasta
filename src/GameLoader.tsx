@@ -1,3 +1,4 @@
+import RoadLoading from "./RoadLoading";
 import { useEffect, useState, type ComponentType } from "react";
 
 type Props = { onExit: () => void };
@@ -30,13 +31,13 @@ export default function GameLoader({ onExit }: Props) {
   }, []);
   if (Game) return <Game onExit={onExit} />;
   return (
-    <div className="game-loading" role="status">
-      {failed ? "Rasta load nahi hua, bhidu." : "Road taiyaar ho raha hai…"}
-      <small>
-        {failed
-          ? "Connection ruk gaya ya naya update aaya hai. Reload karke phir chalo."
-          : "Mumbai ki kaali-peeli aa rahi hai, bhidu"}
-      </small>
+    <div className="game-loading">
+      {failed ? "Rasta load nahi hua, bhidu." : <RoadLoading />}
+      {failed && (
+        <small>
+          Connection ruk gaya ya naya update aaya hai. Reload karke phir chalo.
+        </small>
+      )}
       {failed && (
         <button onClick={() => window.location.reload()}>Reload game</button>
       )}

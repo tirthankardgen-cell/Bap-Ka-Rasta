@@ -159,9 +159,6 @@ export const districts = [
 export const obstacles = [
   { x: -249.5, z: 60, r: 1.5, kind: "parked" },
   { x: -249.5, z: 115, r: 1.5, kind: "parked" },
-  { x: 55, z: -29.5, r: 0.6, kind: "cone" },
-  { x: 59, z: -29.5, r: 0.6, kind: "cone" },
-  { x: 63, z: -29.5, r: 0.6, kind: "cone" },
   { x: 300.5, z: 100, r: 1.5, kind: "parked" },
 ];
 export const isCurved = (edge: number) =>

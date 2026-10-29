@@ -423,6 +423,7 @@ export function createEngine(
     if (incident) return;
     if (introActive) finishIntro();
     resetDrive(state, traffic);
+    world.cones.reset();
     clear();
     place(true);
     publish();
@@ -503,6 +504,7 @@ export function createEngine(
         const before = { x: state.x, z: state.z };
         const previousTime = state.time;
         step(state, input, traffic);
+        world.cones.step(before, state, state.speed, STEP);
         const hit = world.crowd.collide(
           before,
           state,

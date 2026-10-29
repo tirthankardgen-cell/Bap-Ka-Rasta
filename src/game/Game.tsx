@@ -1,3 +1,4 @@
+import RoadLoading from "../RoadLoading";
 import IncidentNewspaper from "./IncidentNewspaper";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -325,6 +326,17 @@ export default function Game({ onExit }: { onExit: () => void }) {
                   >
                     Phir try karein <RotateCcw size={18} />
                   </button>
+                  <button
+                    className="game-secondary"
+                    onClick={exit}
+                    aria-label="Back to home"
+                  >
+                    Ghar chalo
+                  </button>
+                </>
+              ) : status === "ready" && !loaded ? (
+                <>
+                  <RoadLoading />
                   <button
                     className="game-secondary"
                     onClick={exit}

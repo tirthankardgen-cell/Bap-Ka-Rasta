@@ -1,3 +1,4 @@
+import { makeCones } from "./cone-visuals";
 import { buildingLots } from "./buildings";
 import { boundaryBuildings } from "./boundaries";
 import { makeCrowd } from "./crowd";
@@ -727,15 +728,11 @@ export function makeWorld(scene: THREE.Scene) {
     );
   }
   for (const o of obstacles) {
-    if (o.kind === "cone") {
-      box("#343f37", o.x, 0.08, o.z, 0.8, 0.12, 0.8);
-      add("cone", "#e58b35", o.x, 0.55, o.z, 0.35, 1, 0.35);
-    } else {
-      const taxi = trafficCar(0);
-      taxi.position.set(o.x, 0, o.z);
-      scene.add(taxi);
-    }
+    const taxi = trafficCar(0);
+    taxi.position.set(o.x, 0, o.z);
+    scene.add(taxi);
   }
+
   // Kerbside carts leave through lanes and pedestrian crossings open.
   const vendors: { x: number; z: number }[] = [];
   for (const e of streets) {
@@ -973,9 +970,11 @@ export function makeWorld(scene: THREE.Scene) {
     scene.add(mesh);
   }
   const crowd = makeCrowd(scene, pavement.heightAt);
+  const cones = makeCones(scene, pavement.heightAt);
   let lastLights = -1;
   return {
     crowd,
+    cones,
     marketIntensity(x: number, z: number) {
       let nearest = Infinity;
       for (const vendor of vendors)
@@ -984,6 +983,7 @@ export function makeWorld(scene: THREE.Scene) {
     },
     update(time: number, x: number, z: number, low = false) {
       crowd.update(time, x, z, low);
+      cones.update(x, z);
       cityTime.value = time;
       if (Math.floor(time * 4) !== lastLights) {
         lastLights = Math.floor(time * 4);

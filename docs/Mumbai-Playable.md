@@ -116,3 +116,9 @@ The cinematic respects reduced motion, stops advancing in a hidden tab, and cann
 
 
 Background people reuse the same 20 character designs. Main-cast names are unchanged; background identities are deterministic and unique within the city, including multiple differently named delivery workers. Their identity follows them into scolding subtitles and incident reports. Mid-block routes include diagonal crossings, pavement sections and independent short pauses, without signal permission. A shared 20 Hz crowd simulation makes nearby walkers sidestep and maintain body clearance, and supplies the same positions to vehicle-hit detection. Named locals stay at their original homes.
+
+### Loading and roadside cones
+
+Both game-code and auto-model loading show a lightweight road-building animation with two workers, shovels and traffic cones. Reduced-motion settings show the static illustration; retry and home navigation remain available when a download fails.
+
+There are 43 movable cones in small roadside work zones. Player impacts use swept contact detection, including reverse: slow contact tips a cone nearby, while faster contact launches it a few metres with gravity, a small bounce and a sideways landing. Cones do not block or brake the auto. Fallen cones remain in place and can be knocked again after the auto moves away. Reset restores the work zones. These props use the existing scene resource cleanup.
