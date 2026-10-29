@@ -12,7 +12,7 @@ Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the 
 
 ![BR — Bap Ka Rasta: Apna sheher. Apni sawaari. Mumbai auto rickshaw browser game](public/brand/readme-cover.png)
 
-*The BR brand cover uses the original generated landing artwork. Gameplay uses procedural 3D geometry.*
+*The BR brand cover uses the original generated landing artwork. Gameplay combines an authored procedural city with Blender models for the Mumbai auto and reference-inspired character cast.*
 
 [![Mumbai playable game map in the BR brand style](docs/maps/mumbai-game-map.png)](docs/maps/mumbai-game-map.svg)
 
@@ -34,7 +34,7 @@ The current build includes:
 - **Connected streets:** 75 road segments, 34 signalized intersections, and a clockwise roundabout, with routes through Marine Drive, Churchgate, Fort, and Colaba-inspired areas.
 - **Neighbourhood lanes:** 29 narrow two-way streets, with one lane each way; new northern/eastern connections and visible perimeter walls and closed-end barriers.
 - **Mumbai-inspired architecture:** Art Deco curved balconies, Fort-style stone arches, tiled-roof chawls, shared galleries, laundry, shopfronts and rooftop tanks. The auto has an open cabin, patterned seating, a round front lamp and coloured trim under warmer sunset lighting. These are custom interpretations of the supplied reference.
-- **Street activity:** 112 moving traffic vehicles and 1,542 crowd actors, including the original 19 named locals and individually named background people, with walking, browsing, chatting, working and mid-block crossing activity. Twenty character designs include the player driver.
+- **Street activity:** 112 moving traffic vehicles and 1,542 crowd actors, including the original 19 named locals and individually named background people, with walking, browsing, chatting, working and mid-block crossing activity. All twenty character designs use [Blender models based on the cast boards](assets/characters/mumbai/README.md), including Sachin's seated driver and first-person hands.
 - **Arcade driving:** acceleration, steering, braking, delayed reverse, vehicle and roadside collisions, and safe vehicle reset. The auto reaches approximately 65 km/h.
 - **Driver opening:** a skippable, subtitled walk to the auto, cabin entry and camera handoff, with reduced-motion support. Character voice recordings can be linked later.
 - **Landscape mobile experience:** city selection, vehicle selection and driving automatically use a landscape canvas, even when a phone is upright. No rotate-phone prompt or orientation pause. The home page follows the phone normally.
@@ -138,7 +138,7 @@ The browser configuration uses Chromium with software WebGL. `PLAYWRIGHT_CHROMIU
 
 Before submitting a change, run the checks relevant to it and update documentation when controls, availability, or setup steps change. Keep audio attribution alongside any added or edited recordings.
 
-The [CI workflow](.github/workflows/ci.yml) checks the production build, simulation/layout tests, and research-audio manifest on pull requests and pushes to `main`. Browser tests remain a separate check; the long desktop flow still exceeds its 150-second budget under software WebGL. Pause now publishes its HUD state immediately, but the full browser suite is not yet consistently passing. [Dependabot](.github/dependabot.yml) is configured for weekly dependency and workflow-action updates.
+The [CI workflow](.github/workflows/ci.yml) checks the production build, simulation/layout tests, and research-audio manifest on pull requests and pushes to `main`. Browser tests remain a separate local check. The Blender-character integration passed all 24 browser tests in Chrome, including loading retry and graphics-context recovery; this does not measure performance on a physical phone. [Dependabot](.github/dependabot.yml) is configured for weekly dependency and workflow-action updates.
 
 ## Project structure
 

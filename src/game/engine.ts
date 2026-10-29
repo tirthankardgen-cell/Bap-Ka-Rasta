@@ -9,6 +9,7 @@ import {
   type IntroStage,
 } from "./intro";
 import { driverHands } from "./intro-visuals";
+import { characterPlayerPart, type CharacterModels } from "./character-models";
 import { createStreetAudio } from "./audio";
 import * as THREE from "three";
 import { atmosphere } from "./atmosphere";
@@ -57,6 +58,7 @@ export function createEngine(
   onPause: () => void,
   onError: (message: string) => void,
   autoModel: THREE.Group,
+  characterModels: CharacterModels,
   initialDrive = newDrive(),
 ) {
   const renderer = new THREE.WebGLRenderer({
@@ -80,20 +82,31 @@ export function createEngine(
   const scene = new THREE.Scene();
   const lighting = atmosphere(renderer, scene);
   lighting.quality(!automaticShadows);
-  const world = makeWorld(scene);
+  const world = makeWorld(scene, characterModels);
   const player = autoRickshaw(autoModel);
   scene.add(player.root);
   const traffic = newTraffic();
   const trafficHorn = createTrafficHornScheduler();
   const placeTraffic = trafficVisuals(scene, traffic, autoModel);
+  // Traffic keeps its cheap anonymous drivers; Sachin is the reference-cast model.
+  autoModel.traverse((object) => {
+    if (object.userData.driver) {
+      object.visible = false;
+      object.userData.driver = false;
+    }
+  });
+  const sachin = characterPlayerPart(characterModels, "seated");
+  sachin.userData.driver = true;
+  player.root.add(sachin);
   renderer.domElement.dataset.vehicleModel = "mumbai-auto";
+  renderer.domElement.dataset.characterModels = "blender-reference-cast";
   renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = initialDrive;
   const previousPose = { x: state.x, z: state.z, yaw: state.yaw };
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
   scene.add(camera);
-  const hands = driverHands(camera);
+  const hands = driverHands(camera, characterModels);
   let introActive = false,
     introStarted = false,
     introTime = 0,
@@ -142,6 +155,12 @@ export function createEngine(
     const stage = !introStarted ? "ready" : introActive ? frame.stage : "done";
     renderer.domElement.dataset.introStage = stage;
     renderer.domElement.dataset.characterCount = String(world.crowd.count);
+    renderer.domElement.dataset.detailedCharacters = String(
+      world.crowd.stats.detailed,
+    );
+    renderer.domElement.dataset.visibleCharacters = String(
+      world.crowd.stats.visible,
+    );
     onStats({
       gear: state.gear,
       incident,
@@ -653,6 +672,8 @@ export function createEngine(
       scene.traverse((o) => {
         if (o instanceof THREE.Mesh) {
           geometries.add(o.geometry);
+          if (o.customDepthMaterial) materials.add(o.customDepthMaterial);
+          if (o.customDistanceMaterial) materials.add(o.customDistanceMaterial);
           for (const mat of Array.isArray(o.material)
             ? o.material
             : [o.material]) {

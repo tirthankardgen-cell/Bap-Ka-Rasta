@@ -8,9 +8,9 @@ import {
   type Stats,
 } from "../../../src/game/engine";
 import {
-  loadAutoRickshaw,
-  disposeAutoModel,
-} from "../../../src/game/auto-model";
+  loadGameAssets,
+  disposeGameAssets,
+} from "../../../src/game/game-assets";
 import { newDrive } from "../../../src/game/simulation";
 import { createActors, actorPose } from "../../../src/game/characters";
 import IncidentNewspaper from "../../../src/game/IncidentNewspaper";
@@ -22,9 +22,9 @@ function Fixture() {
   const [stats, setStats] = useState<Stats | null>(null);
   useEffect(() => {
     let active = true;
-    void loadAutoRickshaw().then((model) => {
+    void loadGameAssets().then((assets) => {
       if (!active) {
-        disposeAutoModel(model);
+        disposeGameAssets(assets);
         return;
       }
       const a = createActors().find((a) => a.cross >= 0)!;
@@ -42,7 +42,8 @@ function Fixture() {
         setStats,
         () => {},
         console.error,
-        model,
+        assets.autoModel,
+        assets.characterModels,
         drive,
       );
       engine.current.quality(true);

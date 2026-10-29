@@ -18,7 +18,7 @@ import {
   Camera,
 } from "lucide-react";
 import { createEngine, type Engine, type Stats } from "./engine";
-import { loadAutoRickshaw, disposeAutoModel } from "./auto-model";
+import { loadGameAssets, disposeGameAssets } from "./game-assets";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
@@ -64,10 +64,10 @@ export default function Game({ onExit }: { onExit: () => void }) {
     setSound(true);
     setLow(false);
     setStats(initial);
-    void loadAutoRickshaw(controller.signal)
-      .then((model) => {
+    void loadGameAssets(controller.signal)
+      .then((assets) => {
         if (!active) {
-          disposeAutoModel(model);
+          disposeGameAssets(assets);
           return;
         }
         try {
@@ -82,11 +82,12 @@ export default function Game({ onExit }: { onExit: () => void }) {
             (message) => {
               if (active) setError(message);
             },
-            model,
+            assets.autoModel,
+            assets.characterModels,
           );
           setLoaded(true);
         } catch (e) {
-          disposeAutoModel(model);
+          disposeGameAssets(assets);
           throw e;
         }
       })

@@ -1,12 +1,14 @@
 # Mumbai characters, crowd variety and voice production
 
-**Implementation update:** the game now includes all 20 procedural character designs (Sachin plus 19 uniquely placed named locals), varied district crowds, a guided driver-entry opening, skip/pause/reduced-motion support and subtitles. Constable Patil is male. Character recordings remain unlinked until audio is supplied; no missing voice assets are fetched. The tables below remain the production brief. Advanced schedules, full on-foot movement, saved camera preferences, passenger jobs, shop purchases and repairs are still future work. See the [playable guide](../Mumbai-Playable.md) for current behaviour.
+**Implementation update:** all 20 designs now have Blender-authored models based on the reference boards below, replacing the old box-part people. Sachin has a matching seated body and first-person hands; the 19 named locals and district crowds use shared animated models with distance-based detail. The guided opening, skip/pause/reduced-motion support, crowd movement, collisions and subtitles remain in place. Constable Patil is male. Character recordings remain unlinked until audio is supplied; no missing voice assets are fetched. Advanced schedules, full on-foot movement, saved camera preferences, passenger jobs, shop purchases and repairs are still future work. See the [Blender asset library and rebuild guide](../../assets/characters/mumbai/README.md) and [playable guide](../Mumbai-Playable.md).
 
 ## Visual references
 
 - [Main cast: eight characters](images/01-mumbai-main-cast.png)
 - [Street crowd: twelve additional characters](images/02-mumbai-street-crowd.png)
 - [Six-panel walk-up and entry storyboard](images/03-driver-opening.png)
+
+Actual Blender models: [main-cast renders](renders/main-cast.jpg) · [street-crowd renders](renders/street-crowd.jpg) · [editable .blend](../../assets/characters/mumbai/mumbai-characters.blend).
 
 Concept boards generated with OpenAI image generation on 2026-10-26 for this project; the main cast was revised to make Patil male. These are original generated concepts, not imported Roblox assets or finished 3D models. Use blocky heads/bodies for people, with distinct faces, silhouettes and clothing; keep buildings, vehicles and props materially more realistic. The written character table is authoritative if art differs in accessories, uniform detail or labels. The opening board is mood/composition guidance: entry must be from the actual pavement-facing opening, with no invented hinged car door. The third-person transition must avoid passing through the canopy.
 
@@ -135,7 +137,7 @@ Mostly natural Hinglish, with perhaps one short Marathi phrase per line. Use fam
 
 ## Delivery order
 
-1. **Reference pack complete:** concept images, character/voice briefs, crowd design and recording sheet. The current procedural implementation covers the opening, cast and initial crowd variety; recorded dialogue is pending.
+1. **Reference pack and Blender cast complete:** concept images, character/voice briefs, crowd design and recording sheet. The current implementation covers the opening, all twenty Blender character designs and district crowd variety; recorded dialogue is pending.
 2. **Opening prototype:** one stand, Sachin + Raju + Meera, guided walk/entry, skip/reduced-motion/touch support, safe camera handoff. Integrate approved intro clips when provided.
 3. **Crowd variety:** implement six neighbourhood kits, 12 shared-rig crowd archetypes, variant selection, seating/queues/browsing and LOD. Review three consecutive blocks and real-phone performance before raising density.
 4. **Reactive speech:** add proximity/event scheduler, subtitles, cooldowns and audio settings; wire approved ambient lines. Keep future interaction rows disabled.

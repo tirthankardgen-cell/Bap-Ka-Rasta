@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readCharacterModels } from "./helpers/character-assets.ts";
+import { disposeAutoModel } from "../src/game/auto-model.ts";
 import {
   characters,
   createActors,
@@ -76,28 +78,31 @@ test("crowd models produce finite transforms and Low graphics reduces visible in
   const { Scene, InstancedMesh, Matrix4 } = await import("three");
   const { makeCrowd } = await import("../src/game/crowd.ts");
   const scene = new Scene();
-  const crowd = makeCrowd(scene, () => 0.42);
+  const crowd = makeCrowd(scene, () => 0.42, await readCharacterModels());
   crowd.update(2, -270, 325, false);
-  const mesh = scene.children[0];
-  assert.ok(mesh instanceof InstancedMesh);
-  const standard = mesh.count;
+  const standard = crowd.stats.visible;
   assert.ok(standard > 0);
+  assert.ok(crowd.stats.detailed > 0 && crowd.stats.detailed <= 24);
   const matrix = new Matrix4();
-  for (let i = 0; i < standard; i++) {
-    mesh.getMatrixAt(i, matrix);
-    assert.ok(matrix.elements.every(Number.isFinite));
-  }
+  scene.traverse((mesh) => {
+    if (!(mesh instanceof InstancedMesh) || !mesh.userData.characterId) return;
+    for (let i = 0; i < mesh.count; i++) {
+      mesh.getMatrixAt(i, matrix);
+      assert.ok(matrix.elements.every(Number.isFinite));
+    }
+    assert.ok(mesh.count <= mesh.instanceMatrix.count);
+  });
   crowd.update(2, -270, 325, true);
-  assert.ok(mesh.count > 0 && mesh.count < standard);
-  mesh.geometry.dispose();
-  if (!Array.isArray(mesh.material)) mesh.material.dispose();
+  assert.ok(crowd.stats.visible > 0 && crowd.stats.visible < standard);
+  assert.ok(crowd.stats.detailed <= 12);
+  disposeAutoModel(scene);
 });
 
 test("serious crowd impacts render a grounded mark above the road and zebra crossing", async () => {
   const { Scene, Mesh } = await import("three");
   const { makeCrowd } = await import("../src/game/crowd.ts");
   const scene = new Scene(),
-    crowd = makeCrowd(scene, () => 0);
+    crowd = makeCrowd(scene, () => 0, await readCharacterModels());
   const actor = createActors().find((a) => a.cross >= 0)!;
   const time = 35 - (actor.cross % 4) * 4;
   const p = actorPose(actor, time);

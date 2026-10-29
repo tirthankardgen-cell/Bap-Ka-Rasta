@@ -1,0 +1,182 @@
+{
+  "plain": {
+    "index": 0,
+    "color": "#ffffff",
+    "pattern": "plain"
+  },
+  "khaki": {
+    "index": 1,
+    "color": "#b18e4c",
+    "pattern": "cotton"
+  },
+  "green_sari": {
+    "index": 2,
+    "color": "#176548",
+    "pattern": "sari"
+  },
+  "maroon": {
+    "index": 3,
+    "color": "#802c41",
+    "pattern": "cotton"
+  },
+  "work_blue": {
+    "index": 4,
+    "color": "#33598c",
+    "pattern": "denim"
+  },
+  "blue_kurta": {
+    "index": 5,
+    "color": "#225991",
+    "pattern": "floral"
+  },
+  "cream": {
+    "index": 6,
+    "color": "#e9ddc4",
+    "pattern": "cotton"
+  },
+  "hoodie": {
+    "index": 7,
+    "color": "#762e40",
+    "pattern": "knit"
+  },
+  "jeans": {
+    "index": 8,
+    "color": "#4c647c",
+    "pattern": "denim"
+  },
+  "purple_sari": {
+    "index": 9,
+    "color": "#73318d",
+    "pattern": "sari"
+  },
+  "orange_blouse": {
+    "index": 10,
+    "color": "#d28a30",
+    "pattern": "cotton"
+  },
+  "white": {
+    "index": 11,
+    "color": "#eeeade",
+    "pattern": "cotton"
+  },
+  "teal": {
+    "index": 12,
+    "color": "#177c77",
+    "pattern": "floral"
+  },
+  "apron": {
+    "index": 13,
+    "color": "#e8d5b4",
+    "pattern": "stripe"
+  },
+  "plaid": {
+    "index": 14,
+    "color": "#c2ac8a",
+    "pattern": "plaid"
+  },
+  "scrubs": {
+    "index": 15,
+    "color": "#a585c7",
+    "pattern": "cotton"
+  },
+  "pale_blue": {
+    "index": 16,
+    "color": "#9bbada",
+    "pattern": "cotton"
+  },
+  "navy": {
+    "index": 17,
+    "color": "#303c53",
+    "pattern": "cotton"
+  },
+  "rust": {
+    "index": 18,
+    "color": "#ac4a2a",
+    "pattern": "cotton"
+  },
+  "orange": {
+    "index": 19,
+    "color": "#e08325",
+    "pattern": "cotton"
+  },
+  "lime": {
+    "index": 20,
+    "color": "#bbd849",
+    "pattern": "cotton"
+  },
+  "blue_sari": {
+    "index": 21,
+    "color": "#558cb9",
+    "pattern": "sari"
+  },
+  "olive": {
+    "index": 22,
+    "color": "#566344",
+    "pattern": "cotton"
+  },
+  "cargo": {
+    "index": 23,
+    "color": "#bda079",
+    "pattern": "cotton"
+  },
+  "sports": {
+    "index": 24,
+    "color": "#8842a6",
+    "pattern": "knit"
+  },
+  "ochre": {
+    "index": 25,
+    "color": "#bf913e",
+    "pattern": "cotton"
+  },
+  "basket": {
+    "index": 26,
+    "color": "#987043",
+    "pattern": "wicker"
+  },
+  "newspaper": {
+    "index": 27,
+    "color": "#e9e1ce",
+    "pattern": "paper"
+  },
+  "leather": {
+    "index": 28,
+    "color": "#47382c",
+    "pattern": "leather"
+  },
+  "dark": {
+    "index": 29,
+    "color": "#30343b",
+    "pattern": "cotton"
+  },
+  "gold": {
+    "index": 30,
+    "color": "#dfa94c",
+    "pattern": "gold"
+  },
+  "silver": {
+    "index": 31,
+    "color": "#b9c4ca",
+    "pattern": "metal"
+  },
+  "sole": {
+    "index": 32,
+    "color": "#e6dfd1",
+    "pattern": "plain"
+  },
+  "black": {
+    "index": 33,
+    "color": "#20252b",
+    "pattern": "leather"
+  },
+  "apron_cream": {
+    "index": 34,
+    "color": "#ded2b2",
+    "pattern": "cotton"
+  },
+  "blue_workwear": {
+    "index": 35,
+    "color": "#32629e",
+    "pattern": "cotton"
+  }
+}

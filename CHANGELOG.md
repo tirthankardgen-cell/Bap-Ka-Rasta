@@ -1,5 +1,7 @@
 # Changelog
 
+- Replaced box-part pedestrians with the complete 20-character Blender cast based on the Mumbai concept boards, including shaped faces and hair, patterned clothing, modelled accessories, animated detail/distant meshes, and matching seated Sachin and first-person hands. Added a packed GLB, editable labelled Blender library, comparison renders, reproducible asset scripts, bounded parallel loading and resource cleanup.
+
 - Moved loading-worker motion onto compositor layers to keep it moving during scene setup; removed repeated Ghar chalo popup buttons and the newspaper home wording.
 
 - Added a reference-inspired Toto e-rickshaw preview as the sixth vehicle, marked Coming soon, with six-item gallery navigation.

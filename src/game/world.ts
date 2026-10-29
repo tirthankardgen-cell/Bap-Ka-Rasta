@@ -3,6 +3,7 @@ import { makeCones } from "./cone-visuals";
 import { buildingLots } from "./buildings";
 import { boundaryBuildings } from "./boundaries";
 import { makeCrowd } from "./crowd";
+import type { CharacterModels } from "./character-models";
 import { pavementLayout, PAVEMENT_TOP } from "./pavements";
 import * as THREE from "three";
 import {
@@ -131,7 +132,10 @@ ${glass ? "" : sea ? "diffuseColor.rgb*=.96+.04*sin(vSurfaceWorld.x*.3+sin(vSurf
   return material;
 }
 
-export function makeWorld(scene: THREE.Scene) {
+export function makeWorld(
+  scene: THREE.Scene,
+  characterModels: CharacterModels,
+) {
   const grainCanvas = document.createElement("canvas");
   grainCanvas.width = 128;
   grainCanvas.height = 128;
@@ -976,7 +980,7 @@ export function makeWorld(scene: THREE.Scene) {
     mesh.computeBoundingSphere();
     scene.add(mesh);
   }
-  const crowd = makeCrowd(scene, pavement.heightAt);
+  const crowd = makeCrowd(scene, pavement.heightAt, characterModels);
   const cones = makeCones(scene, pavement.heightAt);
   let lastLights = -1,
     lastViewX = Infinity,
