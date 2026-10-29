@@ -1,3 +1,4 @@
+import { gearedSpeed, type Gear } from "./gears.ts";
 import {
   streets,
   trafficLane,
@@ -54,6 +55,7 @@ export type Traffic = {
   decisions: number;
 };
 export type Drive = {
+  gear: Gear;
   x: number;
   z: number;
   yaw: number;
@@ -72,6 +74,7 @@ export type Drive = {
 export function newDrive(): Drive {
   return {
     ...SPAWN,
+    gear: 1,
     speed: 0,
     steer: 0,
     distance: 0,
@@ -243,6 +246,7 @@ export function updateTraffic(
   }
 }
 export function resetDrive(s: Drive, traffic: Traffic[]) {
+  s.gear = 1;
   const near = nearestStreet(s.checkpoint.x, s.checkpoint.z);
   for (let i = 0; i < 100; i++) {
     const edge = i < 20 ? near.edge : (i - 20) % streets.length,
@@ -300,14 +304,9 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
       if (!input.throttle && s.reverseWait >= 0.4)
         s.speed = Math.max(-3.3, s.speed - 3 * dt);
     }
-  } else if (input.throttle && !input.brake) {
-    s.reverseWait = 0;
-    s.speed = Math.min(18.05, s.speed + (s.speed < 0 ? 9 : 4.2) * dt);
   } else {
     s.reverseWait = 0;
-    s.speed =
-      Math.sign(s.speed) *
-      Math.max(0, Math.abs(s.speed) - (0.8 + Math.abs(s.speed) * 0.035) * dt);
+    s.speed = gearedSpeed(s.speed, s.gear, input.throttle, dt);
   }
   if (input.handbrake) s.speed *= Math.exp(-3 * dt);
   const targetSteer = Number(input.left) - Number(input.right);

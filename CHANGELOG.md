@@ -1,5 +1,7 @@
 # Changelog
 
+- Added four automatic-clutch gears with 12/25/45/65 km/h limits, centre touch buttons, number-row/numpad shortcuts, gentle downshifts and gear-aware engine pitch.
+
 - Added an animated road-worker loading screen and 43 knockable roadside cones, with speed-based tosses, tumbling, ground settling and reset support.
 
 - Kept all 20 character designs and original main names; expanded the crowd to 1,542 distinct identities, added staggered mid-block crossings, and shared pedestrian avoidance positions with vehicle-hit detection.

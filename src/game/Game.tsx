@@ -1,3 +1,4 @@
+import { GEARS, GEAR_LIMITS } from "./gears";
 import RoadLoading from "../RoadLoading";
 import IncidentNewspaper from "./IncidentNewspaper";
 import { useEffect, useRef, useState } from "react";
@@ -21,6 +22,7 @@ import { loadAutoRickshaw, disposeAutoModel } from "./auto-model";
 import type { Input } from "./simulation";
 import "./game.css";
 const initial: Stats = {
+  gear: 1,
   incident: null,
   introStage: "ready",
   introFade: 0,
@@ -178,6 +180,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
         data-stage={stats.introStage}
         data-distance={stats.distance.toFixed(2)}
         data-speed={stats.speed.toFixed(2)}
+        data-gear={stats.gear}
         data-position={`${stats.x.toFixed(2)},${stats.z.toFixed(2)}`}
       >
         <div className="game-canvas" ref={host} />
@@ -278,23 +281,46 @@ export default function Game({ onExit }: { onExit: () => void }) {
             </div>
             <div className="keyboard-hint">
               WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE{" "}
-              <i>·</i> C CAMERA
+              <i>·</i> C CAMERA <i>·</i> 1–4 GEARS
             </div>
             <div className="drive-buttons">
               <div className="steering">
                 {pedal("left", "Steer left", <ArrowLeft />)}
                 {pedal("right", "Steer right", <ArrowRight />)}
               </div>
-              <div className="utility">
-                <button onClick={horn} aria-label="Horn">
-                  <Megaphone />
-                </button>
-                <button
-                  onClick={() => engine.current?.reset()}
-                  aria-label="Reset vehicle"
+              <div className="drive-centre">
+                <div
+                  className="gear-selector"
+                  role="group"
+                  aria-label="Select gear"
                 >
-                  <RotateCcw />
-                </button>
+                  {GEARS.map((gear) => (
+                    <button
+                      key={gear}
+                      className="gear-button"
+                      aria-label={`Gear ${gear}, up to ${GEAR_LIMITS[gear]} km/h`}
+                      aria-pressed={stats.gear === gear}
+                      onClick={() => engine.current?.selectGear(gear)}
+                    >
+                      <strong>{gear}</strong>
+                      <small>{GEAR_LIMITS[gear]}</small>
+                    </button>
+                  ))}
+                </div>
+                <span className="gear-caption">
+                  GEAR · {GEAR_LIMITS[stats.gear]} KM/H MAX
+                </span>
+                <div className="utility">
+                  <button onClick={horn} aria-label="Horn">
+                    <Megaphone />
+                  </button>
+                  <button
+                    onClick={() => engine.current?.reset()}
+                    aria-label="Reset vehicle"
+                  >
+                    <RotateCcw />
+                  </button>
+                </div>
               </div>
               <div className="pedals">
                 {pedal("brake", "Brake / reverse", <ArrowDown />)}

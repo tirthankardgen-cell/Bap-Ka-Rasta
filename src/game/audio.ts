@@ -1,3 +1,4 @@
+import { enginePitch, type Gear } from "./gears.ts";
 // Field-recorded stems, fetched only after the player's sound gesture.
 export function createStreetAudio(report: (state: string) => void) {
   let context: AudioContext | null = null,
@@ -106,16 +107,20 @@ export function createStreetAudio(report: (state: string) => void) {
       paused = value;
       sync();
     },
-    update(speed: number, throttle: boolean, nearby: number, market: number) {
+    update(
+      speed: number,
+      throttle: boolean,
+      nearby: number,
+      market: number,
+      gear: Gear,
+    ) {
       if (!context || !enabled || paused) return;
       const engine = loops.get("engine"),
         traffic = loops.get("traffic"),
         crowd = loops.get("market");
       if (engine) {
         engine.source.playbackRate.setTargetAtTime(
-          0.8 +
-            Math.min(Math.abs(speed) / 18, 1) * 0.65 +
-            (throttle ? 0.12 : 0),
+          enginePitch(speed, gear, throttle),
           context.currentTime,
           0.25,
         );

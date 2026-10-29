@@ -48,8 +48,9 @@ test("acceleration, speed cap, braking and delayed reverse", () => {
   const s = newDrive(),
     input = emptyInput();
   input.throttle = true;
-  for (let i = 0; i < 240; i++) step(s, input, []);
-  assert.ok(s.speed > 12 && s.speed <= 18.05);
+  s.gear = 4;
+  for (let i = 0; i < 360; i++) step(s, input, []);
+  assert.ok(s.speed > 12 && s.speed <= 65 / 3.6);
   input.throttle = false;
   input.brake = true;
   let stopped = false;
@@ -113,8 +114,10 @@ test("safe reset preserves progress and avoids occupied positions", () => {
   s.distance = 124;
   s.topSpeed = 42;
   s.speed = 10;
+  s.gear = 4;
   resetDrive(s, traffic);
   assert.equal(s.speed, 0);
+  assert.equal(s.gear, 1);
   assert.equal(s.distance, 124);
   assert.equal(s.topSpeed, 42);
   assert.ok(roadContains(s.x, s.z));
@@ -196,6 +199,7 @@ test("dense traffic follows connected routes for three minutes without invalid p
 test("five-minute free drive can choose cross streets without a finish condition", () => {
   const s = newDrive(),
     input = emptyInput();
+  s.gear = 3;
   const points = [
     [-260, 180],
     [-260, -40],
@@ -248,6 +252,7 @@ test("free driving does not automatically brake at pedestrians or red signals", 
     z: p.z + 5,
     yaw: Math.PI,
     speed: 10,
+    gear: 3,
     time: time - 1 / 60,
   });
   step(s, { ...emptyInput(), throttle: true }, []);
@@ -276,7 +281,7 @@ test("expanded neighbourhood lanes carry opposing traffic and stay inside the vi
     assert.equal(roadContains(p[0], p[1], 0), false);
   const drive = newDrive(),
     input = emptyInput();
-  Object.assign(drive, { x: 452.5, z: -420, yaw: 0 });
+  Object.assign(drive, { x: 452.5, z: -420, yaw: 0, gear: 2 });
   input.throttle = true;
   for (let i = 0; i < 600; i++) step(drive, input, []);
   assert.ok(drive.distance > 50);

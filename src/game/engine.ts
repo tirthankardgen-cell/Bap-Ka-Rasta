@@ -1,3 +1,4 @@
+import { type Gear } from "./gears";
 import { type IncidentReport, type PedestrianHit } from "./pedestrian-rules";
 import {
   introFrame,
@@ -26,6 +27,7 @@ import { createCameraLook, followCamera, type CameraMode } from "./camera";
 import { AUTO_DRIVER_EYE_HEIGHT, AUTO_WHEEL_RADIUS } from "./auto-model";
 export type { CameraMode } from "./camera";
 export type Stats = {
+  gear: Gear;
   incident: IncidentReport | null;
   introStage: IntroStage;
   introFade: number;
@@ -133,6 +135,7 @@ export function createEngine(
     renderer.domElement.dataset.introStage = stage;
     renderer.domElement.dataset.characterCount = String(world.crowd.count);
     onStats({
+      gear: state.gear,
       incident,
       introStage: stage,
       introFade: introActive ? frame.fade : 0,
@@ -310,6 +313,11 @@ export function createEngine(
     "ArrowRight",
     "Space",
   ]);
+  function selectGear(gear: Gear) {
+    if (paused || introActive || incident) return;
+    state.gear = gear;
+    publish();
+  }
   function down(e: KeyboardEvent) {
     if (paused || incident) return;
     if (introActive && e.code === "Enter") {
@@ -323,6 +331,11 @@ export function createEngine(
       updateInput();
     }
     if (e.repeat) return;
+    const gearKey = /^(?:Digit|Numpad)([1-4])$/.exec(e.code);
+    if (gearKey && !introActive) {
+      e.preventDefault();
+      selectGear(Number(gearKey[1]) as Gear);
+    }
     if (e.code === "Escape" || e.code === "KeyP") {
       e.preventDefault();
       setPaused(true);
@@ -545,6 +558,7 @@ export function createEngine(
         traffic.filter((t) => Math.hypot(t.x - state.x, t.z - state.z) < 65)
           .length,
         world.marketIntensity(state.x, state.z),
+        state.gear,
       );
       renderer.render(scene, camera);
     }
@@ -565,6 +579,7 @@ export function createEngine(
   publish();
   raf = requestAnimationFrame(loop);
   return {
+    selectGear,
     cycleCamera,
     beginIntro,
     skipIntro: finishIntro,

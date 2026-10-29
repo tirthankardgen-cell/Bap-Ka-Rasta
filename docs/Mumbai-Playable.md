@@ -122,3 +122,7 @@ Background people reuse the same 20 character designs. Main-cast names are uncha
 Both game-code and auto-model loading show a lightweight road-building animation with two workers, shovels and traffic cones. Reduced-motion settings show the static illustration; retry and home navigation remain available when a download fails.
 
 There are 43 movable cones in small roadside work zones. Player impacts use swept contact detection, including reverse: slow contact tips a cone nearby, while faster contact launches it a few metres with gravity, a small bounce and a sideways landing. Cones do not block or brake the auto. Fallen cones remain in place and can be knocked again after the auto moves away. Reset restores the work zones. These props use the existing scene resource cleanup.
+
+### Four-speed automatic-clutch gears
+
+Start in first gear. Select **1 / 2 / 3 / 4** with the centre buttons, number-row keys or numpad. The arcade speed limits are **12 / 25 / 45 / 65 km/h**. Holding the accelerator gradually reaches the selected limit; release to coast, or use the existing brake/reverse control. Upshifts preserve current speed and downshifts apply gradual engine braking, including while accelerating. No clutch button or stalling is required. Engine pitch follows speed within the chosen gear. Reset returns to first gear; gear changes are disabled during the intro, pause and incident sequence.

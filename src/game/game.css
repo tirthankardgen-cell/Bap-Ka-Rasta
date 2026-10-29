@@ -688,3 +688,83 @@
     padding: 8px;
   }
 }
+.drive-centre {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+}
+.gear-selector {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #fff8;
+  border-radius: 12px;
+  background: #faf8f0bf;
+  backdrop-filter: blur(10px);
+}
+.gear-selector .gear-button {
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-content: center;
+  gap: 1px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #26372e;
+  background: transparent;
+  touch-action: manipulation;
+}
+.gear-button strong {
+  font-size: 18px;
+  line-height: 1;
+}
+.gear-button small {
+  font-size: 9px;
+  line-height: 1.2;
+}
+.gear-selector .gear-button[aria-pressed="true"] {
+  background: #ffce36;
+  border-color: #26372e;
+}
+.gear-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.gear-caption {
+  color: #26372e;
+  background: #faf8f0df;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+.drive-centre .utility {
+  margin-bottom: 0;
+}
+@container playfield (max-height: 500px) {
+  .drive-centre {
+    gap: 3px;
+  }
+  .gear-selector {
+    padding: 2px;
+    gap: 2px;
+  }
+}
+.drive-centre {
+  margin-bottom: 48px;
+}
+.drive-centre .utility {
+  position: static;
+  align-self: center;
+}
+@media (any-pointer: coarse) {
+  .drive-centre {
+    margin-bottom: 0;
+  }
+}
+@container playfield (max-height: 500px) {
+  .drive-centre {
+    margin-bottom: 0;
+  }
+}
