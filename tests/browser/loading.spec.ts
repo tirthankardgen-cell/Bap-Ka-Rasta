@@ -5,16 +5,15 @@ async function enter(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "Yahin Chalao" }).click();
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
 }
-test("failed game chunk offers reload and home instead of endless loading", async ({
+test("failed game chunk offers reload without a home popup button", async ({
   page,
 }) => {
   await page.route(/\/assets\/Game-.*\.js$/, (route) => route.abort());
   await enter(page);
   await expect(page.getByRole("button", { name: "Reload game" })).toBeVisible();
-  await page.getByRole("button", { name: "Ghar chalo", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Mera Bap Ka Rasta" }),
-  ).toBeVisible();
+    page.getByRole("button", { name: "Ghar chalo", exact: true }),
+  ).toHaveCount(0);
 });
 test("stalled model times out and retry loads the playable scene", async ({
   page,
@@ -59,8 +58,46 @@ test("road workers animate while the game code loads and respect reduced motion"
   ).toBe("none");
   await page.setViewportSize({ width: 667, height: 375 });
   await page.screenshot({ path: "test-results/road-workers-loading.png" });
-  await page.getByRole("button", { name: "Ghar chalo", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Mera Bap Ka Rasta" }),
-  ).toBeVisible();
+    page.getByRole("button", { name: "Ghar chalo", exact: true }),
+  ).toHaveCount(0);
+});
+
+test("worker animation continues while the main thread is busy", async ({
+  page,
+}) => {
+  await page.route("**/models/mumbai-auto.glb", () => {});
+  await enter(page);
+  await expect(page.locator(".game .road-loading")).toBeVisible();
+  await expect(page.locator(".worker-shovel").first()).toBeVisible();
+  expect(
+    await page
+      .locator(".worker-shovel")
+      .first()
+      .evaluate((el) => el instanceof HTMLElement),
+  ).toBe(true);
+  const cdp = await page.context().newCDPSession(page);
+  const frames: { time: number; data: string }[] = [];
+  cdp.on("Page.screencastFrame", (frame) => {
+    frames.push({ time: Date.now(), data: frame.data });
+    void cdp
+      .send("Page.screencastFrameAck", { sessionId: frame.sessionId })
+      .catch(() => {});
+  });
+  await cdp.send("Page.startScreencast", { format: "png", everyNthFrame: 3 });
+  await page.evaluate(() => {
+    setTimeout(() => {
+      const until = performance.now() + 1600;
+      while (performance.now() < until) {
+        /* simulate scene generation */
+      }
+    }, 200);
+  });
+  const start = Date.now();
+  await new Promise((resolve) => setTimeout(resolve, 2100));
+  await cdp.send("Page.stopScreencast");
+  const busyFrames = frames.filter(
+    (f) => f.time > start + 450 && f.time < start + 1500,
+  );
+  expect(new Set(busyFrames.map((f) => f.data)).size).toBeGreaterThan(1);
 });

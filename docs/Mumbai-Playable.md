@@ -119,7 +119,7 @@ Background people reuse the same 20 character designs. Main-cast names are uncha
 
 ### Loading and roadside cones
 
-Both game-code and auto-model loading show a lightweight road-building animation with two workers, shovels and traffic cones. Reduced-motion settings show the static illustration; retry and home navigation remain available when a download fails.
+Both game-code and auto-model loading show a lightweight road-building animation with two workers, shovels and traffic cones. Reduced-motion settings show the static illustration; retry remains available when a download fails. The worker and road motions use composited HTML layers so they keep animating while scene setup occupies JavaScript.
 
 There are 43 movable cones in small roadside work zones. Player impacts use swept contact detection, including reverse: slow contact tips a cone nearby, while faster contact launches it a few metres with gravity, a small bounce and a sideways landing. Cones do not block or brake the auto. Fallen cones remain in place and can be knocked again after the auto moves away. Reset restores the work zones. These props use the existing scene resource cleanup.
 

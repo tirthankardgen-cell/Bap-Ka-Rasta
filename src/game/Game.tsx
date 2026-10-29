@@ -352,24 +352,10 @@ export default function Game({ onExit }: { onExit: () => void }) {
                   >
                     Phir try karein <RotateCcw size={18} />
                   </button>
-                  <button
-                    className="game-secondary"
-                    onClick={exit}
-                    aria-label="Back to home"
-                  >
-                    Ghar chalo
-                  </button>
                 </>
               ) : status === "ready" && !loaded ? (
                 <>
                   <RoadLoading />
-                  <button
-                    className="game-secondary"
-                    onClick={exit}
-                    aria-label="Back to home"
-                  >
-                    Ghar chalo
-                  </button>
                 </>
               ) : status === "ready" ? (
                 <>
@@ -397,13 +383,6 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     aria-label="Drive without intro"
                   >
                     Seedha drive · intro baad mein
-                  </button>
-                  <button
-                    className="game-secondary"
-                    onClick={exit}
-                    aria-label="Back to home"
-                  >
-                    Ghar chalo
                   </button>
                 </>
               ) : (
@@ -456,13 +435,6 @@ export default function Game({ onExit }: { onExit: () => void }) {
                       <Home size={18} /> Aaj ka ho gaya
                     </button>
                   </div>
-                  <button
-                    className="game-secondary"
-                    onClick={exit}
-                    aria-label="Back to home"
-                  >
-                    <Home size={16} /> Ghar chalo
-                  </button>
                 </>
               )}
             </section>

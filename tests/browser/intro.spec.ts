@@ -66,6 +66,6 @@ test("mobile reduced-motion intro can skip directly to a stationary drive", asyn
   ).toBeEnabled();
   await expect(page.getByRole("button", { name: "Skip intro" })).toHaveCount(0);
   await page.getByRole("button", { name: "Pause drive" }).click();
-  await page.getByRole("button", { name: "Back to home" }).click();
+  await page.getByRole("button", { name: "End drive" }).click();
   await expect(page.locator("canvas")).toHaveCount(0);
 });

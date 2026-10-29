@@ -84,7 +84,7 @@ export default function IncidentNewspaper({
             }
           }}
         >
-          Phir se shuru · Home par chalo <span aria-hidden="true">↗</span>
+          Phir se shuru <span aria-hidden="true">↗</span>
         </button>
       </section>
     </div>

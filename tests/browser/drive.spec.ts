@@ -182,7 +182,7 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
     .poll(async () => Number(await game.getAttribute("data-distance")))
     .toBe(0);
   await page.getByRole("button", { name: "Pause drive" }).click();
-  await page.getByRole("button", { name: "Back to home" }).click();
+  await page.getByRole("button", { name: "End drive" }).click();
   await expect(
     page.getByRole("button", { name: "Mera Bap Ka Rasta" }),
   ).toBeVisible();

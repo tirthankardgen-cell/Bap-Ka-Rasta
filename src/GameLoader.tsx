@@ -41,7 +41,6 @@ export default function GameLoader({ onExit }: Props) {
       {failed && (
         <button onClick={() => window.location.reload()}>Reload game</button>
       )}
-      <button onClick={onExit}>Ghar chalo</button>
     </div>
   );
 }
