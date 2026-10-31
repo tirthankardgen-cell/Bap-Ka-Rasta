@@ -6,16 +6,16 @@ From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai**, press **Y
 
 ## City environment
 
-The old oval circuit has been replaced by an independently authored South Mumbai-inspired street network:
+The city uses an independently authored Mumbai-inspired street network with a 1,488 × 2,400 m playable footprint:
 
-- 75 connected road segments, approximately 13.34 km of road centreline, with four-lane avenues, cross streets, T-junctions, and alternate routes through city blocks.
-- 47 graph junctions, including eight nodes around a clockwise Fort-inspired roundabout; 34 intersections have working traffic signals.
-- 29 narrow 10 m streets have one lane in each direction. Traffic uses the correct side and slows in these lanes; crossings and stop lines fit their widths. New northern/eastern connections expand the neighbourhood.
+- 227 connected road segments, approximately 38.29 km of road centreline, with four-lane avenues, cross streets, T-junctions, and alternate routes through city blocks.
+- 136 graph junctions and four clockwise roundabouts; 100 intersections have working traffic signals. Mumbai Chowk sits at the geometric centre, with a clear 40 m diameter platform for a future feature. Fort Circle contains Flora Fountain; Dadar Garden Circle and Cuffe Parade Circle provide two smaller garden islands.
+- 126 narrow 10 m streets have one lane in each direction, with 91 curved segments spread through all quadrants. Traffic, markings, pavement clipping and collision use the same sampled road paths.
 - Perimeter masonry, seafront walls, closed-end barriers and signs make the limits visible; shared road boundaries keep both player and traffic inside.
-- Marine Drive's west-coast promenade, inland Churchgate/Fort streets, a station-inspired landmark, a central maidan, Colaba market connections, and a Gateway-inspired waterfront.
+- Marine Drive's west-coast promenade, inland Churchgate/Fort streets, a central maidan, Colaba market connections, Bandstand, Juhu and the Dadar/Parel expansion. The [landmark catalogue](Mumbai-Landmarks.md) lists all 29 original Blender sites, their references, scale and placement, including Taj, Gateway, Antilia, CSMT and celebrity residences. Approximately 1,740 ordinary building lots fill the remaining frontage.
 - 112 moving vehicles: taxis, cars, red buses, autos and scooters. Vehicles choose routes at intersections, queue behind traffic/player vehicles, and obey red/amber signals. Intersection reservations keep competing NPC turns from entering simultaneously.
-- 1,542 crowd actors, including 19 uniquely placed main NPCs and individually named background walkers, chatting pairs, browsers, workers and crossing pedestrians. Twenty visual character profiles include Sachin as the player, male Constable Patil, Raju, Meera, Sameer, Aarti, Imran, Lata and twelve other Mumbai locals. Signal-controlled crossings coexist with 201 independently timed mid-block walkers who can step into traffic on green. The player does not automatically slow for them.
-- Pavement surfaces sit at 0.42 m, around 0.35 m above the road, including junction corners; raised geometry is clipped against all road corridors to keep turns open. Vendors and walkers are raised with their supporting surface.
+- 4,472 crowd actors, including 19 uniquely placed main NPCs and individually named background walkers, chatting pairs, browsers, workers and crossing pedestrians. Twenty visual character profiles include Sachin as the player, male Constable Patil, Raju, Meera, Sameer, Aarti, Imran, Lata and twelve other Mumbai locals. Signal-controlled crossings coexist with 585 independently timed mid-block walkers who can step into traffic on green. The player does not automatically slow for them.
+- Pavement surfaces sit at 0.16 m, including junction corners; raised geometry is clipped against all road corridors to keep turns open. Vendors and walkers are grounded on their supporting surface. Standing profiles measure 1.56–1.81 m before small variation, below the 2.08 m auto canopy. Cars are 1.55 m high and 4.25 m long; the BEST midi bus is 3.10 m high and 9.40 m long. Adult people can naturally be taller than a car roof.
 - Regular footpaths narrowed to 3.3 m per side, closer-set taller buildings, and kerbside chai, vada-pav, fruit and bhel carts with sellers/customers. Cart footprints stay outside driving lanes and junction crossings.
 - Zebra crossings, stop lines, lane markings, lights, street signs, shopfronts, balconies, chai/vada-pav stalls, bus shelters, benches, palms, parked vehicles, and cones.
 
@@ -62,6 +62,9 @@ The simulation uses metres/seconds with a 60 Hz fixed step and a catch-up cap. F
 - `src/game/simulation.ts`: movement, graph-based traffic paths, intersection turns, following, signals, collisions and resets.
 - `src/game/world.ts`: instanced road/scenery geometry, lights, moving pedestrians, landmarks and traffic batching.
 - `src/game/vehicles.ts`: curved vehicle bodies, wheels, trim and blocky drivers.
+- `src/game/landmark-layout.ts` / `landmark-models.ts`: authoritative landmark sites, protected approaches, compressed Blender loading and near/far visibility.
+- `src/game/world-scale.ts`: standing character heights and oriented vehicle body envelopes.
+- `scripts/landmarks/` / `assets/architecture/mumbai/`: original materials, Blender source, exports, photo-reference catalogue and reproducible build commands.
 - `src/game/atmosphere.ts`: sky, reflections, fog and local sunlight shadows.
 - `src/game/audio.ts`: lazy-loaded field-recorded loops, horn one-shot, spatial ambience mixing and audio cleanup.
 - `src/game/characters.ts` / `crowd.ts`: cast profiles, district populations, model instances, activity routes and subtitle greetings.
@@ -117,15 +120,15 @@ Contact at 20 km/h or above ends the drive. Controls lock immediately; the affec
 The cinematic respects reduced motion, stops advancing in a hidden tab, and cannot be bypassed with reset/camera/pedal keys. Road and vehicle collisions still apply. The speed cutoff is a gameplay setting in `src/game/pedestrian-rules.ts`, not a real-world injury prediction.
 
 
-Background people reuse the same 20 character designs. Main-cast names are unchanged; background identities are deterministic and unique within the city, including multiple differently named delivery workers. Their identity follows them into scolding subtitles and incident reports. Mid-block routes include diagonal crossings, pavement sections and independent short pauses, without signal permission. A shared 20 Hz crowd simulation makes nearby walkers sidestep and maintain body clearance, and supplies the same positions to vehicle-hit detection. Named locals stay at their original homes.
+Background people reuse the same 20 character designs. Main-cast names are unchanged; background identities are deterministic and unique within the city, including multiple differently named delivery workers. Their identity follows them into scolding subtitles and incident reports. Mid-block routes include diagonal crossings, pavement sections and independent short pauses, without signal permission. A shared 20 Hz crowd simulation makes nearby walkers sidestep and maintain body clearance, and supplies the same positions to vehicle-hit detection. Named locals stay at their defined homes.
 
 ### Loading and roadside cones
 
 Both game-code and auto-model loading show a lightweight road-building animation with two workers, shovels and traffic cones. Reduced-motion settings show the static illustration; retry remains available when a download fails. The worker and road motions use composited HTML layers so they keep animating while scene setup occupies JavaScript.
 
-Model preparation, pavement/building layout, world construction and traffic batching now yield between short work batches. Shader preparation finishes before the ready button appears, and leaving or retrying cancels setup and disposes its resources. The fixed road geometry is cached instead of recalculated for every pavement/collision query.
+Model preparation, pavement/building layout, world construction and traffic batching now yield between short work batches. Shader preparation finishes before the ready button appears, and leaving or retrying cancels setup and disposes its resources. Fixed road geometry and completed building/pavement layouts are cached across retries; each new scene receives separate mutable layout objects. Partially cancelled layouts and GPU resources are not retained in this cache.
 
-There are 43 movable cones in small roadside work zones. Player impacts use swept contact detection, including reverse: slow contact tips a cone nearby, while faster contact launches it a few metres with gravity, a small bounce and a sideways landing. Cones do not block or brake the auto. Fallen cones remain in place and can be knocked again after the auto moves away. Reset restores the work zones. These props use the existing scene resource cleanup.
+There are 75 movable cones in bounded roadside work zones spread across the city. Player impacts use swept contact detection, including reverse: slow contact tips a cone nearby, while faster contact launches it a few metres with gravity, a small bounce and a sideways landing. Cones do not block or brake the auto. Fallen cones remain in place and can be knocked again after the auto moves away. Reset restores the work zones. These props use the existing scene resource cleanup.
 
 ### Four-speed automatic-clutch gears
 
@@ -133,12 +136,14 @@ Start in first gear. Select **1 / 2 / 3 / 4** with the centre buttons, number-ro
 
 ### Rendering and frame pacing
 
-Static city batches keep only nearby instances on the GPU, refreshing after 12 metres of travel and preserving large overlapping ground/road surfaces. Standard and Low draw radii are 350/270 metres, beyond their fog ranges. Instance buffers upload only their populated ranges. Crowd separation uses numeric spatial keys instead of repeatedly allocating strings; the full cast and collision behaviour remain active.
+Static city batches keep only nearby instances on the GPU, refreshing after 12 metres of travel and preserving large overlapping ground/road surfaces. Standard and Low draw radii are 450/330 metres, beyond their 420/300 m fog ranges. Landmark façades use detailed and simplified silhouettes; tiny storefronts cull earlier. Curved roads are batched by spatial tile. Instance buffers upload only their populated ranges. Crowd separation uses numeric spatial keys; the full cast and collision behaviour remain active.
 
-Crowd separation now reuses spatial buckets, skips square roots for distant people, and anchors settled neighbours so they do not jitter back into overlaps. In a 380-tick local comparison for all 1,542 street actors, average motion-update time changed from 4.45 ms to 3.13 ms; timing varies with the machine.
+Crowd separation reuses spatial buckets, skips square roots for distant people, and anchors settled neighbours so they do not jitter back into overlaps. The older 1,542-actor build measured 4.45 ms → 3.13 ms per motion update in a 380-tick local comparison; those figures predate the expanded map and are not a current performance guarantee.
 
-A manual Chrome/SwiftShader check at 1280×800 on 2026-10-31 measured loading at 13.4 s versus the earlier 25.5 s, with the longest main-thread task reduced from 23.7 s to 1.74 s. Software-renderer shader warmup still causes brief stalls. During the checked drive, 95% of frame intervals were at most 33.4 ms. This is a local comparison, not a guarantee for every device. Recorded speech also completed during a 65 km/h drive, and a deliberately delayed 5.2 s voice download finished before its related reply; street gossip produced no captions.
+A Chrome/SwiftShader check of the earlier map at 1280×800 on 2026-10-31 measured loading at 13.4 s versus 25.5 s before cooperative setup. Those timings predate the landmark expansion. Software-renderer shader warmup can still cause brief stalls. Recorded speech also completed during a 65 km/h drive, and a deliberately delayed 5.2 s voice download finished before its related reply; street gossip produced no captions.
 
 Standard graphics adapts pixel density to sustained frame time, recovering gradually when there is headroom. Mobile starts at at most native CSS-pixel resolution with dynamic shadows disabled; desktop starts at at most 1.25× and disables shadows if sustained frame times are high. Low remains an explicit fixed-quality option. The auto and its camera share an interpolated pose between physics steps, while collisions remain fixed-step.
 
-For a repeatable city-scene benchmark, run the development server on port 4176, then `node scripts/measure-rendering.mjs` (set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` if needed). It reports submitted triangles, calls, scene-update time and render time at a fixed coastal viewpoint. The measured change was 1,967,036 → 460,204 submitted triangles (about 77% fewer); timing and playable FPS depend on the device. This development fixture is not included in the production build.
+For a repeatable city-scene benchmark, run the development server on port 4176, then `node scripts/measure-rendering.mjs` (set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` if needed). It reports submitted triangles, calls, scene-update time and render time at a fixed coastal viewpoint. Timing and playable FPS depend on the device; this development fixture is not included in the production build. The landmark viewer supplies additional site and common-ground scale checks.
+
+The expanded map's local Chrome fixture on 1 November 2026 measured 3.47 ms per scene update and 12.63 ms per render at 844 × 390, submitting 958,142 triangles in 406 calls. It uses a hemisphere light without the game's sun/shadow pass. These figures describe that fixed view, not full driving FPS or phone performance. [Original model, city and scale previews](mumbai-landmarks/README.md) document the final visual checks.

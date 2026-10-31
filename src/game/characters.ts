@@ -517,9 +517,14 @@ export function actorIdentity(a: Actor) {
   const names = c.gender === "female"
     ? femaleNames
     : maleNames;
+  // Preserve the existing short names, then add a middle name once the larger
+  // city exhausts a complete first-name/surname cycle.
+  const generation=Math.floor(a.id/(names.length*surnames.length));
+  const middle=generation ? " "+maleNames[(generation-1)%maleNames.length] : "";
   return {
     name:
       names[a.id % names.length] +
+      middle +
       " " +
       surnames[Math.floor(a.id / names.length) % surnames.length],
     role: c.role,

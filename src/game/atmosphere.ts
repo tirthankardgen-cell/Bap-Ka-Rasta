@@ -5,10 +5,10 @@ export function atmosphere(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   canvas.height = 512;
   const ctx = canvas.getContext("2d")!;
   const sky = ctx.createLinearGradient(0, 0, 0, 512);
-  sky.addColorStop(0, "#bb873f");
-  sky.addColorStop(0.3, "#e9b75f");
-  sky.addColorStop(0.49, "#ffe4a2");
-  sky.addColorStop(0.55, "#ddbe83");
+  sky.addColorStop(0, "#879fb0");
+  sky.addColorStop(0.3, "#bdc8c5");
+  sky.addColorStop(0.49, "#f4dcaa");
+  sky.addColorStop(0.55, "#c7bea7");
   sky.addColorStop(1, "#7c827b");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 1024, 512);
@@ -40,10 +40,10 @@ export function atmosphere(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   pmrem.dispose();
   scene.background = texture;
   scene.environment = environment.texture;
-  scene.fog = new THREE.Fog("#e8c386", 140, 320);
-  const fill = new THREE.HemisphereLight("#ffe6ad", "#84623e", 1.1);
+  scene.fog = new THREE.Fog("#d9cfb7", 160, 420);
+  const fill = new THREE.HemisphereLight("#e6eff1", "#887a64", 1.2);
   scene.add(fill);
-  const sun = new THREE.DirectionalLight("#ffd087", 3.6);
+  const sun = new THREE.DirectionalLight("#fff0d7", 3.2);
   sun.castShadow = true;
   sun.shadow.mapSize.set(512, 512);
   sun.shadow.camera.left = -65;
@@ -75,7 +75,7 @@ export function atmosphere(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
       low = value;
       renderer.shadowMap.enabled = !value;
       renderer.shadowMap.needsUpdate = true;
-      scene.fog = new THREE.Fog("#e8c386", value ? 90 : 140, value ? 240 : 320);
+      scene.fog = new THREE.Fog("#d9cfb7", value ? 110 : 160, value ? 300 : 420);
     },
     dispose() {
       texture.dispose();

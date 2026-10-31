@@ -45,6 +45,7 @@ function Fixture() {
         console.error,
         assets.autoModel,
         assets.characterModels,
+        assets.landmarkModels,
         drive,
         controller.signal,
       );

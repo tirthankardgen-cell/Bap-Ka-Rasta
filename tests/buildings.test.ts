@@ -7,9 +7,10 @@ import {
   footprintsOverlap,
 } from "../src/game/buildings.ts";
 import { roadContains, junctions } from "../src/game/network.ts";
+import { landmarkReservations } from "../src/game/landmark-layout.ts";
 
 const lots = buildingLots();
-test("dense street frontages reserve inhabited corners, including all four sides of central intersections", () => {
+test("dense street frontages retain corner buildings or reserved landmark forecourts", () => {
   assert.ok(lots.length >= 600);
   assert.ok(lots.filter((b) => b.corner).length >= 100);
   for (const [x, z] of [
@@ -27,7 +28,9 @@ test("dense street frontages reserve inhabited corners, including all four sides
               (b.z - z) * sz > 0 &&
               Math.abs(b.x - x) < 43 &&
               Math.abs(b.z - z) < 43,
-          ),
+          ) || landmarkReservations.some(site=>footprintsOverlap(site,{
+            x:x+sx*28,z:z+sz*28,yaw:0,halfWidth:14,halfLength:14,
+          })),
           `missing corner at ${x},${z}: ${sx},${sz}`,
         );
   }

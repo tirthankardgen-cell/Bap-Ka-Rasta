@@ -4,6 +4,7 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { characters } from "./characters.ts";
 import { disposeAutoModel } from "./auto-model.ts";
 import { runSetupWork, runSetupWorkSync } from "./setup-work.ts";
+import { CHARACTER_HEIGHTS } from "./world-scale.ts";
 
 export const CHARACTER_MODEL_URL = "/models/mumbai-characters.glb";
 export const CHARACTER_DETAIL_LIMIT = 24;
@@ -130,6 +131,31 @@ function* prepareCharacterWork(source: THREE.Group): Generator<void, CharacterMo
     }
     if (!levels.detail || !levels.crowd)
       throw new Error(`Blender cast is missing ${character.id}`);
+    // Use the head, not a carried basket or a raised prop, to measure stature.
+    // Apply the same metre-space transform to geometry AND articulation pivots
+    // in both levels; otherwise walking limbs separate after a scale correction.
+    const detail = levels.detail.geometry;
+    const position = detail.getAttribute("position");
+    const joints = detail.getAttribute("castJoint");
+    const floor = detail.boundingBox!.min.y;
+    let headTop = -Infinity;
+    for (let i = 0; i < position.count; i++)
+      if (joints.getX(i) === 3) headTop = Math.max(headTop, position.getY(i));
+    const scale = CHARACTER_HEIGHTS[character.id] / (headTop - floor);
+    if (!Number.isFinite(scale) || scale < 0.6 || scale > 1.2)
+      throw new Error(`Invalid standing dimensions for ${character.id}`);
+    for (const level of [levels.detail, levels.crowd]) {
+      for (const name of ["position", "castPivot", "castParentPivot"]) {
+        const attribute = level.geometry.getAttribute(name);
+        for (let i = 0; i < attribute.count; i++) {
+          if (i % 4096 === 0) yield;
+          attribute.setXYZ(i, attribute.getX(i) * scale,
+            (attribute.getY(i) - floor) * scale, attribute.getZ(i) * scale);
+        }
+      }
+      level.geometry.computeBoundingBox();
+      level.geometry.computeBoundingSphere();
+    }
     cast.set(character.id, { detail: levels.detail, crowd: levels.crowd });
   }
   for (const object of objects) {

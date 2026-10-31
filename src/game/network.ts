@@ -1,4 +1,4 @@
-// Authored South Mumbai-inspired network; metres, north is -Z. Not a street-map export.
+// Authored Mumbai-inspired network; metres, north is -Z. Not a street-map export.
 export type Point = { x: number; z: number };
 export type Junction = Point & {
   id: number;
@@ -13,7 +13,17 @@ export type Street = {
   width: number;
   name: string;
   oneWay: boolean;
+  roundabout?: string;
+  bend?: number;
 };
+export const roundabouts = [
+  { id: "fort", name: "Fort Circle", x: 110, z: 180, radius: 34, width: 12, islandRadius: 22 },
+  { id: "central", name: "Mumbai Chowk", x: 450, z: -40, radius: 64, width: 18, islandRadius: 50 },
+  { id: "dadar", name: "Dadar Garden Circle", x: 980, z: -680, radius: 26, width: 10, islandRadius: 19 },
+  { id: "cuffe", name: "Cuffe Parade Circle", x: 110, z: 860, radius: 25, width: 10, islandRadius: 18 },
+] as const;
+/** A clear, level centre for a future feature; roads and building lots must avoid it. */
+export const CENTRAL_PLAZA = { x: 450, z: -40, radius: 20, height: 0.32 };
 export const junctions: Junction[] = [];
 export const streets: Street[] = [];
 const xs = [-260, -80, 110, 290],
@@ -24,8 +34,8 @@ function node(x: number, z: number, name: string, ring = false) {
   junctions.push({ id, x, z, name, signal: false, ring });
   return id;
 }
-function link(a: number, b: number, name: string, width = 24, oneWay = false) {
-  streets.push({ id: streets.length, a, b, name, width, oneWay });
+function link(a: number, b: number, name: string, width = 24, oneWay = false, roundabout?: string) {
+  streets.push({ id: streets.length, a, b, name, width, oneWay, roundabout });
 }
 for (let row = 0; row < 5; row++)
   for (let col = 0; col < 4; col++)
@@ -74,7 +84,7 @@ for (let row = 0; row < 5; row++)
       );
   }
 for (let i = 0; i < 8; i++)
-  link(roundIds[i], roundIds[(i + 1) % 8], "Fort Circle", 12, true);
+  link(roundIds[i], roundIds[(i + 1) % 8], "Fort Circle", 12, true, "fort");
 const southWest = node(-80, 620, "Colaba Market"),
   southEast = node(290, 620, "Gateway Waterfront");
 link(grid.get("1,4")!, southWest, "Colaba Market Road", 20);
@@ -132,7 +142,99 @@ for (const e of streets)
   )
     e.width = 10;
 
-export const WORLD_BOUNDS = { minX: -294, maxX: 648, minZ: -718, maxZ: 658 };
+// Extend the existing connected network north, east and south. Every quadrant
+// gets a mixture of main avenues and curved, two-lane neighbourhood streets.
+const expandedXs = [-260, -80, 110, 290, 450, 610, 800, 980, 1160];
+const expandedZs = [-1200, -1000, -840, -680, -480, -260, -40, 180, 400, 620, 860, 1120];
+const expanded = new Map(junctions.filter(n => !n.ring).map(n => [`${n.x},${n.z}`, n.id]));
+for (const z of expandedZs)
+  for (const x of expandedXs) {
+    if (x === 110 && z === 180) continue; // Existing Fort Circle replaces this crossing.
+    const key = `${x},${z}`;
+    if (!expanded.has(key)) expanded.set(key, node(x, z,
+      z < -1000 ? "Juhu Quarter" : z < -680 ? "Bandra" : x > 610 ? "Dadar / Parel" : "Colaba Extension"));
+  }
+const hasLink = (a: number, b: number) => streets.some(s => (s.a === a && s.b === b) || (s.a === b && s.b === a));
+// An added crossing must split an existing long road, not create overlapping
+// parallel edges (the old Gateway Road spans the new Heritage Road junction).
+for (const street of [...streets]) {
+  if (street.oneWay) continue;
+  const a=junctions[street.a], b=junctions[street.b];
+  const dx=b.x-a.x, dz=b.z-a.z, length2=dx*dx+dz*dz;
+  const middle=junctions.filter(n=>!n.ring&&n.id!==a.id&&n.id!==b.id)
+    .map(n=>({n,t:((n.x-a.x)*dx+(n.z-a.z)*dz)/length2}))
+    .filter(({n,t})=>t>0&&t<1&&Math.abs((n.x-a.x)*dz-(n.z-a.z)*dx)<.001)
+    .sort((u,v)=>u.t-v.t);
+  if(!middle.length) continue;
+  const chain=[a.id,...middle.map(p=>p.n.id),b.id];
+  street.b=chain[1];
+  for(let i=1;i<chain.length-1;i++) link(chain[i],chain[i+1],street.name,street.width);
+}
+for (let row = 0; row < expandedZs.length; row++)
+  for (let col = 0; col < expandedXs.length; col++) {
+    const x = expandedXs[col], z = expandedZs[row];
+    const a = expanded.get(`${x},${z}`);
+    if (a === undefined) continue;
+    if (col + 1 < expandedXs.length) {
+      const b = expanded.get(`${expandedXs[col + 1]},${z}`);
+      if (b !== undefined && !hasLink(a, b)) {
+        const main = row % 3 === 0;
+        link(a, b,
+          z <= -1000 ? (main ? "Juhu Tara Road" : "Juhu Church Lane") :
+          z === -840 ? "Bandra Hill Road" :
+          z >= 860 ? (main ? "Cuffe Parade Road" : "Sassoon Dock Lane") :
+          main ? "Dadar Link Road" : "Parel Market Lane", main ? 24 : 10);
+      }
+    }
+    if (row + 1 < expandedZs.length) {
+      const b = expanded.get(`${x},${expandedZs[row + 1]}`);
+      if (b !== undefined && !hasLink(a, b)) {
+        const main = col % 3 === 0;
+        link(a, b,
+          x === -260 ? (z < -680 ? "Bandstand Promenade" : "Marine Drive") :
+          x === -80 && z < -680 ? "Pali Hill Lane" :
+          x === 290 ? "S. V. Road" :
+          x >= 800 ? (main ? "Eastern Avenue" : "Dadar Neighbourhood Lane") :
+          z >= 620 ? "Colaba Harbour Lane" : "Chapel Road", main ? 24 : 10);
+      }
+    }
+  }
+
+// Reuse the old bazaar crossing's ID so there is no disconnected orphan node.
+// The four approaches stop at the ring, leaving the central island unobstructed.
+const centre = roundabouts[1];
+for (const circle of roundabouts.slice(1)) {
+const centre = circle;
+const centreId = expanded.get(`${centre.x},${centre.z}`)!;
+const centralIds = Array.from({ length: 8 }, (_, i) => {
+  const x = centre.x + Math.cos(i * Math.PI / 4) * centre.radius;
+  const z = centre.z + Math.sin(i * Math.PI / 4) * centre.radius;
+  if (i === 0) {
+    Object.assign(junctions[centreId], { x, z, name: centre.name, ring: true });
+    return centreId;
+  }
+  return node(x, z, centre.name, true);
+});
+for (const e of streets) {
+  if (e.a !== centreId && e.b !== centreId) continue;
+  const other = junctions[e.a === centreId ? e.b : e.a];
+  const index = Math.abs(other.x - centre.x) > Math.abs(other.z - centre.z)
+    ? other.x > centre.x ? 0 : 4 : other.z > centre.z ? 2 : 6;
+  if (e.a === centreId) e.a = centralIds[index]; else e.b = centralIds[index];
+  e.width = centre.width;
+  e.name = centre.name + " Approach";
+}
+for (let i = 0; i < 8; i++) link(centralIds[i], centralIds[(i + 1) % 8], centre.name, centre.width, true, centre.id);
+}
+for (const e of streets) {
+  if (e.oneWay || e.width > 12) continue;
+  // Alternating bends are present in west, north, centre, east and south;
+  // endpoints and tangents stay aligned with their connected intersections.
+  if (e.id % 3 !== 0 || ["Bazaar Galli", "Chawl Lane", "Dukaan Lane"].includes(e.name))
+    e.bend = (e.id % 2 ? 1 : -1) * 5;
+}
+
+export const WORLD_BOUNDS = { minX: -294, maxX: 1194, minZ: -1240, maxZ: 1160 };
 export function trafficLane(edge: number, preferred = 3) {
   const e = streets[edge];
   return e.oneWay
@@ -155,14 +257,18 @@ export const districts = [
   { name: "Fort", x: 110, z: 180 },
   { name: "Colaba", x: 0, z: 620 },
   { name: "Gateway Waterfront", x: 290, z: 600 },
+  { name: "Bandra / Bandstand", x: -170, z: -850 },
+  { name: "Juhu Quarter", x: 110, z: -1100 },
+  { name: "Dadar / Parel", x: 980, z: -120 },
+  { name: "Cuffe Parade", x: 0, z: 990 },
+  { name: "Mumbai Chowk", x: centre.x, z: centre.z },
 ];
 export const obstacles = [
   { x: -249.5, z: 60, r: 1.5, kind: "parked" },
   { x: -249.5, z: 115, r: 1.5, kind: "parked" },
   { x: 300.5, z: 100, r: 1.5, kind: "parked" },
 ];
-const curved = streets.map((street) => street.oneWay ||
-  ["Bazaar Galli", "Chawl Lane", "Dukaan Lane"].includes(street.name));
+const curved = streets.map((street) => street.oneWay || !!street.bend);
 export const isCurved = (edge: number) => curved[edge];
 type Sample = Point & { distance: number };
 const paths = new Map<number, Sample[]>();
@@ -183,11 +289,12 @@ export function streetPath(edge: number): Sample[] {
     let x = a.x + (b.x - a.x) * t,
       z = a.z + (b.z - a.z) * t;
     if (e.oneWay) {
-      const angle = Math.atan2(a.z - 180, a.x - 110) + (t * Math.PI) / 4;
-      x = 110 + 34 * Math.cos(angle);
-      z = 180 + 34 * Math.sin(angle);
+      const ring = roundabouts.find(r => r.id === e.roundabout)!;
+      const angle = Math.atan2(a.z - ring.z, a.x - ring.x) + (t * Math.PI) / 4;
+      x = ring.x + ring.radius * Math.cos(angle);
+      z = ring.z + ring.radius * Math.sin(angle);
     } else if (isCurved(edge)) {
-      const bend = 5 * Math.sin(Math.PI * t) ** 2 * (edge % 2 ? 1 : -1);
+      const bend = e.bend! * Math.sin(Math.PI * t) ** 2;
       x += ((b.z - a.z) / chord) * bend;
       z -= ((b.x - a.x) / chord) * bend;
     }

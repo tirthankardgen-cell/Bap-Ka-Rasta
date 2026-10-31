@@ -1,0 +1,14 @@
+{
+  "size": 512,
+  "metres_per_repeat": 4,
+  "surfaces": [
+    "sandstone",
+    "limestone",
+    "basalt",
+    "redstone",
+    "terracotta",
+    "plaster",
+    "paving"
+  ],
+  "authorship": "Original deterministic procedural textures; no reference photos used as textures."
+}

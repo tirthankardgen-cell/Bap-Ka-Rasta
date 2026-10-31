@@ -1,0 +1,273 @@
+{
+  "generator": "Blender 3.5.1",
+  "runtime": "/models/mumbai-landmarks.glb",
+  "bytes": 16130296,
+  "models": [
+    {
+      "id": "mannat",
+      "name": "Mannat · Shah Rukh Khan",
+      "height_m": 32,
+      "triangles": {
+        "near": 27764,
+        "far": 1312
+      }
+    },
+    {
+      "id": "galaxy",
+      "name": "Galaxy Apartments · Salman Khan",
+      "height_m": 26,
+      "triangles": {
+        "near": 24664,
+        "far": 628
+      }
+    },
+    {
+      "id": "jalsa",
+      "name": "Jalsa · Amitabh Bachchan",
+      "height_m": 15,
+      "triangles": {
+        "near": 17316,
+        "far": 108
+      }
+    },
+    {
+      "id": "taj-palace",
+      "name": "Taj Mahal Palace",
+      "height_m": 73,
+      "triangles": {
+        "near": 177432,
+        "far": 19536
+      }
+    },
+    {
+      "id": "gateway",
+      "name": "Gateway of India",
+      "height_m": 26,
+      "triangles": {
+        "near": 19556,
+        "far": 2928
+      }
+    },
+    {
+      "id": "antilia",
+      "name": "Antilia",
+      "height_m": 173,
+      "triangles": {
+        "near": 34500,
+        "far": 240
+      }
+    },
+    {
+      "id": "csmt",
+      "name": "Chhatrapati Shivaji Maharaj Terminus",
+      "height_m": 78,
+      "triangles": {
+        "near": 90766,
+        "far": 9946
+      }
+    },
+    {
+      "id": "bmc",
+      "name": "BMC Headquarters",
+      "height_m": 77.7,
+      "triangles": {
+        "near": 84508,
+        "far": 9376
+      }
+    },
+    {
+      "id": "rajabai",
+      "name": "Rajabai Clock Tower",
+      "height_m": 85,
+      "triangles": {
+        "near": 16880,
+        "far": 1024
+      }
+    },
+    {
+      "id": "crawford",
+      "name": "Crawford Market",
+      "height_m": 32,
+      "triangles": {
+        "near": 24292,
+        "far": 600
+      }
+    },
+    {
+      "id": "asiatic",
+      "name": "Asiatic Library / Town Hall",
+      "height_m": 24,
+      "triangles": {
+        "near": 15888,
+        "far": 1356
+      }
+    },
+    {
+      "id": "eros",
+      "name": "Eros Cinema",
+      "height_m": 34,
+      "triangles": {
+        "near": 15632,
+        "far": 344
+      }
+    },
+    {
+      "id": "regal",
+      "name": "Regal Cinema",
+      "height_m": 25,
+      "triangles": {
+        "near": 13244,
+        "far": 100
+      }
+    },
+    {
+      "id": "flora",
+      "name": "Flora Fountain",
+      "height_m": 12,
+      "triangles": {
+        "near": 4344,
+        "far": 872
+      }
+    },
+    {
+      "id": "mount-mary",
+      "name": "Mount Mary Basilica",
+      "height_m": 45,
+      "triangles": {
+        "near": 16426,
+        "far": 526
+      }
+    },
+    {
+      "id": "siddhivinayak",
+      "name": "Siddhivinayak Temple",
+      "height_m": 38,
+      "triangles": {
+        "near": 22772,
+        "far": 2756
+      }
+    },
+    {
+      "id": "world-one",
+      "name": "World One",
+      "height_m": 280.2,
+      "triangles": {
+        "near": 87288,
+        "far": 23772
+      }
+    },
+    {
+      "id": "opera-house",
+      "name": "Royal Opera House",
+      "height_m": 28,
+      "triangles": {
+        "near": 28619,
+        "far": 1847
+      }
+    },
+    {
+      "id": "nehru-centre",
+      "name": "Nehru Centre",
+      "height_m": 91,
+      "triangles": {
+        "near": 22884,
+        "far": 6508
+      }
+    },
+    {
+      "id": "high-court",
+      "name": "Bombay High Court",
+      "height_m": 52,
+      "triangles": {
+        "near": 26597,
+        "far": 1585
+      }
+    },
+    {
+      "id": "bse",
+      "name": "Bombay Stock Exchange",
+      "height_m": 118,
+      "triangles": {
+        "near": 27420,
+        "far": 4868
+      }
+    },
+    {
+      "id": "world-trade-centre",
+      "name": "World Trade Centre",
+      "height_m": 155.9,
+      "triangles": {
+        "near": 22932,
+        "far": 4692
+      }
+    },
+    {
+      "id": "leopold",
+      "name": "Leopold Cafe",
+      "height_m": 13,
+      "triangles": {
+        "near": 3786,
+        "far": 366
+      }
+    },
+    {
+      "id": "mondegar",
+      "name": "Cafe Mondegar",
+      "height_m": 14,
+      "triangles": {
+        "near": 2056,
+        "far": 96
+      }
+    },
+    {
+      "id": "kyani",
+      "name": "Kyani & Co.",
+      "height_m": 11,
+      "triangles": {
+        "near": 1628,
+        "far": 84
+      }
+    },
+    {
+      "id": "yazdani",
+      "name": "Yazdani Bakery",
+      "height_m": 8,
+      "triangles": {
+        "near": 1456,
+        "far": 72
+      }
+    },
+    {
+      "id": "kitab",
+      "name": "Kitab Khana",
+      "height_m": 14,
+      "triangles": {
+        "near": 3606,
+        "far": 366
+      }
+    },
+    {
+      "id": "fashion",
+      "name": "Fashion Street",
+      "height_m": 5,
+      "triangles": {
+        "near": 1204,
+        "far": 60
+      }
+    },
+    {
+      "id": "bademiya",
+      "name": "Bademiya",
+      "height_m": 6,
+      "triangles": {
+        "near": 836,
+        "far": 60
+      }
+    }
+  ],
+  "source": "mumbai-landmarks.blend",
+  "units": "metres",
+  "uncompressed_bytes": 53930852,
+  "sha256": "8b42374fe20922d5fed206e3cfe055ca1f4de92aab0c1439a4d96da19c461cf4",
+  "compression": "EXT_meshopt_compression + EXT_texture_webp"
+}

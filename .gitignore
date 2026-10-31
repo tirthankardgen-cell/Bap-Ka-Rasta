@@ -18,3 +18,4 @@ __pycache__/
 Thumbs.db
 output/playwright/
 assets/characters/mumbai/*.blend1
+assets/architecture/mumbai/*.blend1

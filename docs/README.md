@@ -8,6 +8,8 @@ Use the current implementation guides for setup and behavior. The original desig
 | --- | --- |
 | [Project README](../README.md) | Overview, local setup, controls, tests, and deployment |
 | [Mumbai playable guide](Mumbai-Playable.md) | Current street network, runtime architecture, and validation limits |
+| [Mumbai landmarks, roads and shops](Mumbai-Landmarks.md) | All 29 placed sites, photo sources, heights, four roundabouts and the future central feature area |
+| [Mumbai model and scale previews](mumbai-landmarks/README.md) | Original Blender renders, in-game views, roundabouts and measured vehicle/people proportions |
 | [Contributing](../CONTRIBUTING.md) | Development workflow, conventions, validation, and pull requests |
 | [Support](../SUPPORT.md) | Troubleshooting and the right place to ask for help |
 | [Roadmap](ROADMAP.md) | Current milestone, reliability work, and planned expansion |
@@ -25,7 +27,7 @@ Use the current implementation guides for setup and behavior. The original desig
 | Resource | Purpose |
 | --- | --- |
 | [Game design and architecture](Bap-ka-Rasta-Game-Plan.md) | Original product specification and proposed implementation |
-| [Mumbai characters and voices](mumbai-characters/README.md) | Twenty character designs, 118 recorded Mumbai lines, nearby conversations, voice casting and every person's assignment |
+| [Mumbai characters and voices](mumbai-characters/README.md) | Twenty character designs, 119 recorded Mumbai lines, nearby conversations, voice casting and every person's assignment |
 | [BR brand kit](branding/README.md) | Canonical BR mark, icons, social covers, site metadata and branded geographic map |
 | [Vehicle carousel reference](../output/design/vehicle-circular-gallery-prompt.md) | Supplied design brief for the implemented oval vehicle chooser |
 | [Visual storyboards](storyboard/README.md) | City, character, vehicle, and player-journey concept art |

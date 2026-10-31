@@ -13,7 +13,7 @@ import VehicleSelection from "./VehicleSelection";
 export const cities = [
   {
     name: "Mumbai",
-    subtitle: "South Mumbai ki galiyan",
+    subtitle: "Mumbai ki galiyan",
     description:
       "Samundar ki hawa, kaali-peeli ka swag. Marine Drive se Colaba tak, apna Mumbai apne andaaz mein ghoom.",
     detail: "GALI SE GALI · BINDASS GHUMO",

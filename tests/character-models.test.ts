@@ -7,6 +7,7 @@ import { characters } from "../src/game/characters.ts";
 import { disposeAutoModel } from "../src/game/auto-model.ts";
 import { characterPlayerPart } from "../src/game/character-models.ts";
 import { readCharacterModels } from "./helpers/character-assets.ts";
+import { CHARACTER_HEIGHTS } from "../src/game/world-scale.ts";
 
 test("the shipped Blender library contains all reference characters at human scale, with compatible LODs", async () => {
   const models = await readCharacterModels();
@@ -15,12 +16,18 @@ test("the shipped Blender library contains all reference characters at human sca
     const { detail, crowd } = models.cast.get(id)!;
     const bounds = detail.geometry.boundingBox!;
     const size = bounds.getSize(new THREE.Vector3());
-    assert.ok(size.y > 1.7 && size.y < 2.15, `${id}: height ${size.y}`);
+    const positions = detail.geometry.getAttribute("position");
+    const headJoints = detail.geometry.getAttribute("castJoint");
+    let headTop = -Infinity;
+    for (let i=0; i<positions.count; i++)
+      if (headJoints.getX(i) === 3) headTop = Math.max(headTop, positions.getY(i));
+    assert.ok(Math.abs(headTop-CHARACTER_HEIGHTS[id]) < .002, `${id}: calibrated head height ${headTop}`);
+    assert.ok(size.y > 1.5 && size.y < 2.05, `${id}: height including carried props ${size.y}`);
     assert.ok(
       bounds.min.y >= -0.025 && bounds.min.y < 0.05,
       `${id}: feet at ${bounds.min.y}`,
     );
-    assert.ok(size.x > 0.55 && size.x < 1.65, `${id}: width ${size.x}`);
+    assert.ok(size.x > 0.4 && size.x < 1.65, `${id}: width ${size.x}`);
     assert.ok(detail.geometry.index!.count > 24000, `${id}: detailed geometry`);
     // Small disconnected flower petals retain a minimum number of faces.
     assert.ok(
@@ -48,7 +55,7 @@ test("the shipped Blender library contains all reference characters at human sca
         Number.isFinite(pivots.getX(i) + pivots.getY(i) + pivots.getZ(i)),
       );
       assert.ok(
-        pivots.getY(i) >= 0.4 && pivots.getY(i) < 1.5,
+        pivots.getY(i) >= 0.28 && pivots.getY(i) < 1.5,
         `${id}: pivot ${pivots.getY(i)}`,
       );
     }

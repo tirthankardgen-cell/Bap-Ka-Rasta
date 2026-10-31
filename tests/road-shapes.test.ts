@@ -9,13 +9,15 @@ import {
   roadContains,
   constrainRoad,
   WORLD_BOUNDS,
+  roundabouts,
 } from "../src/game/network.ts";
 import { boundaryBuildings } from "../src/game/boundaries.ts";
-test("Fort Circle follows a constant radius and has no polygonal road corners", () => {
+test("both roundabouts follow their authored radii without polygonal road corners", () => {
   for (const e of streets.filter((e) => e.oneWay)) {
     assert.ok(streetPath(e.id).length > 10);
     for (const p of streetPath(e.id)) {
-      assert.ok(Math.abs(Math.hypot(p.x - 110, p.z - 180) - 34) < 0.001);
+      const ring = roundabouts.find(r => r.id === e.roundabout)!;
+      assert.ok(Math.abs(Math.hypot(p.x - ring.x, p.z - ring.z) - ring.radius) < 0.001);
       assert.ok(roadContains(p.x, p.z));
     }
   }
@@ -53,7 +55,8 @@ test("curved gallis support opposing lanes and collision follows the bend", () =
       const p = lanePosition(e.id, e.a, g.length / 2, side * 7);
       assert.equal(pavement.heightAt(p.x, p.z), PAVEMENT_TOP);
     }
-    for (let d = 10; d < g.length - 10; d += 4) {
+    // Stay beyond the wider avenue mouths added at either end of these lanes.
+    for (let d = 20; d < g.length - 20; d += 4) {
       for (const from of [e.a, e.b]) {
         const p = lanePosition(e.id, from, d, 2.5);
         assert.ok(roadContains(p.x, p.z));

@@ -1,4 +1,5 @@
 import { streets } from "../src/game/network.ts";
+import { landmarkSites } from "../src/game/landmark-layout.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -51,5 +52,7 @@ test("branded map documents the playable network rather than municipal wards", (
     streets.length,
   );
   assert.match(map, /Boundary buildings/);
+  assert.doesNotMatch(map, /NaN|undefined/);
+  assert.equal(new Set([...map.matchAll(/data-landmark="([^"]+)"/g)].map(m=>m[1])).size,landmarkSites.length);
   assert.doesNotMatch(map, /DataMeet|municipal ward/);
 });

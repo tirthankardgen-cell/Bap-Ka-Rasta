@@ -8,13 +8,10 @@ export function coneLocations(): Point[] {
     { x: 63, z: -29.5 },
   ];
   // Small roadside work zones, rather than a continuous barrier or blocked junction.
-  for (const street of streets) {
-    if (
-      street.oneWay ||
-      street.id % 7 !== 0 ||
-      geometry(street.id).length < 120
-    )
-      continue;
+  const eligible = streets.filter(street => !street.oneWay && street.id % 7 === 0 && geometry(street.id).length >= 120);
+  const count=Math.min(18,eligible.length);
+  for (let zone=0;zone<count;zone++) {
+    const street=eligible[Math.floor(zone*eligible.length/count)];
     for (let i = 0; i < 4; i++)
       points.push(
         lanePosition(

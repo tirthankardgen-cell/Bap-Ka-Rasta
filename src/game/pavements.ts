@@ -7,13 +7,27 @@ import {
   lanePosition,
 } from "./network.ts";
 import { runSetupWorkSync } from "./setup-work.ts";
-export const PAVEMENT_TOP = 0.42;
+export const PAVEMENT_TOP = 0.16;
+type PavementLayout = {
+  strips: { x: number; z: number; width: number }[];
+  heightAt: (x: number, z: number) => number;
+};
+// Keep completed, deterministic CPU data across scene restarts. The height
+// lookup closes over private read-only cells; mutable strip objects are copied.
+let completedLayout: PavementLayout | undefined;
+function copyLayout(layout: PavementLayout): PavementLayout {
+  return {
+    strips: layout.strips.map((strip) => ({ ...strip })),
+    heightAt: layout.heightAt,
+  };
+}
 // Metre cells are merged into strips for rendering. Reject every cell touching
 // the road union, so raised corners cannot obstruct an intersection or turn.
 export function pavementLayout() {
   return runSetupWorkSync(pavementWork());
 }
-export function* pavementWork() {
+export function* pavementWork(): Generator<void, PavementLayout> {
+  if (completedLayout) return copyLayout(completedLayout);
   const candidates = new Set<string>();
   function* rect(x0: number, z0: number, x1: number, z1: number) {
     for (let z = Math.floor(z0); z < Math.ceil(z1); z++) {
@@ -103,11 +117,12 @@ export function* pavementWork() {
         }
     }
   }
-  return {
+  completedLayout = {
     strips,
     heightAt: (x: number, z: number) => {
       const key = `${Math.floor(x)},${Math.floor(z)}`;
       return cells.has(key) || curveCells.has(key) ? PAVEMENT_TOP : 0;
     },
   };
+  return copyLayout(completedLayout);
 }

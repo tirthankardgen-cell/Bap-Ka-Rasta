@@ -2,7 +2,7 @@
 
 [View the branded game map](mumbai-game-map.png) · [SVG original](mumbai-game-map.svg)
 
-This map reads the same `src/game/network.ts` centreline samples, road widths, spawn position and `src/game/boundaries.ts` building rows used by the game. It shows 75 street segments and 149 boundary buildings. North is negative game Z; the sea is west. Labels identify the game's fictional districts.
+This map reads the same road paths, widths, roundabouts, spawn point, building lots and landmark sites used by the game. It shows 227 street segments, 246 boundary buildings, 1,740 interior building lots and 29 numbered landmarks/shops. North is negative game Z; the sea is west. Numbers match the [landmark catalogue](../Mumbai-Landmarks.md).
 
 The map is a guide to the playable environment. It is not the real Mumbai municipal or navigation map. Interior building details and individual street props are omitted for readability.
 
@@ -14,4 +14,4 @@ node --experimental-strip-types scripts/build-game-map.mts
 node scripts/render-game-map.mjs
 ```
 
-The generated SVG and PNG use the shared BR identity and bundled Barlow font. Regenerate both whenever the road network or boundary rows change.
+The 1600 × 2000 SVG and PNG use the shared BR identity and bundled Barlow font. Regenerate both whenever roads, roundabouts, landmark reservations or building rows change.

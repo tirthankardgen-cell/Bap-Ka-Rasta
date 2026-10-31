@@ -1,5 +1,10 @@
 # Changelog
 
+- Expanded Mumbai to 227 connected road segments across 3.57 km², with curved two-lane streets in every quadrant, a decorated central roundabout with a reserved future-feature platform, and two additional small garden roundabouts.
+- Added 29 original Blender landmarks, celebrity homes and shops from public photo references, including Taj, Gateway, Antilia, CSMT, Mannat, Galaxy, Jalsa, Mount Mary, Siddhivinayak, World One and World Trade Centre. Reserved approaches preserve street views; near/far models, compressed textures, an editable source library and a numbered map/catalogue are included.
+- Corrected pedestrian, pavement, auto, car, bus and scooter proportions, including vehicle-length collision envelopes and following distances. Extended unique crowd identities and voice assignments to 4,472 people, bounded roadside work zones, and fixed an overlapping road at a new crossing. Balanced daylight and a longer hazy view reveal the enlarged skyline.
+- Reused completed CPU building/pavement layouts on fresh drives and graphics recovery while keeping scene data independent and cancellation safe. Added model, map and measured scale previews with reproducible asset/layout checks.
+
 - Corrected canonical, social and sitemap URLs to `rasta.vihar.online`; added image sitemap entries. The production build now prerenders the existing React landing screen and hydrates it in the browser, exposing the title and artwork before JavaScript runs while preserving client-side selection and gameplay.
   - Verified with 81 unit tests, the production build and all 25 Playwright browser tests in Chrome. The new check covers the initial HTML, JavaScript-disabled display, domain consistency and hydration into city selection. Social cover images were regenerated with the new domain.
 

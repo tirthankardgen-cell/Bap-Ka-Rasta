@@ -30,6 +30,7 @@ import {
 import { landscapeDelta } from "../LandscapeStage";
 import { createCameraLook, followCamera, type CameraMode } from "./camera";
 import { AUTO_DRIVER_EYE_HEIGHT, AUTO_WHEEL_RADIUS } from "./auto-model";
+import type { LandmarkModels } from "./landmark-models";
 export type { CameraMode } from "./camera";
 export type Stats = {
   gear: Gear;
@@ -61,6 +62,7 @@ export async function createEngine(
   onError: (message: string) => void,
   autoModel: THREE.Group,
   characterModels: CharacterModels,
+  landmarkModels: LandmarkModels,
   initialDrive = newDrive(),
   startupSignal?: AbortSignal,
 ) {
@@ -95,7 +97,7 @@ export async function createEngine(
     lighting = atmosphere(renderer, scene);
     lighting.quality(!automaticShadows);
     await checkpoint(true);
-    world = await makeWorld(scene, characterModels, startupSignal);
+    world = await makeWorld(scene, characterModels, landmarkModels, startupSignal);
     player = autoRickshaw(autoModel);
     scene.add(player.root);
     placeTraffic = await trafficVisuals(scene, traffic, autoModel, startupSignal);
@@ -118,6 +120,7 @@ export async function createEngine(
   player.root.add(sachin);
   renderer.domElement.dataset.vehicleModel = "mumbai-auto";
   renderer.domElement.dataset.characterModels = "blender-reference-cast";
+  renderer.domElement.dataset.landmarkCount = String(landmarkModels.sites.length);
   renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
   const state = initialDrive;

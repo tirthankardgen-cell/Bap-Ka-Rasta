@@ -1,6 +1,6 @@
 # Mumbai voice lines
 
-119 short recordings for 20 character profiles, covering the player and all 1542 individually named street actors. Hindi carries the meaning, with occasional Marathi phrases such as Mogryacha gajra ghya, Paaoos yenaar ka and Amchya veli. Openings vary naturally across the script. This pack is only for Mumbai.
+119 short recordings for 20 character profiles, covering the player and all 4472 individually named street actors. Hindi carries the meaning, with occasional Marathi phrases such as Mogryacha gajra ghya, Paaoos yenaar ka and Amchya veli. Openings vary naturally across the script. This pack is only for Mumbai.
 
 The free ElevenLabs account supplies 18 included voices across 20 roles. Aarti/Pooja share Sarah and Lata/Shanta share Lily, with different delivery settings and separate recordings. The presets are multilingual approximations, not recordings by native Mumbai actors. No paid library voices or voice cloning are used.
 

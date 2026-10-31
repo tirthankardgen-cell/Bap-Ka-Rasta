@@ -1,4 +1,5 @@
 import { gearedSpeed, type Gear } from "./gears.ts";
+import { trafficDimensions, vehicleContact } from "./world-scale.ts";
 import {
   streets,
   trafficLane,
@@ -90,8 +91,13 @@ export function newDrive(): Drive {
 }
 export function newTraffic(): Traffic[] {
   const result: Traffic[] = [];
+  // Spread the bounded fleet across the whole enlarged map, including its new
+  // eastern and southern roads, instead of filling only the first 112 edges.
+  const gcd = (a: number, b: number): number => b ? gcd(b, a % b) : a;
+  let stride = 37;
+  while (gcd(stride, streets.length) !== 1) stride++;
   for (let i = 0; i < 420 && result.length < 112; i++) {
-    const edge = i % streets.length,
+    const edge = (i * stride) % streets.length,
       e = streets[edge],
       from =
         e.oneWay || (i + Math.floor(i / streets.length)) % 2 === 0 ? e.a : e.b,
@@ -103,7 +109,8 @@ export function newTraffic(): Traffic[] {
           ((0.23 + (i % 5) * 0.11 + Math.floor(i / streets.length) * 0.43) % 1);
     const p = lanePosition(edge, from, progress, lane);
     if (Math.hypot(p.x - SPAWN.x, p.z - SPAWN.z) < 32) continue;
-    if (result.some((t) => Math.hypot(t.x - p.x, t.z - p.z) < 9)) continue;
+    if (result.some((t) => Math.hypot(t.x - p.x, t.z - p.z) < Math.max(9,
+      (trafficDimensions(t.kind).length + trafficDimensions(i % 6).length) / 2 + 2))) continue;
     result.push({
       id: i,
       edge,
@@ -206,7 +213,8 @@ export function updateTraffic(
     };
     const ahead =
       traffic.some(
-        (other) => other !== t && blocked(other, t.kind === 3 ? 13 : 9),
+        (other) => other !== t && blocked(other, Math.max(9,
+          (trafficDimensions(t.kind).length + trafficDimensions(other.kind).length) / 2 + 3.2)),
       ) || blocked(player, 10);
     let target = ahead
       ? 0
@@ -327,14 +335,18 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
     s.speed *= Math.exp(-4 * dt);
   }
   updateTraffic(traffic, s, s.time, dt);
-  for (const other of [
-    ...traffic.map((t) => ({
-      x: t.x,
-      z: t.z,
-      r: t.kind === 3 ? 2.1 : t.kind === 5 ? 1 : 1.5,
-    })),
-    ...obstacles,
-  ]) {
+  for (const vehicle of traffic) {
+    const contact = vehicleContact(s, vehicle);
+    if (!contact) continue;
+    s.x += contact.x;
+    s.z += contact.z;
+    if (s.cooldown === 0) {
+      s.speed *= -0.1;
+      s.cooldown = 0.7;
+      s.impact = 1.2;
+    }
+  }
+  for (const other of obstacles) {
     const dx = s.x - other.x,
       dz = s.z - other.z,
       d = Math.hypot(dx, dz),

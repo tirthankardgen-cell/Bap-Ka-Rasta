@@ -22,7 +22,10 @@ import {
   signalPhase,
   crossingPosition,
   SPAWN,
+  roundabouts,
+  WORLD_BOUNDS,
 } from "../src/game/network.ts";
+import { vehicleContact } from "../src/game/world-scale.ts";
 
 test("connected street network has branches, multiple lanes and a one-way roundabout", () => {
   const seen = new Set<number>([0]),
@@ -38,7 +41,7 @@ test("connected street network has branches, multiple lanes and a one-way rounda
   assert.ok(
     junctions.filter((n) => connections(n.id).length >= 3).length >= 10,
   );
-  assert.equal(streets.filter((e) => e.oneWay).length, 8);
+  assert.equal(streets.filter((e) => e.oneWay).length, roundabouts.length * 8);
   assert.ok(streets.filter((e) => e.width === 24).length >= 25);
   assert.equal(roadContains(110, 180), false);
   assert.ok(roadContains(144, 180));
@@ -104,7 +107,7 @@ test("traffic contacts separate vehicles and reduce speed", () => {
   // Place the collision fixture on its traffic lane, independently of the kerbside spawn.
   Object.assign(s, lanePosition(e.id, e.b, 75, 6));
   step(s, emptyInput(), [t]);
-  assert.ok(Math.hypot(s.x - t.x, s.z - t.z) >= 2.49);
+  assert.equal(vehicleContact(s, t), null, "actual vehicle bodies separate");
   assert.ok(s.impact > 0);
 });
 
@@ -261,7 +264,7 @@ test("free driving does not automatically brake at pedestrians or red signals", 
 });
 
 test("expanded neighbourhood lanes carry opposing traffic and stay inside the visible city perimeter", () => {
-  const lanes = streets.filter((e) => e.width === 10);
+  const lanes = streets.filter((e) => e.width === 10 && !e.oneWay);
   assert.ok(lanes.length >= 20);
   for (const e of lanes) {
     assert.equal(e.oneWay, false);
@@ -273,10 +276,10 @@ test("expanded neighbourhood lanes carry opposing traffic and stay inside the vi
     assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 4.9);
   }
   for (const p of [
-    [-295, 0],
-    [649, 0],
-    [0, -719],
-    [0, 659],
+    [WORLD_BOUNDS.minX-1, 0],
+    [WORLD_BOUNDS.maxX+1, 0],
+    [0, WORLD_BOUNDS.minZ-1],
+    [0, WORLD_BOUNDS.maxZ+1],
   ])
     assert.equal(roadContains(p[0], p[1], 0), false);
   const drive = newDrive(),

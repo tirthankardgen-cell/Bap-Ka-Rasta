@@ -4,9 +4,11 @@ import {
   lanePosition,
   roadContains,
   WORLD_BOUNDS,
+  roundabouts,
 } from "./network.ts";
 import { boundaryBuildings } from "./boundaries.ts";
 import { runSetupWorkSync } from "./setup-work.ts";
+import { landmarkReservations } from "./landmark-layout.ts";
 
 export type BuildingLot = {
   x: number;
@@ -50,6 +52,8 @@ export function footprintsOverlap(a: Footprint, b: Footprint) {
     Math.abs(dx * sb + dz * cb) < b.halfLength + a.halfWidth * crossed + a.halfLength * aligned;
 }
 const reserved: Footprint[] = [
+  ...landmarkReservations,
+  ...roundabouts.map(r => ({ x: r.x, z: r.z, yaw: 0, halfWidth: r.islandRadius, halfLength: r.islandRadius })),
   // Keep the maidan and the inhabited perimeter intact.
   { x: -170, z: 70, yaw: 0, halfWidth: 55, halfLength: 70 },
   ...boundaryBuildings.map((b) => ({
@@ -61,7 +65,12 @@ const reserved: Footprint[] = [
 export function buildingLots(): BuildingLot[] {
   return runSetupWorkSync(buildingLotWork());
 }
+// The map is fixed for this module's lifetime. Retain only completed CPU layout
+// data so Retry does not repeat all frontage/road intersection checks. Each
+// world receives its own lot objects; no scene or GPU resources are retained.
+let completedLots: BuildingLot[] | undefined;
 export function* buildingLotWork(): Generator<void, BuildingLot[]> {
+  if (completedLots) return completedLots.map((lot) => ({ ...lot }));
   const lots: BuildingLot[] = [];
   const occupied = [...reserved];
   function place(
@@ -123,5 +132,6 @@ export function* buildingLotWork(): Generator<void, BuildingLot[]> {
       for (const side of [-1, 1]) place(e.id, d, side, false);
     }
   }
-  return lots;
+  completedLots = lots;
+  return lots.map((lot) => ({ ...lot }));
 }

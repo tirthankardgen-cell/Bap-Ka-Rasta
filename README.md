@@ -4,7 +4,7 @@
 
 **Apna sheher. Apni sawaari. Apna rasta.**
 
-A single-player, browser-based 3D driving game inspired by Indian streets. Explore a South Mumbai-inspired neighbourhood in a black-and-yellow auto rickshaw, sharing the roads with traffic, pedestrians, and street vendors.
+A single-player, browser-based 3D driving game inspired by Indian streets. Explore a Mumbai-inspired city in a black-and-yellow auto rickshaw, sharing the roads with traffic, pedestrians, and street vendors.
 
 Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the browser and can be deployed as a static site without accounts, a backend, API keys, or a database.
 
@@ -12,11 +12,11 @@ Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the 
 
 ![BR — Bap Ka Rasta: Apna sheher. Apni sawaari. Mumbai auto rickshaw browser game](public/brand/readme-cover.png)
 
-*The BR brand cover uses the original generated landing artwork. Gameplay combines an authored procedural city with Blender models for the Mumbai auto and reference-inspired character cast.*
+*The BR brand cover uses the original generated landing artwork. Gameplay combines an authored procedural city with Blender models for 29 Mumbai landmarks and shops, the auto and the character cast.*
 
 [![Mumbai playable game map in the BR brand style](docs/maps/mumbai-game-map.png)](docs/maps/mumbai-game-map.svg)
 
-*The actual playable environment: main avenues, two-lane side streets, curved bazaar gallis, Fort Circle, the sea edge and boundary buildings. Generated directly from the game's road and boundary data. [Brand assets](docs/branding/README.md).*
+*The playable 3.57 km² environment: main avenues, curved two-lane streets, four roundabouts and 29 numbered destinations. Generated from the game's road, landmark and building data. [Landmark catalogue](docs/Mumbai-Landmarks.md) · [Blender and in-game previews](docs/mumbai-landmarks/README.md).*
 
 [Quick start](#quick-start) · [How to play](#how-to-play) · [Development](#development) · [Project structure](#project-structure) · [Deployment](#deployment) · [Documentation](#documentation) · [Credits and licensing](#credits-and-licensing)
 
@@ -31,10 +31,12 @@ The project is an early playable prototype. Mumbai and the auto rickshaw are ava
 
 The current build includes:
 
-- **Connected streets:** 75 road segments, 34 signalized intersections, and a clockwise roundabout, with routes through Marine Drive, Churchgate, Fort, and Colaba-inspired areas.
-- **Neighbourhood lanes:** 29 narrow two-way streets, with one lane each way; new northern/eastern connections and visible perimeter walls and closed-end barriers.
+- **Connected streets:** 227 road segments, 100 signalized intersections and 38.29 km of road centreline across a 1,488 × 2,400 m city inspired by Colaba, Fort, Worli, Dadar, Bandra and Juhu.
+- **Neighbourhood lanes:** 126 narrow streets with one lane each way, including 91 curved segments distributed across all four map quadrants. Four clockwise roundabouts include the large central Mumbai Chowk, Fort Circle and smaller Dadar/Cuffe Parade garden circles.
+- **Recognisable destinations:** 29 [Blender landmarks, celebrity homes and shops](docs/Mumbai-Landmarks.md), including Taj, Gateway, Antilia, CSMT, Mannat, Galaxy, Jalsa, Mount Mary, Siddhivinayak, World One and World Trade Centre. Detailed façades, terraces, domes and local shop signs use original geometry and masonry textures. Open approaches keep the landmarks visible from the street.
 - **Mumbai-inspired architecture:** Art Deco curved balconies, Fort-style stone arches, tiled-roof chawls, shared galleries, laundry, shopfronts and rooftop tanks. The auto has an open cabin, patterned seating, a round front lamp and coloured trim under warmer sunset lighting. These are custom interpretations of the supplied reference.
-- **Street activity:** 112 moving traffic vehicles and 1,542 crowd actors, including the original 19 named locals and individually named background people, with walking, browsing, chatting, working and mid-block crossing activity. All twenty character designs use [Blender models based on the cast boards](assets/characters/mumbai/README.md), including Sachin's seated driver and first-person hands.
+- **Street activity:** 112 moving traffic vehicles and 4,472 crowd actors, including the original 19 named locals and individually named background people, with walking, browsing, chatting, working and mid-block crossing activity. All twenty character designs use [Blender models based on the cast boards](assets/characters/mumbai/README.md), including Sachin's seated driver and first-person hands. Rendering stays local, with bounded detailed characters and shared distant models.
+- **Consistent scale:** 1.56–1.81 m standing character profiles, a 0.16 m pavement, a 2.08 m auto canopy, 1.55 m cars and 3.10 m BEST midi buses. Vehicle lengths also inform collisions and traffic following.
 - **Arcade driving:** acceleration, steering, braking, delayed reverse, vehicle and roadside collisions, and safe vehicle reset. The auto reaches approximately 65 km/h.
 - **Voiced driver opening and street conversations:** 119 varied Hindi lines with occasional Marathi phrases, recorded using free ElevenLabs voices. Neighbours gossip independently of the auto; distance changes their volume. Sentences finish before replies, and captions appear only for speech directed at the player. The opening remains skippable and supports reduced motion.
 - **Landscape mobile experience:** city selection, vehicle selection and driving automatically use a landscape canvas, even when a phone is upright. No rotate-phone prompt or orientation pause. The home page follows the phone normally.
@@ -122,6 +124,8 @@ Run these commands from the repository root:
 | `npm run voices:generate` | Regenerate missing/changed voice files using the private ElevenLabs key and included voices |
 | `npm run voices:catalogue` | Rebuild runtime voice metadata, the line list and every person's voice assignment |
 | `npm run voices:verify` | Check all voice assets, gender assignments, short durations, hashes and attribution |
+| `node scripts/landmarks/build_catalogue.mts` | Rebuild the landmark, shop, road and physical-scale catalogue |
+| `node scripts/build-game-map.mts` | Regenerate the numbered playable map from the actual layout |
 
 ### Verification
 
@@ -238,7 +242,7 @@ The PDF builder currently uses Segoe UI and Consolas from `C:/Windows/Fonts`. On
 ## Known limitations and troubleshooting
 
 - **Prototype scope:** Mumbai and the auto rickshaw are the only playable combination. The other galleries and design documents contain future content.
-- **Map fidelity:** the streets are independently authored, compressed gameplay geometry inspired by South Mumbai. Municipal ward data provides geographic context; there is no live map integration.
+- **Map fidelity:** the streets and landmark positions form an independently authored, compressed Mumbai-inspired game layout. Published building heights are identified separately from visual estimates in the catalogue; footprints and routes are not survey data. There is no live map integration.
 - **Device coverage:** automated browser checks use Chromium and simulated touch. Real Android/iOS performance, Safari compatibility, and extended manual playtesting still need validation.
 - **Low frame rate:** enable browser hardware acceleration and switch to **Low graphics** in the pause panel. This reduces rendering resolution and fog distance and disables shadows.
 - **Graphics unavailable:** use a WebGL 2-capable browser. If the graphics context is lost during a drive, use the retry action shown on screen.

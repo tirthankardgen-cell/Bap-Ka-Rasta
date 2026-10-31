@@ -1,4 +1,5 @@
 import { createCrowdMotion } from "./crowd-motion.ts";
+import { crowdHeightVariation } from "./world-scale.ts";
 import { createPedestrianRules, fallPose } from "./pedestrian-rules.ts";
 import * as THREE from "three";
 import { characters, createActors, type Actor } from "./characters.ts";
@@ -210,7 +211,7 @@ export function makeCrowd(
               }
             : base;
         if (Math.hypot(p.x - x, p.z - z) > (low ? 90 : 150)) continue;
-        const size = a.named ? 1 : 0.94 + (a.variant % 5) * 0.025;
+        const size = crowdHeightVariation(a.variant, a.named);
         root.position.set(p.x, heightAt(p.x, p.z), p.z);
         root.rotation.set(0, p.yaw, 0, "YXZ");
         const partnerId = dialogue.talkingTo(a.id);
