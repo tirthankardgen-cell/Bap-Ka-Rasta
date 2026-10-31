@@ -1,3 +1,4 @@
+import { showExitAd } from "../game-ads";
 import { GEARS, GEAR_LIMITS } from "./gears";
 import RoadLoading from "../RoadLoading";
 import IncidentNewspaper from "./IncidentNewspaper";
@@ -55,6 +56,10 @@ export default function Game({ onExit }: { onExit: () => void }) {
     [sound, setSound] = useState(true),
     [low, setLow] = useState(false),
     [hornActive, setHornActive] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const exitStarted = useRef(false);
+  const cancelAd = useRef<(() => void) | null>(null);
+  useEffect(() => () => cancelAd.current?.(), []);
   const hornTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     let active = true;
@@ -124,6 +129,14 @@ export default function Game({ onExit }: { onExit: () => void }) {
   }
   function exit() {
     onExit();
+  }
+  function incidentExit() {
+    if (exitStarted.current) return;
+    exitStarted.current = true;
+    setLeaving(true);
+    engine.current?.setPaused(true);
+    engine.current?.sound(false);
+    cancelAd.current = showExitAd(onExit);
   }
   function restart() {
     setStatus("ready");
@@ -331,7 +344,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
           </>
         )}
         {stats.incident?.phase === "report" && !error && (
-          <IncidentNewspaper incident={stats.incident} onExit={exit} />
+          <IncidentNewspaper incident={stats.incident} onExit={incidentExit} leaving={leaving} />
         )}
         {(status !== "driving" || error) && (
           <div className="game-overlay">

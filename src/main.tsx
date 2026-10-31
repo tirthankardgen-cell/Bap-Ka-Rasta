@@ -1,3 +1,4 @@
+import { initializeGameAds } from "./game-ads";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowUpRight, MapPin } from "lucide-react";
@@ -12,6 +13,8 @@ import Selection, { cities } from "./selection/Selection";
 
 import GameLoader from "./GameLoader";
 import { mobileFullscreen } from "./fullscreen";
+
+initializeGameAds();
 
 function App() {
   const [screen, setScreen] = useState<"home" | "city" | "vehicle" | "game">(

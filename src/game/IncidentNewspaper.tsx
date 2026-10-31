@@ -5,9 +5,11 @@ import "./incident-newspaper.css";
 export default function IncidentNewspaper({
   incident,
   onExit,
+  leaving = false,
 }: {
   incident: IncidentReport;
   onExit: () => void;
+  leaving?: boolean;
 }) {
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -77,6 +79,8 @@ export default function IncidentNewspaper({
           ref={button}
           className="incident-restart"
           onClick={onExit}
+          disabled={leaving}
+          aria-busy={leaving}
           onKeyDown={(e) => {
             if (e.key === "Tab") {
               e.preventDefault();
@@ -84,7 +88,7 @@ export default function IncidentNewspaper({
             }
           }}
         >
-          Phir se shuru <span aria-hidden="true">↗</span>
+          {leaving ? "Returning home…" : "Back to home"} <span aria-hidden="true">↗</span>
         </button>
       </section>
     </div>

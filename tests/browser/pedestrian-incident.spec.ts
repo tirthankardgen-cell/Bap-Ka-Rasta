@@ -53,7 +53,7 @@ test("serious impact locks controls, captures the scene and returns home from th
   await page.screenshot({
     path: "test-results/pedestrian-newspaper-mobile.png",
   });
-  const restart = page.getByRole("button", { name: "Phir se shuru" });
+  const restart = page.getByRole("button", { name: "Back to home" });
   await restart.focus();
   await page.keyboard.press("Tab");
   await expect(restart).toBeFocused();
