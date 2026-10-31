@@ -66,7 +66,7 @@ for (const [name, w, h, square] of [
  .tag{font-size:${22 * k}px;margin:0;line-height:1.45;max-width:42%}.pill{margin-top:${25 * k}px;background:#ffcc37;border:1.5px solid #23281f;border-radius:50px;padding:${10 * k}px ${18 * k}px;font-size:${12 * k}px;letter-spacing:1px}
  .url{margin-top:auto;font-size:${13 * k}px;letter-spacing:.7px}.label{position:absolute;right:4%;top:6%;background:#faf8f0e8;padding:8px 12px;border-radius:5px;font-size:${11 * k}px}
  ${square ? ".art{height:70%;top:30%;object-position:72% 55%}.shade{background:linear-gradient(180deg,#faf8f0 0%,#faf8f0 22%,#faf8f000 55%)}.copy{inset:5%}.mark{width:72px;height:72px}h1{font-size:100px;line-height:.9;margin:22px 0 16px}.tag{max-width:65%;font-size:23px}.pill{margin-top:18px}.url{background:#faf8f0ed;padding:10px;border-radius:5px}" : ""}
- </style><main><img class="art" src="${hero}" alt=""><div class="shade"></div><div class="copy"><img class="mark" src="${logo}" alt="BR"><h1>BAP KA<br>RASTA<span>.</span></h1><p class="tag">Apna sheher.<br>Apni sawaari.</p><span class="pill">PLAY MUMBAI · AUTO RICKSHAW</span><span class="url">bap-ka-rasta.vercel.app</span></div><span class="label">FREE-ROAM BROWSER GAME</span></main>`,
+ </style><main><img class="art" src="${hero}" alt=""><div class="shade"></div><div class="copy"><img class="mark" src="${logo}" alt="BR"><h1>BAP KA<br>RASTA<span>.</span></h1><p class="tag">Apna sheher.<br>Apni sawaari.</p><span class="pill">PLAY MUMBAI · AUTO RICKSHAW</span><span class="url">rasta.vihar.online</span></div><span class="label">FREE-ROAM BROWSER GAME</span></main>`,
     w,
     h,
     "public/brand/" + name,

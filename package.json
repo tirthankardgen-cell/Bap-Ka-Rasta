@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "A browser-based Indian street-driving game built with React, TypeScript, and Three.js. Explore Mumbai-inspired roads in an auto rickshaw with keyboard or touch controls.",
   "license": "UNLICENSED",
-  "homepage": "https://bap-ka-rasta.vercel.app",
+  "homepage": "https://rasta.vihar.online",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tirthankardgen-cell/Bap-Ka-Rasta.git"
@@ -32,7 +32,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/prerender-landing.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "playwright test",

@@ -1,5 +1,8 @@
 # Changelog
 
+- Corrected canonical, social and sitemap URLs to `rasta.vihar.online`; added image sitemap entries. The production build now prerenders the existing React landing screen and hydrates it in the browser, exposing the title and artwork before JavaScript runs while preserving client-side selection and gameplay.
+  - Verified with 81 unit tests, the production build and all 25 Playwright browser tests in Chrome. The new check covers the initial HTML, JavaScript-disabled display, domain consistency and hydration into city selection. Social cover images were regenerated with the new domain.
+
 - Rewrote and regenerated the Mumbai script as 119 clips with varied openings and two conversation topics per local. Street gossip now runs independently of the auto, fades with distance and finishes sentences before replies. Captions are limited to player-directed dialogue. Added bounded concurrent audio mixing, cooperative scene construction, cached road geometry and steadier, faster crowd motion.
 
 - Added 118 short Mumbai Hindi/Marathi voice recordings using only free ElevenLabs presets, with a new line list and voice assignments for all 1,543 people. Nearby locals exchange related question/reply clips and turn toward each other; vendors and impact reactions use matching character voices. Added asynchronous positional playback, ambience ducking, pause/mute/skip cleanup, bounded caching, an offline generator, audio verification and non-commercial free-plan attribution.

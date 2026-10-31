@@ -8,7 +8,7 @@ A single-player, browser-based 3D driving game inspired by Indian streets. Explo
 
 Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the browser and can be deployed as a static site without accounts, a backend, API keys, or a database.
 
-[Play the live demo](https://bap-ka-rasta.vercel.app) · [Browse the documentation](docs/README.md) · [Contribute](CONTRIBUTING.md) · [Get support](SUPPORT.md)
+[Play the live demo](https://rasta.vihar.online) · [Browse the documentation](docs/README.md) · [Contribute](CONTRIBUTING.md) · [Get support](SUPPORT.md)
 
 ![BR — Bap Ka Rasta: Apna sheher. Apni sawaari. Mumbai auto rickshaw browser game](public/brand/readme-cover.png)
 
@@ -115,7 +115,7 @@ Run these commands from the repository root:
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Start the Vite development server, normally on port 5173 |
-| `npm run build` | Run TypeScript checks and create the static production build in `dist/` |
+| `npm run build` | Run TypeScript checks, build to `dist/`, and prerender the landing screen for crawlers and initial display |
 | `npm run preview` | Serve the existing production build locally, normally on port 4173 |
 | `npm test` | Run simulation and pavement-layout tests |
 | `npm run test:e2e` | Run Playwright browser tests against a production build |

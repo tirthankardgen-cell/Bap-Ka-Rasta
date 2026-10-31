@@ -31,7 +31,9 @@ The covers reuse the existing generated landing artwork, composed with the canon
 
 `index.html` provides the canonical URL, description, Open Graph tags, X/Twitter large-image tags, image dimensions/alt text, icons and VideoGame structured data. `public/site.webmanifest` defines standalone presentation, app icons and unrestricted device orientation; the application handles its landscape play canvas. `robots.txt` and `sitemap.xml` describe the public landing URL. There is no service worker or offline gameplay promise.
 
-Canonical production URL: `https://bap-ka-rasta.vercel.app/`. Update the canonical, social tags, structured data, sitemap, robots and artwork URL together if the domain changes. Share platforms cache previews; their crawlers must fetch the deployed assets before a new card appears.
+Canonical production URL: `https://rasta.vihar.online/`. Update the canonical, social tags, structured data, sitemap, robots and artwork URL together if the domain changes. Share platforms cache previews; their crawlers must fetch the deployed assets before a new card appears.
+
+The production build renders `src/Landing.tsx` into `dist/index.html` using `scripts/prerender-landing.mjs`; the browser hydrates that same component. Its heading, artwork and launch control are present before JavaScript runs. Selection and gameplay stay client-rendered. The sitemap includes the landing artwork and brand images. Submit `https://rasta.vihar.online/sitemap.xml` in Search Console after deploying; these crawlability changes do not guarantee indexing.
 
 For the GitHub repository's social preview, upload `og-cover.png` in repository Settings → General → Social preview. The image is supplied here; the GitHub settings UI is not changed by committing it.
 
