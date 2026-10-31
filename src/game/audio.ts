@@ -1,19 +1,38 @@
 import { enginePitch, type Gear } from "./gears.ts";
+import { createVoiceAudio } from "./voice-audio.ts";
+import type { DialogueCue } from "./dialogue.ts";
 // Field-recorded stems, fetched only after the player's sound gesture.
-export function createStreetAudio(report: (state: string) => void) {
+export function createStreetAudio(
+  report: (state: string) => void,
+  reportVoice: (state: string, clipId: string) => void = () => {},
+) {
   let context: AudioContext | null = null,
     enabled = false,
     paused = true,
     disposed = false;
   let loading: Promise<void> | null = null;
+  let voice: ReturnType<typeof createVoiceAudio> | null = null;
+  let dialogue: DialogueCue | null = null;
+  let listener = { x: 0, z: 0, yaw: 0 };
+  let speaking = false;
   const abort = new AbortController();
   const loops = new Map<
     string,
-    { source: AudioBufferSourceNode; gain: GainNode }
+    { source: AudioBufferSourceNode; gain: GainNode; level: number }
   >();
   const shots = new Set<AudioBufferSourceNode>();
   let hornBuffer: AudioBuffer | null = null,
     lastHorn = -10;
+  function level(name: string, value: number, fade: number) {
+    const loop = loops.get(name);
+    if (!loop || !context) return;
+    loop.level = value;
+    loop.gain.gain.setTargetAtTime(value * (speaking ? 0.63 : 1), context.currentTime, fade);
+  }
+  function duck(value: boolean) {
+    speaking = value;
+    for (const [name, loop] of loops) level(name, loop.level, value ? 0.06 : 0.25);
+  }
   function crossfade(buffer: AudioBuffer) {
     const overlap = Math.min(
       Math.floor(buffer.sampleRate * 0.25),
@@ -37,6 +56,7 @@ export function createStreetAudio(report: (state: string) => void) {
   }
   function sync() {
     if (!context || disposed) return;
+    voice?.pause(paused);
     if (enabled && !paused)
       void context.resume().catch(() => report("unavailable"));
     else {
@@ -76,7 +96,8 @@ export function createStreetAudio(report: (state: string) => void) {
         source.connect(gain);
         gain.connect(context!.destination);
         source.start();
-        loops.set(name, { source, gain });
+        loops.set(name, { source, gain, level: gain.gain.value });
+        level(name, gain.gain.value, 0.06);
       }
       report("ready");
       sync();
@@ -89,13 +110,20 @@ export function createStreetAudio(report: (state: string) => void) {
   }
   return {
     enable(value: boolean) {
+      if (disposed) return false;
       enabled = value;
       try {
         if (value) {
           context ??= new AudioContext();
+          voice ??= createVoiceAudio(context, reportVoice, duck);
+          voice.enable(true);
           sync();
+          voice.cue(dialogue, listener);
           loading ??= load();
-        } else sync();
+        } else {
+          voice?.enable(false);
+          sync();
+        }
         return enabled;
       } catch {
         report("unavailable");
@@ -106,6 +134,15 @@ export function createStreetAudio(report: (state: string) => void) {
     pause(value: boolean) {
       paused = value;
       sync();
+    },
+    dialogue(cue: DialogueCue | null, position: { x: number; z: number; yaw: number }) {
+      dialogue = cue;
+      listener = position;
+      voice?.cue(cue, position);
+    },
+    clearDialogue() {
+      dialogue = null;
+      voice?.clear();
     },
     update(
       speed: number,
@@ -124,18 +161,10 @@ export function createStreetAudio(report: (state: string) => void) {
           context.currentTime,
           0.25,
         );
-        engine.gain.gain.setTargetAtTime(
-          throttle ? 0.8 : 0.5,
-          context.currentTime,
-          0.2,
-        );
+        level("engine", throttle ? 0.8 : 0.5, 0.2);
       }
-      traffic?.gain.gain.setTargetAtTime(
-        0.15 + Math.min(nearby / 12, 1) * 0.22,
-        context.currentTime,
-        0.8,
-      );
-      crowd?.gain.gain.setTargetAtTime(market * 0.3, context.currentTime, 0.8);
+      if (traffic) level("traffic", 0.15 + Math.min(nearby / 12, 1) * 0.22, 0.8);
+      if (crowd) level("market", market * 0.3, 0.8);
     },
     horn() {
       if (
@@ -183,8 +212,10 @@ export function createStreetAudio(report: (state: string) => void) {
       source.start(0, 0, Math.min(0.65, hornBuffer.duration));
     },
     dispose() {
+      if (disposed) return;
       disposed = true;
       abort.abort();
+      voice?.dispose();
       for (const { source, gain } of loops.values()) {
         source.stop();
         source.disconnect();

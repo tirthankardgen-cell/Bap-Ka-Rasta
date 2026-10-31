@@ -47,3 +47,6 @@ jobs:
 
       - name: Verify research audio and attribution
         run: python scripts/verify_audio_assets.py
+
+      - name: Verify generated Mumbai dialogue and free voice assignments
+        run: npm run voices:verify

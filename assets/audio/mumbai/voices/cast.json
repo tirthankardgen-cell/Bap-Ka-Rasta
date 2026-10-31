@@ -1,0 +1,346 @@
+{
+  "version": 1,
+  "policy": "Free account; included premade voices only. Hindi synthesis with Marathi words. These presets are not native Mumbai actors.",
+  "cast": [
+    {
+      "characterId": "sachin",
+      "characterAge": 32,
+      "gender": "male",
+      "voiceId": "iP95p4xoKVk53GoZ742B",
+      "voiceName": "Chris - Charming, Down-to-Earth",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.55,
+        "similarityBoost": 0.75
+      },
+      "direction": "Warm, relaxed Mumbai auto driver; quiet confidence and a small smile.",
+      "reason": "Grounded, warm driver; conversational mid-register male."
+    },
+    {
+      "characterId": "raju",
+      "characterAge": 58,
+      "gender": "male",
+      "voiceId": "pqHfZKP75CvOlQylNhV4",
+      "voiceName": "Bill - Wise, Mature, Balanced",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "old",
+      "settings": {
+        "stability": 0.7,
+        "similarityBoost": 0.75
+      },
+      "direction": "Affectionate older driver; weathered, unhurried, with dry humour.",
+      "reason": "Older, balanced male voice for an affectionate senior driver."
+    },
+    {
+      "characterId": "meera",
+      "characterAge": 43,
+      "gender": "female",
+      "voiceId": "hpp4J3VqNfWAUOO0d1Us",
+      "voiceName": "Bella - Professional, Bright, Warm",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.52,
+        "similarityBoost": 0.75
+      },
+      "direction": "Warm, resonant chai-stall owner; brisk and inviting, never shrill.",
+      "reason": "Bright, warm mature female voice for brisk chai-stall calls."
+    },
+    {
+      "characterId": "sameer",
+      "characterAge": 28,
+      "gender": "male",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.58,
+        "similarityBoost": 0.75
+      },
+      "direction": "Young mechanic; practical medium-low voice, clipped and reassuring.",
+      "reason": "Smooth, trustworthy male voice for a practical mechanic."
+    },
+    {
+      "characterId": "aarti",
+      "characterAge": 27,
+      "gender": "female",
+      "voiceId": "EXAVITQu4vr4xnSDxMaL",
+      "voiceName": "Sarah - Mature, Reassuring, Confident",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.48,
+        "similarityBoost": 0.75
+      },
+      "direction": "Clear young commuter; focused, lightly hurried, conversational.",
+      "reason": "Clear young female voice for a focused commuter."
+    },
+    {
+      "characterId": "imran",
+      "characterAge": 21,
+      "gender": "male",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.42,
+        "similarityBoost": 0.75
+      },
+      "direction": "Bright college student; easy banter and playful timing, no shouting.",
+      "reason": "Youthful, energetic male voice for easy college banter."
+    },
+    {
+      "characterId": "lata",
+      "characterAge": 55,
+      "gender": "female",
+      "voiceId": "pFZP5JQG7iQjIQuC4Bku",
+      "voiceName": "Lily - Velvety Actress",
+      "category": "premade",
+      "sourceAccent": "british",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.52,
+        "similarityBoost": 0.75
+      },
+      "direction": "Mature flower seller; earthy warmth and a gentle musical Marathi cadence.",
+      "reason": "Textured mature female delivery for rhythmic flower-seller calls."
+    },
+    {
+      "characterId": "patil",
+      "characterAge": 45,
+      "gender": "male",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.72,
+        "similarityBoost": 0.75
+      },
+      "direction": "Male traffic constable; grounded, firm diction and controlled authority.",
+      "reason": "Firm, clear male voice for the male traffic constable."
+    },
+    {
+      "characterId": "nilesh",
+      "characterAge": 38,
+      "gender": "male",
+      "voiceId": "bIHbv24MWmeRgasZH58o",
+      "voiceName": "Will - Relaxed Optimist",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.56,
+        "similarityBoost": 0.75
+      },
+      "direction": "Dabbawala; brisk, light and efficient, with friendly short calls.",
+      "reason": "Friendly, light male voice for efficient dabbawala exchanges."
+    },
+    {
+      "characterId": "farah",
+      "characterAge": 36,
+      "gender": "female",
+      "voiceId": "XrExE9yKIg1WjnnlVkGX",
+      "voiceName": "Matilda - Knowledgable, Professional",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.52,
+        "similarityBoost": 0.75
+      },
+      "direction": "Adult fruit seller; bright, steady market projection and easy Hindi.",
+      "reason": "Confident adult female voice for clear fruit-stall conversation."
+    },
+    {
+      "characterId": "suresh",
+      "characterAge": 61,
+      "gender": "male",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "voiceName": "George - Warm, Captivating Storyteller",
+      "category": "premade",
+      "sourceAccent": "british",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.7,
+        "similarityBoost": 0.75
+      },
+      "direction": "Older newspaper seller; lightly textured voice, short rhythmic calls.",
+      "reason": "Warm, resonant mature male voice for the newspaper seller."
+    },
+    {
+      "characterId": "pooja",
+      "characterAge": 26,
+      "gender": "female",
+      "voiceId": "EXAVITQu4vr4xnSDxMaL",
+      "voiceName": "Sarah - Mature, Reassuring, Confident",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.76,
+        "similarityBoost": 0.75
+      },
+      "direction": "Young nurse after a shift; soft, clear, practical and slightly tired.",
+      "reason": "Gentler, steady delivery of Sarah for a tired young nurse."
+    },
+    {
+      "characterId": "vikram",
+      "characterAge": 35,
+      "gender": "male",
+      "voiceId": "CwhRBWXzGAHq8TQ4Fs17",
+      "voiceName": "Roger - Laid-Back, Casual, Resonant",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.62,
+        "similarityBoost": 0.75
+      },
+      "direction": "Office commuter; contained mid-register voice, mild urgency and dry humour.",
+      "reason": "Contained, casual male voice for an office commuter."
+    },
+    {
+      "characterId": "zoya",
+      "characterAge": 22,
+      "gender": "female",
+      "voiceId": "FGY2WhTYpPnrIDTdsKH5",
+      "voiceName": "Laura - Enthusiast, Quirky Attitude",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.45,
+        "similarityBoost": 0.75
+      },
+      "direction": "Young artist; airy, curious and quietly expressive.",
+      "reason": "Expressive young female voice for an artist's curiosity."
+    },
+    {
+      "characterId": "bala",
+      "characterAge": 25,
+      "gender": "male",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "category": "premade",
+      "sourceAccent": "australian",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.45,
+        "similarityBoost": 0.75
+      },
+      "direction": "Delivery rider; energetic, quick and natural, with clear short phrases.",
+      "reason": "Quick, energetic young male voice for a delivery rider."
+    },
+    {
+      "characterId": "jyoti",
+      "characterAge": 41,
+      "gender": "female",
+      "voiceId": "Xb7hH8MSUJpSbSDYk0k2",
+      "voiceName": "Alice - Clear, Engaging Educator",
+      "category": "premade",
+      "sourceAccent": "british",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.65,
+        "similarityBoost": 0.75
+      },
+      "direction": "Safai saathi; low-mid voice, matter-of-fact warmth and deliberate speech.",
+      "reason": "Clear, mature female voice for matter-of-fact street-worker lines."
+    },
+    {
+      "characterId": "shanta",
+      "characterAge": 70,
+      "gender": "female",
+      "voiceId": "pFZP5JQG7iQjIQuC4Bku",
+      "voiceName": "Lily - Velvety Actress",
+      "category": "premade",
+      "sourceAccent": "british",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.8,
+        "similarityBoost": 0.75
+      },
+      "direction": "Older local grandmother; warm, measured and gently amused, never a frail parody.",
+      "reason": "Measured, softer delivery of Lily for the elder; an approximation, not a native elderly Marathi recording."
+    },
+    {
+      "characterId": "dev",
+      "characterAge": 30,
+      "gender": "male",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "category": "premade",
+      "sourceAccent": "british",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.55,
+        "similarityBoost": 0.75
+      },
+      "direction": "Polite photographer; light voice, clear Hindi and quiet curiosity.",
+      "reason": "Clear, steady male diction for the polite photographer."
+    },
+    {
+      "characterId": "asha",
+      "characterAge": 29,
+      "gender": "female",
+      "voiceId": "cgSgspJ2msm6clMCkdW9",
+      "voiceName": "Jessica - Playful, Bright, Warm",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "young",
+      "settings": {
+        "stability": 0.45,
+        "similarityBoost": 0.75
+      },
+      "direction": "Upbeat jogger; clear, energetic short phrases, lightly breathy without panting.",
+      "reason": "Bright, upbeat young female voice for the jogger."
+    },
+    {
+      "characterId": "ganesh",
+      "characterAge": 40,
+      "gender": "male",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "category": "premade",
+      "sourceAccent": "american",
+      "sourceLanguage": "en",
+      "sourceAge": "middle_aged",
+      "settings": {
+        "stability": 0.6,
+        "similarityBoost": 0.75
+      },
+      "direction": "Adult shop worker; resonant, practical voice and short projected requests.",
+      "reason": "Deep, resonant adult male voice for the shop worker."
+    }
+  ]
+}

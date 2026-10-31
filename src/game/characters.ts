@@ -10,6 +10,7 @@ export type Character = {
   id: string;
   name: string;
   role: string;
+  gender: "male" | "female";
   shirt: string;
   trousers: string;
   skin: string;
@@ -18,12 +19,11 @@ export type Character = {
   style?: "sari" | "kurta";
   hat?: string;
   moustache?: boolean;
-  line: string;
-  clip: string;
 };
 export const characters: Character[] = [
   {
     id: "sachin",
+    gender: "male",
     name: "Sachin",
     role: "Auto driver",
     shirt: "#ad956d",
@@ -32,11 +32,10 @@ export const characters: Character[] = [
     hair: "#25251f",
     prop: "keys",
     moustache: true,
-    line: "Chala, Mumbai! Aaj aaramat phirte hain.",
-    clip: "ignition",
   },
   {
     id: "raju",
+    gender: "male",
     name: "Raju Kaka",
     role: "Auto driver",
     shirt: "#b39a70",
@@ -45,11 +44,10 @@ export const characters: Character[] = [
     hair: "#9e9b91",
     prop: "towel",
     moustache: true,
-    line: "Arre bhau, chai piyega? Abhi banayi hai.",
-    clip: "greet_stand",
   },
   {
     id: "meera",
+    gender: "female",
     name: "Meera Tai",
     role: "Chai seller",
     shirt: "#34724c",
@@ -58,11 +56,10 @@ export const characters: Character[] = [
     hair: "#292723",
     prop: "chai",
     style: "sari",
-    line: "Bhau, cutting chai? Ekdum garam!",
-    clip: "stall_enter",
   },
   {
     id: "sameer",
+    gender: "male",
     name: "Sameer",
     role: "Mechanic",
     shirt: "#39638a",
@@ -70,11 +67,10 @@ export const characters: Character[] = [
     skin: "#b77b4d",
     hair: "#24251e",
     prop: "wrench",
-    line: "Auto ki awaaz badle toh bata dena, bhau.",
-    clip: "workshop_enter",
   },
   {
     id: "aarti",
+    gender: "female",
     name: "Aarti",
     role: "Office commuter",
     shirt: "#36628b",
@@ -83,11 +79,10 @@ export const characters: Character[] = [
     hair: "#292720",
     prop: "bag",
     style: "kurta",
-    line: "Train mil jaaye, bas. Aaj meeting hai.",
-    clip: "queue_idle",
   },
   {
     id: "imran",
+    gender: "male",
     name: "Imran",
     role: "College student",
     shirt: "#873a44",
@@ -95,11 +90,10 @@ export const characters: Character[] = [
     skin: "#b77c56",
     hair: "#22261e",
     prop: "headphones",
-    line: "Chai ke baad seedha class. Pakka!",
-    clip: "friend_idle",
   },
   {
     id: "lata",
+    gender: "female",
     name: "Lata Mavshi",
     role: "Flower seller",
     shirt: "#82528e",
@@ -108,11 +102,10 @@ export const characters: Character[] = [
     hair: "#4c4439",
     prop: "flowers",
     style: "sari",
-    line: "Taaze phool hain! Dekh lo, bhau.",
-    clip: "stall_enter",
   },
   {
     id: "patil",
+    gender: "male",
     name: "Constable Patil",
     role: "Traffic constable",
     shirt: "#f1eee2",
@@ -122,11 +115,10 @@ export const characters: Character[] = [
     prop: "whistle",
     hat: "#eee9da",
     moustache: true,
-    line: "Crossing khaali rakho, bhau.",
-    clip: "blocked_crossing",
   },
   {
     id: "nilesh",
+    gender: "male",
     name: "Nilesh",
     role: "Dabbawala",
     shirt: "#f1eee0",
@@ -136,11 +128,10 @@ export const characters: Character[] = [
     prop: "tiffins",
     hat: "#f3eee0",
     moustache: true,
-    line: "Dabba tayyar. Chala, nikalte hain!",
-    clip: "tiffin_sort",
   },
   {
     id: "farah",
+    gender: "female",
     name: "Farah",
     role: "Fruit seller",
     shirt: "#287b79",
@@ -149,11 +140,10 @@ export const characters: Character[] = [
     hair: "#2f2923",
     prop: "fruit",
     style: "kurta",
-    line: "Aaram se chuno. Sab taaza hai.",
-    clip: "stall_idle",
   },
   {
     id: "suresh",
+    gender: "male",
     name: "Suresh",
     role: "Newspaper seller",
     shirt: "#bca784",
@@ -162,11 +152,10 @@ export const characters: Character[] = [
     hair: "#b6b1a3",
     prop: "paper",
     moustache: true,
-    line: "Aaj ka akhbaar! Paper le lo!",
-    clip: "paper_enter",
   },
   {
     id: "pooja",
+    gender: "female",
     name: "Pooja",
     role: "Nurse",
     shirt: "#a78bc0",
@@ -174,11 +163,10 @@ export const characters: Character[] = [
     skin: "#c28c63",
     hair: "#262920",
     prop: "badge",
-    line: "Shift khatam. Ab bas ghar jaana hai.",
-    clip: "queue_idle",
   },
   {
     id: "vikram",
+    gender: "male",
     name: "Vikram",
     role: "Office commuter",
     shirt: "#90b4cf",
@@ -186,11 +174,10 @@ export const characters: Character[] = [
     skin: "#a97853",
     hair: "#282a24",
     prop: "glasses",
-    line: "Meeting se pehle ek chai mil jaaye.",
-    clip: "queue_idle",
   },
   {
     id: "zoya",
+    gender: "female",
     name: "Zoya",
     role: "Artist",
     shirt: "#b75d3d",
@@ -198,11 +185,10 @@ export const characters: Character[] = [
     skin: "#b68058",
     hair: "#292a23",
     prop: "sketchbook",
-    line: "Woh balcony dekho. Kitni sundar hai!",
-    clip: "sketch_idle",
   },
   {
     id: "bala",
+    gender: "male",
     name: "Bala",
     role: "Delivery rider",
     shirt: "#da8433",
@@ -211,11 +197,10 @@ export const characters: Character[] = [
     hair: "#222821",
     prop: "delivery",
     hat: "#324455",
-    line: "Bhau, address isi building ka hai na?",
-    clip: "delivery_wait",
   },
   {
     id: "jyoti",
+    gender: "female",
     name: "Jyoti",
     role: "Safai saathi",
     shirt: "#4380a2",
@@ -223,11 +208,10 @@ export const characters: Character[] = [
     skin: "#9f704d",
     hair: "#272a22",
     prop: "broom",
-    line: "Zara side, bhau. Safai karni hai.",
-    clip: "sweep_wait",
   },
   {
     id: "shanta",
+    gender: "female",
     name: "Shanta Aaji",
     role: "Local resident",
     shirt: "#7f9cb8",
@@ -236,11 +220,10 @@ export const characters: Character[] = [
     hair: "#c2bdb3",
     prop: "shopping",
     style: "sari",
-    line: "Aaj hawa achhi hai. Thoda baithte hain.",
-    clip: "bench_idle",
   },
   {
     id: "dev",
+    gender: "male",
     name: "Dev",
     role: "Photographer",
     shirt: "#617b55",
@@ -248,11 +231,10 @@ export const characters: Character[] = [
     skin: "#b8825c",
     hair: "#393027",
     prop: "camera",
-    line: "Ek photo aur. Yeh building kamaal ki hai!",
-    clip: "photo_idle",
   },
   {
     id: "asha",
+    gender: "female",
     name: "Asha",
     role: "Jogger",
     shirt: "#8b56a3",
@@ -260,11 +242,10 @@ export const characters: Character[] = [
     skin: "#b98157",
     hair: "#292b25",
     prop: "bottle",
-    line: "Paani break. Aaj dhoop tez hai.",
-    clip: "water_break",
   },
   {
     id: "ganesh",
+    gender: "male",
     name: "Ganesh",
     role: "Shop worker",
     shirt: "#b58a46",
@@ -273,8 +254,6 @@ export const characters: Character[] = [
     hair: "#302b23",
     prop: "crate",
     moustache: true,
-    line: "Maal aa gaya. Idhar rakh doon?",
-    clip: "stock_arrived",
   },
 ];
 export type District =
@@ -535,7 +514,7 @@ const surnames =
 export function actorIdentity(a: Actor) {
   const c = characters[a.character];
   if (a.named) return { name: c.name, role: c.role };
-  const names = [2, 4, 6, 9, 11, 13, 15, 16, 18].includes(a.character)
+  const names = c.gender === "female"
     ? femaleNames
     : maleNames;
   return {

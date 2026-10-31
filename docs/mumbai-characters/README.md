@@ -1,6 +1,6 @@
 # Mumbai characters, crowd variety and voice production
 
-**Implementation update:** all 20 designs now have Blender-authored models based on the reference boards below, replacing the old box-part people. Sachin has a matching seated body and first-person hands; the 19 named locals and district crowds use shared animated models with distance-based detail. The guided opening, skip/pause/reduced-motion support, crowd movement, collisions and subtitles remain in place. Constable Patil is male. Character recordings remain unlinked until audio is supplied; no missing voice assets are fetched. Advanced schedules, full on-foot movement, saved camera preferences, passenger jobs, shop purchases and repairs are still future work. See the [Blender asset library and rebuild guide](../../assets/characters/mumbai/README.md) and [playable guide](../Mumbai-Playable.md).
+**Implementation update:** all 20 designs have Blender-authored models and **118 recorded Mumbai voice lines**. Sachin, the 19 named locals and all 1,523 background people have gender-matched voice assignments. Short Hindi/Marathi exchanges, nearby vendor calls and character-specific reactions play from downloaded MP3s. Neighbours answer each other and turn toward their conversation partner. Pause, mute, skip and missing-file fallbacks preserve free roaming. The free-account voice presets approximate the character briefs below; they are not native Mumbai actors. See the [new line list](VOICE-LINES.md), [every person's assignment](people-voices.csv), [voice production guide](../../assets/audio/mumbai/voices/README.md), [Blender library](../../assets/characters/mumbai/README.md), and [playable guide](../Mumbai-Playable.md). Advanced schedules, full on-foot movement, saved camera preferences, passenger jobs, purchases and repairs remain future work.
 
 ## Visual references
 
@@ -19,9 +19,9 @@ Start in a fictional Mumbai suburban auto stand beside a chai stall, chawl front
 | State / timing | View and action | Interaction / voice |
 | --- | --- | --- |
 | Ready screen | Existing city/vehicle selection leads to `Chal Chala`. Load nearby scene, entry animation and first two clips. | This tap also resumes browser audio; never depend on autoplay before a gesture. Missing voice files must not block play. |
-| Approach, ~0–4 s | Driver POV on pavement, khaki cuff and keys; auto 3–4 m ahead. Short guided walk on a protected path. | Raju: “Kay mhantos, Sachin? Aaj kuthe phiraycha?” One greeting only. `Skip intro` always visible. |
-| Enter, ~4–6 s | Turn toward the pavement-side open cabin, hand grips frame, foot steps onto floorboard, body settles onto seat. | Keys, footsteps, seat rustle; no car-door slam. Traffic yields at the reserved exit. |
-| Seated, ~6–8 s | 1P: hands on handlebar, dashboard and windscreen. Ignition starts actual engine audio. | Sachin: “Chala, Mumbai! Aaj aaramat phirte hain.” Keep the engine audible without covering speech. |
+| Approach, ~0–3 s | Driver POV on pavement, khaki cuff and keys; auto 3–4 m ahead. Short guided walk on a protected path. | Raju: “Arre Sachin bhau! Aaj kidhar ki sawaari?” One greeting only. `Skip intro` always visible. |
+| Enter, ~3–6 s | Turn toward the pavement-side open cabin, hand grips frame, foot steps onto floorboard, body settles onto seat. | Raju's greeting finishes before Sachin's reply. Traffic yields at the reserved exit. |
+| Seated, ~6–8 s | 1P: hands on handlebar, dashboard and windscreen. | Sachin: “Chala, Mumbai! Aaram se chalenge, maza aayega.” The engine ducks modestly under speech. |
 | Camera handoff, ~8–9 s | Brief exterior shot via an unobstructed side route or short fade, then default 3P. | Hold vehicle stationary until handoff completes. Honor a saved camera preference on later drives; `C`/camera button remains available. |
 | Driving | Enable throttle, steering, brake and horn; restore normal traffic reservations. | Free roam begins. No mission timer or compulsory passenger task. |
 
@@ -31,7 +31,7 @@ First visit: play the short intro. Later visits: offer `Walk to auto` and `Seedh
 
 ## Main cast and voice briefs
 
-Use the descriptions as ElevenLabs voice-selection/design prompts. Each is an original voice, natural Indian delivery, conversational and close-mic, without music, reverb or traffic baked into the recording. Keep one stable voice per character across all takes. Names describe fictional people, not celebrity impressions.
+The descriptions below are artistic voice targets. The [actual casting](../../assets/audio/mumbai/voices/cast.json) uses only included free ElevenLabs presets, with consistent settings per character and clean speech without added music, reverb or traffic. Names describe fictional people, not celebrity impressions. Eighteen presets cover twenty roles; the limited free female selection means Aarti/Pooja share Sarah and Lata/Shanta share Lily with different delivery settings.
 
 | ID / character | Design and street role | Voice prompt / delivery |
 | --- | --- | --- |
@@ -65,7 +65,7 @@ These are visual archetypes for individually named background variants of the sa
 
 ## Every few blocks should feel different
 
-Do not increase all 738 current pedestrian agents into expensive detailed actors. First replace the repeated look with shared rigs and local activity groups. Density means busy pavement edges and queues, not filling the driving lane with obstacles.
+Do not increase all 1,542 pedestrian agents into expensive detailed actors. Use shared rigs and local activity groups. Density means busy pavement edges and queues, not filling the driving lane with obstacles.
 
 | Neighbourhood kit | Crowd mix / motion | Distinct scene details | Example voices |
 | --- | --- | --- | --- |
@@ -90,23 +90,17 @@ Proposed population rules:
 - Budget detailed animated NPCs across the whole view (initial target 24 desktop / 12 low mode), with shared-material simplified actors farther away. Reuse rigs, instance distant figures, avoid per-NPC React state and individual shadow maps. Keep simulation identities stable as visual LOD changes.
 - Rotate activity states rather than teleporting outfits: browsing → paying → leaving; waiting → crossing → walking. Spawn/despawn only outside view at occluded entrances. Alternate a handful of authored events per district with long cooldowns.
 
-## Voice pack: what to generate
+## Recorded voice pack
 
-[voice-lines.csv](voice-lines.csv) contains **56 individual clips**: four for each main character and two for each additional character. Each row has a stable filename, Roman-script subtitle, Devanagari TTS text, English meaning, performance direction, exact event, cooldown and priority. `stage` separates **intro**, **ambient**, and **future_interaction** so recorded lines never imply an unimplemented fare/repair system is already available. All statuses start `planned`.
+[voice-lines.csv](voice-lines.csv) contains **118 recorded clips**, with stable IDs, Roman subtitles, Devanagari synthesis text, English meanings, performance direction, free voice IDs, durations and deployed paths. The [readable list](VOICE-LINES.md) groups them by character. The [people register](people-voices.csv) maps all 1,543 people, including the player, to their voice profile and available lines.
 
-First recording batch: Sachin and Raju's intro rows, then the other main-cast rows (32 main-cast clips total). Add the 24 street-crowd lines once placement/activity variety works. Do not play all 56 in one drive or force dialogue every block. Passenger destination/drop-off and workshop service lines are reserved for later explicit interaction features.
+Sachin has the opening and three contextual comments. Raju has the other opening line, two ambient lines, a reaction and a conversation pair. Every other local has three ambient lines, a reaction and a conversation pair. Lines last roughly 2–5 seconds. `chat` and `reply` use matching topics so neighbouring people answer coherently. The pack does not add passenger or shop mechanics.
 
 ### ElevenLabs workflow
 
-1. Create/select an original voice using each character brief. Audition the same phrase containing “Chala”, “thamba” and “Mumbai” before generating the whole pack. Use a model currently supporting the required Hindi/Marathi delivery; check the selected model's language list in your account. Do not assume every model handles both languages equally.
-2. Paste only `tts_text` for the line. Keep the voice brief and `direction` out of the spoken text. If using a model with supported performance controls, add direction through those controls; do not rely on unsupported bracket tags. Roman `subtitle` is for the screen, not necessarily the best phonetic TTS input.
-3. Produce two takes per clip with a consistent voice/model/settings combination. Listen for natural code-switching, word stress and the difference between “thamba” and Hindi alternatives. Ask a Marathi speaker to review the first set before generating the full batch; the scripts are draft recording copy.
-4. Keep clean lossless masters where available: mono WAV, preferably 48 kHz, 16/24-bit. If only compressed export is available, preserve that original; conversion to WAV does not restore lost detail. No music, engine, traffic, reverb or horn in dialogue files.
-5. Trim to about 80–150 ms of lead-in and a short natural tail, with no clipped consonants. Aim for consistent perceived loudness (starting reference around -18 LUFS integrated, true peak ≤ -1 dBTP; very short clips need listening checks). Do not normalize quiet conversation into shouting.
-6. Put approved runtime MP3s (mono, 128 kbps is adequate for speech) at `public/audio/mumbai/voices/<character_id>/<filename>`. Keep master takes under `assets/audio/mumbai/voices/<character_id>/` if storing them in this repo; exclude rejected takes. Paths in the CSV describe future assets; they are not existing playable files.
-7. Record the selected voice ID, model, settings, generation date and usage/license details in a production manifest when assets arrive. Keep API keys out of the repo. Update the public audio credits for the chosen voice assets. Change row status to `recorded`, then `approved` after listening and implementation checks.
+Use the [production guide](../../assets/audio/mumbai/voices/README.md) and `npm run voices:generate`, then rebuild the catalogue and verify the assets. The generator reads the ignored `.env.local`, uses the current `eleven_v4` model with Hindi/Marathi support, and refuses paid/library voices or gender mismatches. It preserves downloaded originals and resumes completed work without spending credits again. Direction is separate from spoken text.
 
-Do not generate live speech during gameplay: use these fixed exported clips. No ElevenLabs API integration or account access is needed for this planning pack.
+No live speech is generated during gameplay. The SDK is used only by the offline production script. Free-generated audio requires non-commercial use and ElevenLabs attribution; see the deployed [audio credits](../../public/audio/credits.html).
 
 ### Marathi seasoning, with understandable context
 
@@ -127,20 +121,19 @@ Mostly natural Hinglish, with perhaps one short Marathi phrase per line. Use fam
 
 ### Playback rules and acceptance criteria
 
-- Own one foreground voice channel. Suggested priorities: nearby immediate warning 90, scripted intro 80, explicit interaction 70, idle self-comment 40, background vendor 20. Queue at most one relevant interaction; discard stale ambient calls, never replay a warning after the hazard has passed.
-- Ambient eligibility: speaker within 8–14 m, plausible line of sight, player moving slowly (<12 km/h) or stopped, no foreground line, event entered from outside the trigger. Market vendors need a 20 m exit before rearming. No shouting through buildings or repeated calls each frame.
-- Outside the scripted intro, keep a global speech gap of at least 8 s after a clip ends; character gap at least 35 s, same-line cooldown from the CSV (typically 90–180 s), district call cooldown 20 s. Warning may interrupt ambient, but must also have a hazard edge and cooldown. Roll eligibility at most once on entry; never roll every frame until it eventually triggers.
-- Blend several variants per recurring event before shipping: the pack establishes characters; follow-up production should expand high-frequency triggers to three or more lines. Until then, stay quiet when a line is on cooldown.
-- Intro lines follow the state timeline without overlap (at least 0.3 s between clips; delay the next beat if a take is longer), rather than the ambient 8 s gap. Intro lines are non-spatial and centered; nearby street voices are positional and attenuated, passenger voices belong to the cabin. Driver self-talk is quiet and centered. Never couple dialogue rate to horn presses.
-- Duck ambience/engine modestly (~3–5 dB) during speech, preserving road cues. Separate speech volume, subtitles, and overall mute; muted sound must not hide subtitles. Audio stays default-on after `Chal Chala`, subject to browser gesture requirements.
-- Verification: first start/skip/retry/exit works without double voices; no animation resumes after disposal; 1P/BACK remain inside at 65 km/h and in turns; saved view survives handoff; no two foreground speakers; no cloned named NPCs; no identical outfits on adjacent blocks; crossing/footpath gaps remain traversable; missing voice assets fall back to silence and subtitles.
+- One foreground voice channel, with warning/intro/driver/crowd priorities of 90/80/40/20. An actual mild impact interrupts chatter and discards the pending reply.
+- Conversation partners must be stopped, within 5.5 m, and have a clear pavement path. The listener must be within 16 m and moving below 12 km/h. Replies are topic-matched and use the responding person's own identity.
+- Related turns have a 0.65 s gap after the caption/audio allowance. Exchanges have an 8–12 s cooldown, each actor 45 s and each line 100 s. Selection is throttled; it does not scan and schedule new dialogue every animation frame.
+- Opening clips fit the existing ten-second timeline. Intro/driver speech is centred; street voices are positional. Speech is not coupled to horn presses.
+- Engine/ambience duck by about 4 dB during speech. Pause suspends the shared audio context, mute stops speech while keeping subtitles, and skip/reset/exit abort pending voices.
+- Missing files, slow downloads and disposal races fall back to silence without blocking play. At most 24 decoded voice clips are cached. The current line and its related reply are the only speculative voice downloads.
 
 ## Delivery order
 
-1. **Reference pack and Blender cast complete:** concept images, character/voice briefs, crowd design and recording sheet. The current implementation covers the opening, all twenty Blender character designs and district crowd variety; recorded dialogue is pending.
-2. **Opening prototype:** one stand, Sachin + Raju + Meera, guided walk/entry, skip/reduced-motion/touch support, safe camera handoff. Integrate approved intro clips when provided.
-3. **Crowd variety:** implement six neighbourhood kits, 12 shared-rig crowd archetypes, variant selection, seating/queues/browsing and LOD. Review three consecutive blocks and real-phone performance before raising density.
-4. **Reactive speech:** add proximity/event scheduler, subtitles, cooldowns and audio settings; wire approved ambient lines. Keep future interaction rows disabled.
+1. **Reference pack and Blender cast complete:** concept images, twenty models, crowd design and recording sheet.
+2. **Voiced opening complete:** Sachin and Raju, guided entry, skip/pause/reduced-motion support and safe camera handoff.
+3. **Crowd variety:** shared models, district mixes, walking/browsing/work activity and distance-based detail. Full schedules and real-phone performance remain follow-up work.
+4. **Recorded dialogue complete:** nearby exchanges, street calls, reactions, subtitles, cooldowns and shared audio lifecycle.
 5. **Optional later interactions:** passenger rides, workshop service and purchases, only after their gameplay states exist. Free roaming remains available throughout.
 
 See [background identities](background-names.md) for examples of distinct names assigned to each existing character type. Main-cast names stay unchanged.

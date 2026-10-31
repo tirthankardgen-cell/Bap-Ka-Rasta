@@ -11,6 +11,7 @@ import {
 import { driverHands } from "./intro-visuals";
 import { characterPlayerPart, type CharacterModels } from "./character-models";
 import { createStreetAudio } from "./audio";
+import { introDialogue, type DialogueCue } from "./dialogue";
 import * as THREE from "three";
 import { atmosphere } from "./atmosphere";
 import { makeWorld, autoRickshaw, trafficVisuals } from "./world";
@@ -127,10 +128,18 @@ export function createEngine(
   let audioStatus = "idle";
   let sound = false,
     lastHorn = 0;
-  const streetAudio = createStreetAudio((status) => {
-    audioStatus = status;
-    renderer.domElement.dataset.audioStatus = status;
-  });
+  let dialogueClock = 0;
+  let currentDialogue: DialogueCue | null = null;
+  const streetAudio = createStreetAudio(
+    (status) => {
+      audioStatus = status;
+      renderer.domElement.dataset.audioStatus = status;
+    },
+    (status, clipId) => {
+      renderer.domElement.dataset.voiceStatus = status;
+      renderer.domElement.dataset.voiceClip = clipId;
+    },
+  );
   let incident: IncidentReport | null = null;
   let incidentTime = 0;
   const incidentCameraStart = new THREE.Vector3();
@@ -146,12 +155,12 @@ export function createEngine(
     lookTarget = new THREE.Vector3();
   function publish() {
     const frame = introFrame(introTime, reducedMotion);
-    const greeting = world.crowd.greeting(
-      state.time,
-      state.x,
-      state.z,
-      state.speed,
+    if (!introStarted || incident) currentDialogue = null;
+    else if (introActive) currentDialogue = introDialogue(introTime);
+    else if (!paused) currentDialogue = world.crowd.greeting(
+      state.time, state.x, state.z, state.speed, dialogueClock, state.signal,
     );
+    streetAudio.dialogue(currentDialogue, state);
     const stage = !introStarted ? "ready" : introActive ? frame.stage : "done";
     renderer.domElement.dataset.introStage = stage;
     renderer.domElement.dataset.characterCount = String(world.crowd.count);
@@ -166,10 +175,10 @@ export function createEngine(
       incident,
       introStage: stage,
       introFade: introActive ? frame.fade : 0,
-      speaker: introActive ? frame.speaker : greeting.name,
-      subtitle: introActive ? frame.caption : greeting.text,
-      meaning: introActive ? frame.meaning : "",
-      clipId: introActive ? frame.clipId : greeting.clipId,
+      speaker: currentDialogue?.name ?? "",
+      subtitle: currentDialogue?.line.subtitle ?? "",
+      meaning: currentDialogue?.line.meaning ?? "",
+      clipId: currentDialogue?.line.id ?? "",
       cameraMode,
       audioStatus,
       speed: state.speed * 3.6,
@@ -270,6 +279,9 @@ export function createEngine(
   }
   function finishIntro() {
     if (!introActive && introStarted) return;
+    streetAudio.clearDialogue();
+    world.crowd.clearDialogue(dialogueClock + 3);
+    currentDialogue = null;
     introActive = false;
     introStarted = true;
     state.time = Math.max(state.time, introTime);
@@ -468,6 +480,9 @@ export function createEngine(
   function reset() {
     if (incident) return;
     if (introActive) finishIntro();
+    streetAudio.clearDialogue();
+    world.crowd.clearDialogue(dialogueClock + 3);
+    currentDialogue = null;
     resetDrive(state, traffic);
     world.cones.reset();
     clear();
@@ -493,6 +508,9 @@ export function createEngine(
     clear();
     state.speed = 0;
     accumulator = 0;
+    streetAudio.clearDialogue();
+    world.crowd.clearDialogue();
+    currentDialogue = null;
     streetAudio.pause(true);
     publish();
   }
@@ -521,6 +539,7 @@ export function createEngine(
     const elapsed = Math.max(0, (now - last) / 1000);
     const dt = Math.min(elapsed, 0.1);
     last = now;
+    if (!paused && !incident && introStarted) dialogueClock += Math.min(elapsed, 0.5);
     look.update(elapsed);
     if (incident) {
       if (incident.phase === "cinematic" && !document.hidden) {

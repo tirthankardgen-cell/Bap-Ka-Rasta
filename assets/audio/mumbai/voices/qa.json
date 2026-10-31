@@ -1,0 +1,108 @@
+{
+  "checkedOn": "2026-10-31",
+  "method": "Automated transcription of 24 normalized runtime clips, including one from every character and extra colloquial Marathi samples.",
+  "model": "scribe_v2",
+  "language": "hin",
+  "languageProbability": 1,
+  "samples": [
+    {
+      "id": "mum_sachin_ignition_01",
+      "text": "चला, मुंबई! आराम से चलेंगे, मज़ा आएगा।"
+    },
+    {
+      "id": "mum_raju_greet_intro_01",
+      "text": "अरे सचिन भाऊ! आज किधर की सवारी?"
+    },
+    {
+      "id": "mum_meera_ambient_01",
+      "text": "कटिंग चाय, भाऊ? गरम है, आराम से पीना।"
+    },
+    {
+      "id": "mum_sameer_ambient_01",
+      "text": "इंजन की आवाज़ सुन, भाऊ। अपना ऑटो एकदम फिट है।"
+    },
+    {
+      "id": "mum_aarti_ambient_01",
+      "text": "भाऊ, ट्रेन मिल जाए बस। मीटिंग में लेट नहीं होना।"
+    },
+    {
+      "id": "mum_imran_ambient_01",
+      "text": "चला, चाय पीते हैं। क्लास में अभी टाइम है!"
+    },
+    {
+      "id": "mum_lata_ambient_01",
+      "text": "ताज़े फूल ले लो, ताई! मोगरा एकदम मस्त है।"
+    },
+    {
+      "id": "mum_patil_ambient_01",
+      "text": "भाऊ, सिग्नल का ध्यान रखो। सबको घर जाना है।"
+    },
+    {
+      "id": "mum_nilesh_ambient_01",
+      "text": "डब्बे तैयार, भाऊ! चला, टाइम पे पहुँचाना है।"
+    },
+    {
+      "id": "mum_farah_ambient_01",
+      "text": "सेब, केले, सब ताज़ा है! देख लो, भाऊ।"
+    },
+    {
+      "id": "mum_suresh_ambient_01",
+      "text": "आज का अख़बार, भाऊ! ताज़ी ख़बर पढ़ लो।"
+    },
+    {
+      "id": "mum_pooja_ambient_01",
+      "text": "शिफ़्ट ख़त्म, भाऊ। अब घर की चाय चाहिए बस।"
+    },
+    {
+      "id": "mum_vikram_ambient_01",
+      "text": "मीटिंग से पहले चाय मिल जाए, भाऊ। फिर सब सेट है।"
+    },
+    {
+      "id": "mum_zoya_ambient_01",
+      "text": "वो बालकनी देखो, भाऊ। कितनी मस्त डिज़ाइन है!"
+    },
+    {
+      "id": "mum_bala_ambient_01",
+      "text": "भाऊ, यही बिल्डिंग है ना? एड्रेस तो इधर का है।"
+    },
+    {
+      "id": "mum_jyoti_ambient_01",
+      "text": "ज़रा साइड, भाऊ। सफ़ाई हो जाए तो सबको अच्छा लगेगा।"
+    },
+    {
+      "id": "mum_shanta_ambient_01",
+      "text": "आरामात, बेटा। मुंबई कहीं भागी नहीं जा रही।"
+    },
+    {
+      "id": "mum_dev_ambient_01",
+      "text": "एक फ़ोटो और, भाऊ। ये बिल्डिंग मस्त आ रही है!"
+    },
+    {
+      "id": "mum_asha_ambient_01",
+      "text": "बस एक चक्कर और। फिर मस्त कटिंग चाय!"
+    },
+    {
+      "id": "mum_ganesh_ambient_01",
+      "text": "माल आ गया, भाऊ। चला, ये पेटी अंदर रखते हैं।"
+    },
+    {
+      "id": "mum_raju_ambient_01",
+      "text": "भाऊ, तुला क्या बोलूँ? कटिंग चाय से दिन बनता है।"
+    },
+    {
+      "id": "mum_raju_ambient_02",
+      "text": "इतनी चिक-चिक मत कर, भाऊ। दो मिनट आराम कर!"
+    },
+    {
+      "id": "mum_aarti_ambient_02",
+      "text": "थांबा ज़रा, बैग की चेन खुली रह गई!"
+    },
+    {
+      "id": "mum_shanta_warning_01",
+      "text": "अरे भाऊ, आराम से! आजी को भी घर पहुँचना है।"
+    }
+  ],
+  "transcript": "चला Mumbai आराम से चलेंगे, मजा आएगा। अरे Sachin भाऊ आज किधर की सवारी? Cutting चाय भाऊ गरम है, आराम से पीना। Engine की आवाज़ सुन भाऊ, अपना auto एकदम fit है। भाऊ train मिल जाए बस, meeting में late नहीं होना। चला चाय पीते हैं, class में अभी time है। ताजे फूल ले लो ताई, मोगरा एकदम मस्त है। भाऊ signal का ध्यान रखो, सबको घर जाना है। डब्बे तैयार भाऊ चला time पर पहुंचाना है। सेब, केले सब ताजा है। देख लो भाऊ। आज का अखबार भाऊ ताज़ी खबर पढ़ लो। Shift खत्म भाऊ अब घर की चाय चाहिए बस। Meeting से पहले चाय मिल जाए भाऊ फिर सब set है। वो balcony देखो भाऊ कितनी मस्त design है। भाऊ यही building है ना? Address तो इधर का है। ज़रा side भाऊ सफाई हो जाए तो सबको अच्छा लगेगा। आरामात बेटा Mumbai कहीं भागी नहीं जा रही। एक photo और भाऊ ये building मस्त आ रही है। बस एक चक्कर और फिर मस्त cutting चाय। माल आ गया भाऊ चला ये पेटी अंदर रखते हैं। भाऊ तुला क्या बोलूं? Cutting चाय से दिन बनता है। इतनी चिक-चिक मत कर भाऊ। दो minute आराम कर। थांबा ज़रा bag की chain खुली रह गई। अरे भाऊ आराम से आजी को भी घर पहुंचना है।",
+  "review": "The transcript preserves the intended meaning of the sampled lines, including bhau, chala, tai, tula, thamba, aaramat, aaji and chik-chik. English loanwords are sometimes transcribed in Latin script.",
+  "limits": "Transcription is a speech-content check, not a native-accent certification or a human listening review. The remaining files are covered by full MP3 decoding, manifest and duration checks."
+}

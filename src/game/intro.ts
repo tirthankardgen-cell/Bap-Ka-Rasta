@@ -1,4 +1,5 @@
 import { SPAWN } from "./network.ts";
+import { introDialogue } from "./dialogue.ts";
 export const INTRO_DURATION = 10;
 export type IntroStage =
   | "ready"
@@ -14,6 +15,7 @@ const smooth = (x: number) => {
 const mix = (a: number, b: number, t: number) => a + (b - a) * smooth(t);
 export function introFrame(time: number, reducedMotion = false) {
   const t = Math.max(0, time);
+  const dialogue = introDialogue(t);
   const stage: IntroStage =
     t < 3
       ? "approach"
@@ -51,16 +53,10 @@ export function introFrame(time: number, reducedMotion = false) {
     z,
     fade: Math.max(0, fade),
     exterior: t >= 9,
-    speaker: t < 6 ? "Raju Kaka" : "Sachin",
-    caption:
-      t < 6
-        ? "Kay mhantos, Sachin? Aaj kuthe phiraycha?"
-        : "Chala, Mumbai! Aaj aaramat phirte hain.",
-    meaning:
-      t < 6
-        ? "How’s it going, Sachin? Where shall we roam today?"
-        : "Let’s go, Mumbai! An easy drive today.",
-    clipId: t < 6 ? "mum_raju_greet_intro_01" : "mum_sachin_ignition_01",
+    speaker: dialogue.name,
+    caption: dialogue.line.subtitle,
+    meaning: dialogue.line.meaning,
+    clipId: dialogue.line.id,
   };
 }
 export function advanceIntro(time: number, delta: number, paused: boolean) {

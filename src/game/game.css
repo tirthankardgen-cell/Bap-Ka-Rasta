@@ -566,6 +566,9 @@
   color: #c5d0bf;
   font-size: 11px;
 }
+.game[data-stage="done"] .character-subtitle {
+  bottom: max(210px, calc(var(--play-safe-bottom, 0px) + 185px));
+}
 .intro-fade {
   position: absolute;
   inset: 0;
@@ -593,6 +596,16 @@
     transform: none;
     bottom: 24px;
     max-width: 45cqw;
+  }
+  .game[data-stage="done"] .character-subtitle {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: max(142px, calc(var(--play-safe-bottom, 0px) + 130px));
+    max-width: min(560px, 88cqw);
+    padding: 8px 14px;
+    gap: 3px;
+    font-size: 12px;
   }
 }
 @container playfield (max-height: 500px) and (min-width: 500px) {

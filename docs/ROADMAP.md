@@ -9,7 +9,7 @@ The current build provides:
 - Landing, city selection, and vehicle selection screens.
 - Free driving through an authored South Mumbai-inspired street network.
 - An auto rickshaw, NPC traffic, pedestrians, crossings, and roadside activity.
-- A skippable driver-entry opening, twenty character designs, neighbourhood crowd variety and text greetings; character audio recording/integration is pending.
+- A skippable voiced driver-entry opening, twenty character designs, neighbourhood crowd variety and 118 short Mumbai recordings, including nearby conversations and character-specific reactions.
 - Keyboard and touch input, pause/resume, safe reset, sound, and graphics controls.
 - Recorded engine, horn, traffic, and market audio with attribution.
 - Simulation/layout tests, browser flows, and a static production build.

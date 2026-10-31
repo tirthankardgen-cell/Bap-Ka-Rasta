@@ -1,0 +1,72 @@
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { characters, createActors } from "../../src/game/characters.ts";
+import { voiceLines } from "../../src/game/voice-lines.generated.ts";
+import { recordingLines } from "./dialogue.mjs";
+import { freeCast } from "./free-cast.mjs";
+
+const root = fileURLToPath(new URL("../../", import.meta.url));
+const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
+const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const script = recordingLines();
+const manifest = await readJson("assets/audio/mumbai/voices/manifest.json");
+const { cast } = await readJson("assets/audio/mumbai/voices/cast.json");
+assert.equal(manifest.accountTier, "free");
+assert.equal(cast.length, characters.length);
+assert.equal(manifest.clips.length, script.length);
+assert.equal(new Set(manifest.clips.map((clip) => clip.id)).size, script.length);
+assert.equal(voiceLines.length, script.length);
+const clips = new Map(manifest.clips.map((clip) => [clip.id, clip]));
+const runtime = new Map(voiceLines.map((line) => [line.id, line]));
+for (const character of characters) {
+  const voice = cast.find((voice) => voice.characterId === character.id);
+  assert.ok(voice, `${character.id}: missing cast`);
+  assert.equal(voice.gender, character.gender, `${character.id}: wrong voice gender`);
+  assert.equal(voice.category, "premade", `${character.id}: paid/library voice is forbidden`);
+  assert.equal(voice.voiceId, freeCast[character.id][0]);
+  if (character.id !== "sachin") {
+    for (const event of ["ambient", "warning", "chat", "reply"])
+      assert.ok(script.some((line) => line.characterId === character.id && line.event === event), `${character.id}: missing ${event}`);
+  }
+}
+for (const actor of createActors()) assert.ok(cast.some((voice) => voice.characterId === characters[actor.character].id));
+for (const line of script) {
+  const clip = clips.get(line.id), game = runtime.get(line.id);
+  assert.ok(clip && game, `${line.id}: missing recording or runtime entry`);
+  assert.equal(clip.text, line.text);
+  assert.equal(clip.voiceId, freeCast[line.characterId][0]);
+  assert.equal(clip.voiceSettings.stability, freeCast[line.characterId][1]);
+  assert.equal(clip.modelId, "eleven_v4");
+  assert.equal(game.subtitle, line.subtitle);
+  assert.equal(game.meaning, line.meaning);
+  assert.equal(game.topic, line.topic);
+  assert.equal(game.duration, clip.duration);
+  assert.equal(game.url, "/" + clip.url);
+  assert.equal(clip.url, `audio/mumbai/voices/${line.characterId}/${line.id}.mp3`);
+  assert.equal(clip.masterPath, `assets/audio/mumbai/voices/masters/${line.characterId}/${line.id}.mp3`);
+  assert.ok(line.subtitle.split(/\s+/).length <= 13, `${line.id}: keep the line short`);
+  assert.ok(clip.duration > 0.5 && clip.duration <= 5.5, `${line.id}: clip is not a short street line`);
+  assert.equal(clip.channels, 1);
+  assert.equal(clip.sampleRate, 44100);
+  const [data, master] = await Promise.all([readFile(join(root, "public", clip.url)), readFile(join(root, clip.masterPath))]);
+  assert.equal(data.length, clip.bytes);
+  assert.equal(sha(data), clip.sha256, `${line.id}: corrupt runtime audio`);
+  assert.equal(sha(master), clip.masterSha256, `${line.id}: corrupt source audio`);
+  if (process.argv.includes("--decode")) {
+    const decoded = spawnSync(process.env.FFMPEG_PATH || "ffmpeg", ["-v", "error", "-xerror", "-i", join(root, "public", clip.url), "-f", "null", "-"], { encoding: "utf8", windowsHide: true, timeout: 20_000 });
+    if (decoded.error) throw decoded.error;
+    assert.equal(decoded.status, 0, `${line.id}: decode failed: ${decoded.stderr}`);
+  }
+}
+assert.ok(clips.get("mum_raju_greet_intro_01").duration < 5.5);
+assert.ok(clips.get("mum_sachin_ignition_01").duration < 4);
+const people = await readFile(join(root, "docs/mumbai-characters/people-voices.csv"), "utf8");
+assert.equal(people.trim().split("\n").length - 1, createActors().length + 1);
+const credits = await readFile(join(root, "public/audio/credits.html"), "utf8");
+assert.match(credits, /ElevenLabs/);
+assert.match(credits, /non-commercial/i);
+console.log(`Verified ${script.length} short Mumbai clips, ${cast.length} gender-matched roles, and ${createActors().length + 1} people. ${process.argv.includes("--decode") ? "Every MP3 fully decoded." : "Source and runtime checksums match."}`);

@@ -2,6 +2,7 @@ import { createCrowdMotion } from "./crowd-motion.ts";
 import { createPedestrianRules, fallPose } from "./pedestrian-rules.ts";
 import * as THREE from "three";
 import { characters, createActors, type Actor } from "./characters.ts";
+import { createDialogueDirector } from "./dialogue.ts";
 
 import {
   CHARACTER_DETAIL_LIMIT,
@@ -153,9 +154,7 @@ export function makeCrowd(
   let last = -1,
     lastX = Infinity,
     lastZ = Infinity;
-  let subtitle = { name: "", text: "", clipId: "", until: 0 },
-    nextSpeech = 20;
-  const spoken = new Map<number, number>();
+  const dialogue = createDialogueDirector(actors);
   return {
     count: actors.length,
     stats,
@@ -214,6 +213,11 @@ export function makeCrowd(
         const size = a.named ? 1 : 0.94 + (a.variant % 5) * 0.025;
         root.position.set(p.x, heightAt(p.x, p.z), p.z);
         root.rotation.set(0, p.yaw, 0, "YXZ");
+        const partnerId = dialogue.talkingTo(a.id);
+        if (!reacting && !p.moving && partnerId !== undefined) {
+          const partner = poses[partnerId];
+          if (partner) root.rotation.y = Math.atan2(partner.x - p.x, partner.z - p.z);
+        }
         root.scale.setScalar(size);
         root.updateMatrix();
         if (reacting && reaction.fatal) {
@@ -248,6 +252,8 @@ export function makeCrowd(
             : 3
           : a.named && a.character === 1 && time < 6
             ? 2
+            : dialogue.cue?.actorId === a.id && !p.moving
+              ? 2
             : !p.moving && a.activity === "work"
               ? 1
               : 0;
@@ -269,38 +275,11 @@ export function makeCrowd(
         finishCastBatch(pair.crowd);
       }
     },
-    greeting(time: number, x: number, z: number, speed: number) {
-      for (const hit of rules.reactions.values())
-        if (!hit.fatal && time - hit.time < 5)
-          return {
-            name: hit.name,
-            text: hit.line,
-            clipId: "",
-            until: hit.time + 5,
-          };
-      if (time >= nextSpeech && Math.abs(speed) < 3.3) {
-        const actor = actors.find(
-          (a) =>
-            a.named &&
-            a.character !== 7 &&
-            Math.hypot(a.home!.x - x, a.home!.z - z) < 10 &&
-            time - (spoken.get(a.id) ?? -1000) > 120,
-        );
-        if (actor) {
-          const c = characters[actor.character];
-          subtitle = {
-            name: c.name,
-            text: c.line,
-            clipId: `mum_${c.id}_${c.clip}_01`,
-            until: time + 5,
-          };
-          spoken.set(actor.id, time);
-          nextSpeech = time + 35;
-        }
-      }
-      return time < subtitle.until
-        ? subtitle
-        : { name: "", text: "", clipId: "", until: 0 };
+    greeting(time: number, x: number, z: number, speed: number, clock = time, signal = "") {
+      return dialogue.update({ time, clock, x, z, speed, signal, poses: motion.sample(time), reactions: rules.reactions });
+    },
+    clearDialogue(until = 0) {
+      dialogue.clear(until);
     },
   };
 }

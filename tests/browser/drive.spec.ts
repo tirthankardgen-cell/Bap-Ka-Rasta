@@ -23,6 +23,7 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
   await page.addInitScript(() => {
     const Native = window.AudioContext;
     (window as unknown as { audioStarts: number }).audioStarts = 0;
+    (window as unknown as { hornStarts: number }).hornStarts = 0;
     (window as unknown as { audioContexts: AudioContext[] }).audioContexts = [];
     window.AudioContext = class extends Native {
       createBufferSource() {
@@ -32,6 +33,8 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
           ...args: Parameters<AudioBufferSourceNode["start"]>
         ) => {
           (window as unknown as { audioStarts: number }).audioStarts++;
+          if (!source.loop && source.buffer && source.buffer.duration < 1.2)
+            (window as unknown as { hornStarts: number }).hornStarts++;
           start(...args);
         };
         return source;
@@ -145,14 +148,15 @@ test("Mumbai drive: motion, steering, pause, reset, exit, fresh drive and home",
     .toBe("suspended");
   await page.getByRole("button", { name: "Enable sound" }).click();
   await expect(page.getByRole("button", { name: "Mute sound" })).toBeVisible();
+  const hornStarts = await page.evaluate(() => (window as unknown as { hornStarts: number }).hornStarts);
   await page.getByRole("button", { name: "Horn", exact: true }).click();
   await expect
     .poll(() =>
       page.evaluate(
-        () => (window as unknown as { audioStarts: number }).audioStarts,
+        () => (window as unknown as { hornStarts: number }).hornStarts,
       ),
     )
-    .toBe(4);
+    .toBeGreaterThan(hornStarts);
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   await expect(game).toHaveAttribute("data-status", "paused");
   await expect

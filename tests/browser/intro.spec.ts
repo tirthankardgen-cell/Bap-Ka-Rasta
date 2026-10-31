@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("opening pauses, resumes and hands over to driving without voice assets", async ({
+test("recorded opening voices pause, resume and hand over to driving", async ({
   page,
 }) => {
   test.setTimeout(180_000);
@@ -14,12 +14,16 @@ test("opening pauses, resumes and hands over to driving without voice assets", a
   await page.getByRole("button", { name: "Mera Bap Ka Rasta" }).click();
   await page.getByRole("button", { name: "Yahin Chalao" }).click();
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
+  expect(voices).toEqual([]);
   await page.getByRole("button", { name: "Chal Chala", exact: true }).click();
+  await expect(page.locator("canvas")).toHaveAttribute("data-voice-status", "playing");
+  await expect(page.locator("canvas")).toHaveAttribute("data-voice-clip", "mum_raju_greet_intro_01");
   await page.keyboard.press("Escape");
   const game = page.locator(".game");
   await expect(game).toHaveAttribute("data-status", "paused");
   const stage = await game.getAttribute("data-stage");
   expect(stage).not.toBe("done");
+  await expect(page.locator("canvas")).toHaveAttribute("data-voice-status", "paused");
   await page.getByRole("button", { name: "Standard graphics" }).click();
   await page.waitForTimeout(300);
   await expect(game).toHaveAttribute("data-stage", stage!);
@@ -27,6 +31,7 @@ test("opening pauses, resumes and hands over to driving without voice assets", a
   await page.screenshot({ path: "test-results/mumbai-opening.png" });
   await page.addStyleTag({ content: ".game-overlay { visibility: visible; }" });
   await page.getByRole("button", { name: "Resume drive" }).click();
+  await expect(page.locator("canvas")).toHaveAttribute("data-voice-clip", "mum_sachin_ignition_01", { timeout: 30_000 });
   await expect(game).toHaveAttribute("data-stage", "done", { timeout: 60_000 });
   await expect(
     page.getByRole("button", { name: "Accelerate", exact: true }),
@@ -43,7 +48,9 @@ test("opening pauses, resumes and hands over to driving without voice assets", a
     .toBeGreaterThan(2);
   await page.keyboard.up("w");
   await page.getByRole("button", { name: "Pause drive" }).click();
-  expect(voices).toEqual([]);
+  expect(voices.some((url) => url.endsWith("/raju/mum_raju_greet_intro_01.mp3"))).toBe(true);
+  expect(voices.some((url) => url.endsWith("/sachin/mum_sachin_ignition_01.mp3"))).toBe(true);
+  expect(voices.every((url) => new URL(url).origin === new URL(page.url()).origin)).toBe(true);
   expect(errors).toEqual([]);
 });
 
@@ -59,6 +66,7 @@ test("mobile reduced-motion intro can skip directly to a stationary drive", asyn
   await page.getByRole("button", { name: "Drive Mumbai" }).click();
   await page.getByRole("button", { name: "Chal Chala", exact: true }).click();
   await page.getByRole("button", { name: "Skip intro" }).click();
+  await expect(page.locator("canvas")).toHaveAttribute("data-voice-clip", "");
   await expect(page.locator(".game")).toHaveAttribute("data-stage", "done");
   await expect(page.locator(".game")).toHaveAttribute("data-speed", "0.00");
   await expect(

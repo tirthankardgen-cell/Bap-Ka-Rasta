@@ -36,7 +36,10 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "playwright test",
-    "assets:characters:pack": "node scripts/characters/pack_mumbai_characters.mjs"
+    "assets:characters:pack": "node scripts/characters/pack_mumbai_characters.mjs",
+    "voices:generate": "node --env-file=.env.local scripts/voices/generate.mjs",
+    "voices:catalogue": "node --experimental-strip-types scripts/voices/build.mjs",
+    "voices:verify": "node --experimental-strip-types scripts/voices/verify.mjs"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.3.0",
@@ -47,6 +50,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.75.0",
     "@gltf-transform/core": "^4.4.0",
     "@gltf-transform/extensions": "^4.4.0",
     "@gltf-transform/functions": "^4.4.0",

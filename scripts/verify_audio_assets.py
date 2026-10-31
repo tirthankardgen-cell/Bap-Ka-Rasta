@@ -1,4 +1,4 @@
-"""Verify the checked-in audio library; optionally probe and fully decode each MP3."""
+"""Verify the field-recording library; optionally probe and fully decode each MP3."""
 
 import argparse
 from collections import Counter
@@ -16,7 +16,11 @@ def main():
     root = Path(__file__).resolve().parents[1] / 'assets/audio/mumbai'
     manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
     recordings = manifest['recordings']
-    actual_files = {file.relative_to(root).as_posix() for file in root.rglob('*.mp3')}
+    # Generated character recordings have their own manifest and voices:verify check.
+    actual_files = {
+        file.relative_to(root).as_posix() for file in root.rglob('*.mp3')
+        if not file.is_relative_to(root / 'voices')
+    }
     expected_files = {row['file'] for row in recordings}
     if len(expected_files) != len(recordings) or actual_files != expected_files:
         raise ValueError('Manifest and audio files differ, or paths are duplicated')

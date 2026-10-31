@@ -1,4 +1,5 @@
-import { actorPose, actorIdentity, type Actor } from "./characters.ts";
+import { actorPose, actorIdentity, characters, type Actor } from "./characters.ts";
+import { characterLines } from "./dialogue.ts";
 import { geometry, junctions, type Point } from "./network.ts";
 
 export const SERIOUS_IMPACT_SPEED = 20 / 3.6;
@@ -19,11 +20,6 @@ export type IncidentReport = PedestrianHit & {
   phase: "cinematic" | "report";
   photo: string;
 };
-const lines = [
-  "Arre bhau! Dekh ke chala, rasta tere baap ka hai kya?",
-  "Aye dada! Zara sambhal ke, hum bhi chal rahe hain!",
-  "Kay re! Aankhein road pe rakh, hero mat ban!",
-];
 /** Swept expanded vehicle rectangle: fast frames and reversing cannot tunnel through people. */
 export function sweptPersonContact(
   before: Point,
@@ -130,7 +126,7 @@ export function createPedestrianRules(actors: Actor[]) {
           z: p1.z,
           yaw: after.yaw + (speed < 0 ? Math.PI : 0),
           fatal: Math.abs(speed) >= SERIOUS_IMPACT_SPEED,
-          line: lines[a.id % lines.length],
+          line: characterLines(characters[a.character].id, "warning")[0]?.subtitle ?? "Arre bhau, sambhal ke!",
         };
         reactions.set(a.id, hit);
         if (hit.fatal) fatal = hit;
