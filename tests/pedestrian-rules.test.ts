@@ -28,7 +28,8 @@ test("slow bumps scold once, respect cooldown, and allow a later serious collisi
     0.1,
     2,
   )!;
-  assert.ok(hit && !hit.fatal && hit.line.includes("bhau"));
+  assert.ok(hit && !hit.fatal);
+  assert.match(hit.line, /Laptop/, "The office commuter uses his own warning");
   assert.equal(
     rules.collide({ x: 0, z: -1 }, { x: 0, z: -0.5, yaw: 0 }, 0.1, 0.2, 2),
     null,

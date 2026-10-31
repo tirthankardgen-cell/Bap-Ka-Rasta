@@ -5,18 +5,20 @@ import { voiceLines, type VoiceLine, type VoiceEvent } from "./voice-lines.gener
 
 export { voiceLines, type VoiceLine } from "./voice-lines.generated.ts";
 const byId = new Map(voiceLines.map((line) => [line.id, line]));
-const byCharacter = new Map<string, VoiceLine[]>();
+const byEvent = new Map<string, VoiceLine[]>();
 for (const line of voiceLines) {
-  const list = byCharacter.get(line.characterId) ?? [];
-  list.push(line);
-  byCharacter.set(line.characterId, list);
+  const key = `${line.characterId}:${line.event}`;
+  const entries = byEvent.get(key) ?? [];
+  entries.push(line);
+  byEvent.set(key, entries);
 }
 export const voiceLine = (id: string) => byId.get(id);
-export const characterLines = (id: string, event: VoiceEvent) =>
-  (byCharacter.get(id) ?? []).filter((line) => line.event === event);
+export const characterLines = (id: string, event: VoiceEvent): readonly VoiceLine[] => byEvent.get(`${id}:${event}`) ?? [];
 
 export type DialogueCue = {
   key: string;
+  channel: string;
+  audience: "player" | "neighbours" | "self";
   line: VoiceLine;
   name: string;
   actorId: number | null;
@@ -28,179 +30,252 @@ export type DialogueCue = {
   priority: number;
   nextLine?: VoiceLine;
 };
+export type SpeechProgress = {
+  key: string;
+  state: "loading" | "playing" | "ended" | "unavailable" | "cancelled";
+  duration?: number;
+};
 export type SpeakerPose = { x: number; z: number; moving: boolean };
 type DialogueFrame = {
-  clock: number;
-  time: number;
-  x: number;
-  z: number;
-  speed: number;
-  signal: string;
+  clock: number; time: number; x: number; z: number; speed: number; signal: string;
   poses: readonly SpeakerPose[];
   reactions: ReadonlyMap<number, PedestrianHit>;
+};
+type Turn = { cue: DialogueCue; held: boolean; ended?: number };
+type Exchange = {
+  channel: string; from: number; to?: number; turn: Turn | null;
+  reply?: VoiceLine; replyAt: number;
 };
 
 export function introDialogue(time: number): DialogueCue {
   const first = time < 6;
   const line = voiceLine(first ? "mum_raju_greet_intro_01" : "mum_sachin_ignition_01")!;
   return {
-    key: line.id,
-    line,
-    name: first ? "Raju Kaka" : "Sachin",
-    actorId: null,
-    started: first ? 0 : 6,
-    until: first ? 6 : 10,
-    priority: 80,
+    key: line.id, channel: "foreground", audience: "player", line,
+    name: first ? "Raju Kaka" : "Sachin", actorId: null,
+    started: first ? 0 : 6, until: first ? 6 : 10, priority: 80,
     ...(first ? { nextLine: voiceLine("mum_sachin_ignition_01") } : {}),
   };
 }
 
-/** Short, local exchanges. All timing is the pause-aware real-time dialogue clock. */
+/** The street owns its conversations. The listener's location never schedules them. */
 export function createDialogueDirector(
   actors: readonly Actor[],
   clearPath = (a: SpeakerPose, b: SpeakerPose) =>
     [0.25, 0.5, 0.75].every((t) => !roadContains(a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t, 0)),
 ) {
   const indices = new Map(actors.map((actor, index) => [actor.id, index]));
-  const spoken = new Map<number, number>();
-  const lastLine = new Map<string, number>();
-  const warned = new Map<number, number>();
-  let current: DialogueCue | null = null;
-  let reply: { from: number; to: number; line: VoiceLine; at: number; expires: number } | null = null;
-  let nextAt = 8, nextCheck = 0, sequence = 0;
+  const identities = actors.map(actorIdentity);
+  const lines = actors.map((actor) => {
+    const id = characters[actor.character].id;
+    return { chat: characterLines(id, "chat"), reply: characterLines(id, "reply"), ambient: characterLines(id, "ambient"), warning: characterLines(id, "warning") };
+  });
+  const due = actors.map((actor) => 2 + (actor.id * 13.137) % 68);
+  const availableAt = actors.map(() => 0);
+  const turns = actors.map(() => 0);
+  const busy = new Set<number>();
+  const exchanges = new Map<string, Exchange>();
+  const active = new Map<string, Turn>();
+  const partners = new Map<number, number>();
+  const speaking = new Set<number>();
+  const warnings = new Map<number, number>();
+  const pendingWarnings = new Map<number, PedestrianHit>();
+  const driverSpoken = new Map<string, number>();
+  const sequences = new Map<string, number>();
+  let foreground: Turn | null = null;
+  let nextScan = 0, cursor = 0, now = 0;
   let redSince: number | null = null, redSpoken = false, leftStand = false;
-  const lineReady = (line: VoiceLine, now: number) => now - (lastLine.get(line.id) ?? -1000) >= 100;
-  function position(id: number, frame: DialogueFrame) {
-    const index = indices.get(id);
-    return index === undefined ? undefined : frame.poses[index];
+  let published: DialogueCue[] = [];
+
+  function pose(index: number, frame: DialogueFrame) { return frame.poses[index]; }
+  function able(index: number, frame: DialogueFrame) {
+    const reaction = frame.reactions.get(actors[index].id);
+    return !!pose(index, frame) && !(reaction && (reaction.fatal || frame.time - reaction.time < 5));
   }
-  function local(id: number, frame: DialogueFrame) {
-    const p = position(id, frame), reaction = frame.reactions.get(id);
-    return !!p && !p.moving && Math.hypot(p.x - frame.x, p.z - frame.z) < 16 &&
-      !(reaction && (reaction.fatal || frame.time - reaction.time < 5));
+  function close(a: number, b: number, frame: DialogueFrame) {
+    const p = pose(a, frame), q = pose(b, frame);
+    if (!p || !q || !able(a, frame) || !able(b, frame)) return false;
+    if ((p.x - q.x) ** 2 + (p.z - q.z) ** 2 > 7.5 ** 2) return false;
+    // Authored neighbours on the same pavement need no repeated road scan.
+    const left = actors[a], right = actors[b];
+    return (!left.home && !right.home && left.edge === right.edge && left.side === right.side) || clearPath(p, q);
   }
-  function pairPresent(a: number, b: number, frame: DialogueFrame) {
-    if (!local(a, frame) || !local(b, frame)) return false;
-    const p = position(a, frame)!, q = position(b, frame)!;
-    return Math.hypot(p.x - q.x, p.z - q.z) <= 5.5 && clearPath(p, q);
-  }
-  function speak(line: VoiceLine, actor: Actor | null, frame: DialogueFrame, priority: number, partnerId?: number) {
-    const p = actor ? position(actor.id, frame) : undefined;
-    current = {
-      key: `${actor?.id ?? "driver"}:${line.id}:${frame.clock.toFixed(3)}`,
-      line,
-      name: actor ? actorIdentity(actor).name : "Sachin",
-      actorId: actor?.id ?? null,
+  function start(line: VoiceLine, index: number | null, channel: string, audience: DialogueCue["audience"], frame: DialogueFrame, partner?: number, nextLine?: VoiceLine): Turn {
+    const p = index === null ? undefined : pose(index, frame);
+    const sequence = sequences.get(channel) ?? 0;
+    sequences.set(channel, sequence + 1);
+    const cue: DialogueCue = {
+      key: `${channel}:${line.id}:${sequence}`, channel, audience, line,
+      name: index === null ? "Sachin" : identities[index].name,
+      actorId: index === null ? null : actors[index].id,
       ...(p ? { x: p.x, z: p.z } : {}),
-      ...(partnerId !== undefined ? { partnerId } : {}),
-      started: frame.clock,
-      until: frame.clock + line.duration + 0.2,
-      priority,
+      ...(partner !== undefined ? { partnerId: actors[partner].id } : {}),
+      ...(nextLine ? { nextLine } : {}),
+      started: frame.clock, until: frame.clock + line.duration,
+      priority: audience === "player" ? 90 : channel === "foreground" ? 40 : 20,
     };
-    lastLine.set(line.id, frame.clock);
-    if (actor) spoken.set(actor.id, frame.clock);
-    nextAt = current.until + 8 + (sequence++ % 5);
-    return current;
+    const turn = { cue, held: false };
+    active.set(cue.key, turn);
+    if (index !== null) turns[index]++;
+    return turn;
   }
-  function driverLine(frame: DialogueFrame) {
-    let event: VoiceEvent | null = null;
-    if (redSince !== null && !redSpoken && frame.clock - redSince >= 8) event = "red_wait";
-    else if (leftStand && Math.hypot(frame.x - SPAWN.x, frame.z - SPAWN.z) < 15) event = "stand";
-    else if (frame.clock > 30 && frame.x < -230) event = "waterfront";
-    if (!event) return null;
-    const line = characterLines("sachin", event)[0];
-    if (!line || !lineReady(line, frame.clock)) return null;
-    if (event === "red_wait") redSpoken = true;
-    if (event === "stand") leftStand = false;
-    return speak(line, null, frame, 40);
+  function finished(turn: Turn) {
+    return turn.ended !== undefined || (!turn.held && now >= turn.cue.until);
   }
-  return {
-    get cue() { return current; },
-    talkingTo(id: number) {
-      if (current?.partnerId !== undefined) {
-        if (current.actorId === id) return current.partnerId;
-        if (current.partnerId === id) return current.actorId ?? undefined;
+  function release(exchange: Exchange) {
+    for (const index of [exchange.from, exchange.to]) if (index !== undefined) {
+      busy.delete(index);
+      availableAt[index] = now + 32;
+      due[index] = now + 38 + (actors[index].id * 7.37) % 25;
+    }
+    exchanges.delete(exchange.channel);
+  }
+  function updateExchanges(frame: DialogueFrame) {
+    for (const exchange of exchanges.values()) {
+      if (exchange.turn && finished(exchange.turn)) {
+        const endedAt = exchange.turn.ended ?? exchange.turn.cue.until;
+        active.delete(exchange.turn.cue.key);
+        exchange.turn = null;
+        exchange.replyAt = endedAt + 0.55 + (exchange.from % 3) * 0.08;
+        if (!exchange.reply) { release(exchange); continue; }
       }
-      if (reply?.from === id) return reply.to;
-      if (reply?.to === id) return reply.from;
-      return undefined;
-    },
-    clear(until = 0) {
-      current = null;
-      reply = null;
-      nextAt = Math.max(nextAt, until);
-    },
-    update(frame: DialogueFrame): DialogueCue | null {
-      const now = frame.clock;
-      if (Math.hypot(frame.x - SPAWN.x, frame.z - SPAWN.z) > 45) leftStand = true;
-      if (frame.signal === "red" && Math.abs(frame.speed) < 0.28) redSince ??= now;
-      else { redSince = null; redSpoken = false; }
-      // An actual mild impact preempts chatter; each impact is spoken only once.
-      const hits = [...frame.reactions.values()].filter((hit) =>
-        !hit.fatal && frame.time - hit.time >= 0 && frame.time - hit.time < 5 &&
-        warned.get(hit.actorId) !== hit.time && Math.hypot(hit.x - frame.x, hit.z - frame.z) < 18,
-      ).sort((a, b) => b.time - a.time);
-      if (hits.length && !(current?.priority === 90 && now - current.started < 1.5)) {
-        const hit = hits[0], index = indices.get(hit.actorId);
-        warned.set(hit.actorId, hit.time);
-        if (index !== undefined) {
-          const actor = actors[index], line = characterLines(characters[actor.character].id, "warning")[0];
-          if (line) {
-            reply = null;
-            return speak(line, actor, frame, 90);
+      if (!exchange.turn && exchange.reply && now >= exchange.replyAt) {
+        if (exchange.to !== undefined && close(exchange.from, exchange.to, frame)) {
+          exchange.turn = start(exchange.reply, exchange.to, exchange.channel, "neighbours", frame, exchange.from);
+          exchange.reply = undefined;
+        } else release(exchange);
+      }
+    }
+  }
+  function scanStreet(frame: DialogueFrame) {
+    if (now < nextScan || !actors.length) return;
+    nextScan = now + 0.5;
+    const grid = new Map<number, number[]>();
+    const cellKey = (x: number, z: number) => x * 65536 + z;
+    for (let i = 0; i < actors.length; i++) {
+      const p = pose(i, frame);
+      if (!p || p.moving || busy.has(i) || availableAt[i] > now || !able(i, frame) || foreground?.cue.actorId === actors[i].id) continue;
+      const key = cellKey(Math.floor(p.x / 8), Math.floor(p.z / 8));
+      const bucket = grid.get(key);
+      if (bucket) bucket.push(i); else grid.set(key, [i]);
+    }
+    let started = 0;
+    for (let visited = 0; visited < actors.length && started < 24; visited++) {
+      const i = cursor++ % actors.length;
+      if (due[i] > now || busy.has(i) || availableAt[i] > now || !able(i, frame) || foreground?.cue.actorId === actors[i].id) continue;
+      const p = pose(i, frame), choices = lines[i].chat;
+      let pair: { partner: number; ask: VoiceLine; answer: VoiceLine; distance: number } | undefined;
+      if (!p.moving && choices.length) {
+        const gx = Math.floor(p.x / 8), gz = Math.floor(p.z / 8);
+        for (let offset = 0; offset < choices.length && !pair; offset++) {
+          const ask = choices[(turns[i] + offset) % choices.length];
+          for (let x = gx - 1; x <= gx + 1; x++) for (let z = gz - 1; z <= gz + 1; z++) {
+            for (const j of grid.get(cellKey(x, z)) ?? []) {
+              if (j === i || busy.has(j) || actors[j].character === actors[i].character) continue;
+              const answer = lines[j].reply.find((entry) => entry.topic === ask.topic);
+              if (!answer) continue;
+              const q = pose(j, frame), distance = (q.x - p.x) ** 2 + (q.z - p.z) ** 2;
+              if (distance >= (pair?.distance ?? 7.5 ** 2) || !close(i, j, frame)) continue;
+              pair = { partner: j, ask, answer, distance };
+            }
           }
         }
       }
-      if (current) {
-        const p = current.actorId === null ? undefined : position(current.actorId, frame);
-        const outOfRange = p && Math.hypot(p.x - frame.x, p.z - frame.z) > 20;
-        if (now < current.until && !outOfRange && !(current.priority < 40 && Math.abs(frame.speed) > 4.5)) {
-          if (p) { current.x = p.x; current.z = p.z; }
-          return current;
+      const channel = `street:${actors[i].id}`;
+      if (pair) {
+        const turn = start(pair.ask, i, channel, "neighbours", frame, pair.partner, pair.answer);
+        exchanges.set(channel, { channel, from: i, to: pair.partner, turn, reply: pair.answer, replyAt: Infinity });
+        busy.add(i); busy.add(pair.partner);
+      } else {
+        const choices = lines[i].ambient;
+        if (!choices.length) { due[i] = now + 10; continue; }
+        const turn = start(choices[turns[i] % choices.length], i, channel, "neighbours", frame);
+        exchanges.set(channel, { channel, from: i, turn, replyAt: Infinity });
+        busy.add(i);
+      }
+      started++;
+    }
+  }
+  function directSpeech(frame: DialogueFrame) {
+    for (const hit of frame.reactions.values()) {
+      if (hit.fatal || frame.time - hit.time > 5 || warnings.get(hit.actorId) === hit.time) continue;
+      warnings.set(hit.actorId, hit.time);
+      pendingWarnings.set(hit.actorId, hit);
+      // Let the current sentence finish, but don't continue an interrupted chat.
+      const index = indices.get(hit.actorId);
+      for (const exchange of exchanges.values()) if (exchange.from === index || exchange.to === index) {
+        exchange.reply = undefined;
+        if (!exchange.turn) release(exchange);
+      }
+    }
+    if (foreground && finished(foreground)) { active.delete(foreground.cue.key); foreground = null; }
+    if (foreground) return;
+    for (const [id, hit] of pendingWarnings) {
+      const index = indices.get(id);
+      if (index === undefined || frame.time - hit.time > 10) { pendingWarnings.delete(id); continue; }
+      if (busy.has(index)) continue;
+      pendingWarnings.delete(id);
+      if (lines[index].warning[0]) {
+        foreground = start(lines[index].warning[0], index, "foreground", "player", frame);
+        return;
+      }
+    }
+    let event: VoiceEvent | null = null;
+    if (redSince !== null && !redSpoken && now - redSince >= 8) event = "red_wait";
+    else if (leftStand && Math.hypot(frame.x - SPAWN.x, frame.z - SPAWN.z) < 15) event = "stand";
+    else if (now > 45 && frame.x < -230) event = "waterfront";
+    if (!event || now - (driverSpoken.get(event) ?? -1000) < 140) return;
+    const line = characterLines("sachin", event)[0];
+    if (!line) return;
+    if (event === "red_wait") redSpoken = true;
+    if (event === "stand") leftStand = false;
+    driverSpoken.set(event, now);
+    foreground = start(line, null, "foreground", "self", frame);
+  }
+  return {
+    get cues(): readonly DialogueCue[] { return published; },
+    get cue() { return foreground?.cue ?? null; },
+    talkingTo(id: number) { return partners.get(id); },
+    isTalking(id: number) { return speaking.has(id); },
+    playback(event: SpeechProgress, clock: number) {
+      const turn = active.get(event.key);
+      if (!turn) return;
+      if (event.state === "loading" || event.state === "playing") {
+        turn.held = true;
+        if (event.state === "playing") turn.cue.until = clock + (event.duration ?? turn.cue.line.duration);
+      } else if (event.state === "cancelled") turn.held = false;
+      else { turn.held = false; turn.ended = clock; }
+    },
+    clear(until = now) {
+      active.clear(); exchanges.clear(); busy.clear(); partners.clear(); speaking.clear(); pendingWarnings.clear();
+      foreground = null; published = [];
+      nextScan = until;
+      for (let i = 0; i < due.length; i++) due[i] = Math.max(due[i], until + 2 + (actors[i].id * 13.137) % 30);
+    },
+    update(frame: DialogueFrame): readonly DialogueCue[] {
+      now = frame.clock;
+      if (Math.hypot(frame.x - SPAWN.x, frame.z - SPAWN.z) > 45) leftStand = true;
+      if (frame.signal === "red" && Math.abs(frame.speed) < 0.28) redSince ??= now;
+      else { redSince = null; redSpoken = false; }
+      updateExchanges(frame);
+      directSpeech(frame);
+      scanStreet(frame);
+      partners.clear(); speaking.clear();
+      for (const exchange of exchanges.values()) if (exchange.to !== undefined) {
+        partners.set(actors[exchange.from].id, actors[exchange.to].id);
+        partners.set(actors[exchange.to].id, actors[exchange.from].id);
+      }
+      published = [];
+      for (const turn of active.values()) {
+        const cue = turn.cue;
+        if (cue.actorId !== null) {
+          speaking.add(cue.actorId);
+          const index = indices.get(cue.actorId), p = index === undefined ? undefined : pose(index, frame);
+          if (p) { cue.x = p.x; cue.z = p.z; }
         }
-        if (outOfRange || Math.abs(frame.speed) > 4.5) reply = null;
-        current = null;
+        published.push(cue);
       }
-      if (reply) {
-        if (now > reply.expires || Math.abs(frame.speed) > 3.3 || !pairPresent(reply.from, reply.to, frame)) reply = null;
-        else if (now >= reply.at) {
-          const pending = reply;
-          reply = null;
-          return speak(pending.line, actors[indices.get(pending.to)!], frame, 20, pending.from);
-        } else return null;
-      }
-      if (now < nextAt || now < nextCheck || Math.abs(frame.speed) > 3.3) return null;
-      nextCheck = now + 0.75;
-      if (sequence % 4 === 3) {
-        const line = driverLine(frame);
-        if (line) return line;
-      }
-      const nearby = actors.filter((actor) => local(actor.id, frame) && now - (spoken.get(actor.id) ?? -1000) >= 45)
-        .sort((a, b) => {
-          const pa = position(a.id, frame)!, pb = position(b.id, frame)!;
-          return (spoken.get(a.id) ?? -1000) - (spoken.get(b.id) ?? -1000) ||
-            Math.hypot(pa.x - frame.x, pa.z - frame.z) - Math.hypot(pb.x - frame.x, pb.z - frame.z);
-        });
-      // Two neighbours exchange related lines, with a natural gap between turns.
-      if (sequence % 3 !== 2) for (const actor of nearby) {
-        const question = characterLines(characters[actor.character].id, "chat")[0];
-        if (!question || !lineReady(question, now)) continue;
-        for (const partner of nearby) {
-          if (partner.id === actor.id || partner.character === actor.character || !pairPresent(actor.id, partner.id, frame)) continue;
-          const answer = characterLines(characters[partner.character].id, "reply").find((line) => line.topic === question.topic && lineReady(line, now));
-          if (!answer) continue;
-          const cue = speak(question, actor, frame, 20, partner.id);
-          cue.nextLine = answer;
-          spoken.set(partner.id, now);
-          reply = { from: actor.id, to: partner.id, line: answer, at: cue.until + 0.65, expires: cue.until + 2.5 };
-          return cue;
-        }
-      }
-      for (const actor of nearby) {
-        const choices = characterLines(characters[actor.character].id, "ambient").filter((line) => lineReady(line, now));
-        if (choices.length) return speak(choices[(actor.id + sequence) % choices.length], actor, frame, 20);
-      }
-      return driverLine(frame);
+      return published;
     },
   };
 }

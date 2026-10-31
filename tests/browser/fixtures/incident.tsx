@@ -22,7 +22,8 @@ function Fixture() {
   const [stats, setStats] = useState<Stats | null>(null);
   useEffect(() => {
     let active = true;
-    void loadGameAssets().then((assets) => {
+    const controller = new AbortController();
+    void loadGameAssets(controller.signal).then(async (assets) => {
       if (!active) {
         disposeGameAssets(assets);
         return;
@@ -37,7 +38,7 @@ function Fixture() {
         time,
         speed: location.search.includes("slow") ? 2 : 10,
       });
-      engine.current = createEngine(
+      const created = await createEngine(
         host.current!,
         setStats,
         () => {},
@@ -45,13 +46,17 @@ function Fixture() {
         assets.autoModel,
         assets.characterModels,
         drive,
+        controller.signal,
       );
+      if (!active) { created.dispose(); return; }
+      engine.current = created;
       engine.current.quality(true);
       engine.current.skipIntro();
       engine.current.setPaused(false);
-    });
+    }).catch((error) => { if (active) console.error(error); });
     return () => {
       active = false;
+      controller.abort();
       engine.current?.dispose();
     };
   }, []);
@@ -65,7 +70,7 @@ function Fixture() {
       >
         <div className="game-canvas" ref={host} />
         {stats?.subtitle && (
-          <div className="character-subtitle">
+          <div className="character-subtitle" data-clip-id={stats.clipId}>
             {stats.speaker}: {stats.subtitle}
           </div>
         )}

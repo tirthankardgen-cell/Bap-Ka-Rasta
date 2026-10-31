@@ -48,9 +48,10 @@ await writeFile(join(docs, "people-voices.csv"), csv([
 ]));
 const md = [
   "# Mumbai voice lines", "",
-  `${lines.length} short recordings for ${characters.length} character profiles, covering the player and all ${actors.length} individually named street actors. Hindi carries the meaning, with familiar Marathi words such as bhau, chala, tai, thamba and aaramat. This pack is only for Mumbai.`, "",
+  `${lines.length} short recordings for ${characters.length} character profiles, covering the player and all ${actors.length} individually named street actors. Hindi carries the meaning, with occasional Marathi phrases such as Mogryacha gajra ghya, Paaoos yenaar ka and Amchya veli. Openings vary naturally across the script. This pack is only for Mumbai.`, "",
   "The free ElevenLabs account supplies 18 included voices across 20 roles. Aarti/Pooja share Sarah and Lata/Shanta share Lily, with different delivery settings and separate recordings. The presets are multilingual approximations, not recordings by native Mumbai actors. No paid library voices or voice cloning are used.", "",
-  "Each local has short street lines, a character-specific mild-impact reaction, and a question/reply pair. Neighbours answer only when they are close, stopped on the same pavement and discussing the same topic. Distant and stale replies are discarded. The player has two opening beats with Raju and context-sensitive comments.", "",
+  "Each local has a street remark, a character-specific mild-impact reaction, and two question/reply pairs about cricket, prices, rain, local trains or rent. Neighbours converse on their own schedules, independently of the auto's location and speed. Conversation partners must be nearby and share a topic; distance from the player changes volume. Audible sentences finish before their replies. The player has two opening beats with Raju and context-sensitive self-talk.", "",
+  "Captions appear only for speech addressed to the player, including the opening and pedestrian warnings. Neighbour gossip and the driver's self-talk have no captions.", "",
   "[Recording sheet](voice-lines.csv) · [Every person's voice assignment](people-voices.csv) · [Voice production and playback](../../assets/audio/mumbai/voices/README.md)", "",
 ];
 for (const character of characters) {

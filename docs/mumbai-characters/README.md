@@ -1,6 +1,6 @@
 # Mumbai characters, crowd variety and voice production
 
-**Implementation update:** all 20 designs have Blender-authored models and **118 recorded Mumbai voice lines**. Sachin, the 19 named locals and all 1,523 background people have gender-matched voice assignments. Short Hindi/Marathi exchanges, nearby vendor calls and character-specific reactions play from downloaded MP3s. Neighbours answer each other and turn toward their conversation partner. Pause, mute, skip and missing-file fallbacks preserve free roaming. The free-account voice presets approximate the character briefs below; they are not native Mumbai actors. See the [new line list](VOICE-LINES.md), [every person's assignment](people-voices.csv), [voice production guide](../../assets/audio/mumbai/voices/README.md), [Blender library](../../assets/characters/mumbai/README.md), and [playable guide](../Mumbai-Playable.md). Advanced schedules, full on-foot movement, saved camera preferences, passenger jobs, purchases and repairs remain future work.
+**Implementation update:** all 20 designs have Blender-authored models and **119 recorded Mumbai voice lines**. Sachin, the 19 named locals and all 1,523 background people have gender-matched voice assignments. Neighbours gossip independently of the auto's location and speed; distance changes their volume. Sentences finish before replies, and captions appear only for speech directed at the player. Pause, mute, skip and missing-file fallbacks preserve free roaming. The free-account voice presets approximate the character briefs below; they are not native Mumbai actors. See the [new line list](VOICE-LINES.md), [every person's assignment](people-voices.csv), [voice production guide](../../assets/audio/mumbai/voices/README.md), [Blender library](../../assets/characters/mumbai/README.md), and [playable guide](../Mumbai-Playable.md). Full on-foot movement, saved camera preferences, passenger jobs, purchases and repairs remain future work.
 
 ## Visual references
 
@@ -92,7 +92,7 @@ Proposed population rules:
 
 ## Recorded voice pack
 
-[voice-lines.csv](voice-lines.csv) contains **118 recorded clips**, with stable IDs, Roman subtitles, Devanagari synthesis text, English meanings, performance direction, free voice IDs, durations and deployed paths. The [readable list](VOICE-LINES.md) groups them by character. The [people register](people-voices.csv) maps all 1,543 people, including the player, to their voice profile and available lines.
+[voice-lines.csv](voice-lines.csv) contains **119 recorded clips**, with stable IDs, Roman subtitles, Devanagari synthesis text, English meanings, performance direction, free voice IDs, durations and deployed paths. The [readable list](VOICE-LINES.md) groups them by character. The [people register](people-voices.csv) maps all 1,543 people, including the player, to their voice profile and available lines.
 
 Sachin has the opening and three contextual comments. Raju has the other opening line, two ambient lines, a reaction and a conversation pair. Every other local has three ambient lines, a reaction and a conversation pair. Lines last roughly 2–5 seconds. `chat` and `reply` use matching topics so neighbouring people answer coherently. The pack does not add passenger or shop mechanics.
 
@@ -117,16 +117,16 @@ No live speech is generated during gameplay. The SDK is used only by the offline
 | Aaramat | आरामात | At ease / take it easy |
 | Jhakaas | झकास | Great / excellent; occasional reaction |
 
-Mostly natural Hinglish, with perhaps one short Marathi phrase per line. Use familiar local humour about chai, signals, traffic and the daily commute. Avoid copying film dialogues, celebrity voices or repetitive catchphrases. Always show readable Roman-script subtitles; optionally let players enable English meanings. The spoken text should not assume the player understands Marathi.
+Mostly natural Hinglish, with occasional short Marathi phrases. Use familiar local humour about daily life, prices, cricket, rain and the commute. Avoid copying film dialogues, celebrity voices or repetitive catchphrases. Show readable Roman-script subtitles and English meanings only when someone addresses the player. The spoken text should not assume the player understands Marathi.
 
 ### Playback rules and acceptance criteria
 
-- One foreground voice channel, with warning/intro/driver/crowd priorities of 90/80/40/20. An actual mild impact interrupts chatter and discards the pending reply.
-- Conversation partners must be stopped, within 5.5 m, and have a clear pavement path. The listener must be within 16 m and moving below 12 km/h. Replies are topic-matched and use the responding person's own identity.
-- Related turns have a 0.65 s gap after the caption/audio allowance. Exchanges have an 8–12 s cooldown, each actor 45 s and each line 100 s. Selection is throttled; it does not scan and schedule new dialogue every animation frame.
-- Opening clips fit the existing ten-second timeline. Intro/driver speech is centred; street voices are positional. Speech is not coupled to horn presses.
-- Engine/ambience duck by about 4 dB during speech. Pause suspends the shared audio context, mute stops speech while keeping subtitles, and skip/reset/exit abort pending voices.
-- Missing files, slow downloads and disposal races fall back to silence without blocking play. At most 24 decoded voice clips are cached. The current line and its related reply are the only speculative voice downloads.
+- Up to four street voices and one foreground voice. A mild impact waits for the current sentence, discards the social reply and queues the person's own warning.
+- Conversation partners must be stopped, within 7.5 m, and have a clear pavement path. World schedules do not depend on the listener's position or speed. Replies match the topic and use the responding person's identity.
+- Related turns wait 0.55–0.71 s after actual playback completion. World scans run every 0.5 s; actor rest periods and a 30 s audible-clip cooldown prevent constant repetition.
+- Volume fades continuously with distance, reaching silence at 120 m. Driving away or cue expiry never cuts off a playing recording. Intro handoff waits for the last opening clip to finish; skip remains immediate.
+- Only player-directed lines have captions. Foreground speech ducks ambience and street voices. Pause suspends the shared audio context; mute/skip/reset/exit explicitly stop speech.
+- Downloads hold audible turns until playback or failure without blocking play. At most two fetch/decode jobs run concurrently, with 24 decoded clips cached and only selected lines/their related replies requested.
 
 ## Delivery order
 

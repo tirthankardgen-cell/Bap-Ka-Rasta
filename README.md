@@ -36,7 +36,7 @@ The current build includes:
 - **Mumbai-inspired architecture:** Art Deco curved balconies, Fort-style stone arches, tiled-roof chawls, shared galleries, laundry, shopfronts and rooftop tanks. The auto has an open cabin, patterned seating, a round front lamp and coloured trim under warmer sunset lighting. These are custom interpretations of the supplied reference.
 - **Street activity:** 112 moving traffic vehicles and 1,542 crowd actors, including the original 19 named locals and individually named background people, with walking, browsing, chatting, working and mid-block crossing activity. All twenty character designs use [Blender models based on the cast boards](assets/characters/mumbai/README.md), including Sachin's seated driver and first-person hands.
 - **Arcade driving:** acceleration, steering, braking, delayed reverse, vehicle and roadside collisions, and safe vehicle reset. The auto reaches approximately 65 km/h.
-- **Voiced driver opening and street conversations:** 118 short Hindi lines with familiar Marathi words, recorded using free ElevenLabs voices. Neighbours exchange related replies, vendors make nearby calls, and mild impacts trigger the person's own reaction. The opening remains skippable and supports reduced motion.
+- **Voiced driver opening and street conversations:** 119 varied Hindi lines with occasional Marathi phrases, recorded using free ElevenLabs voices. Neighbours gossip independently of the auto; distance changes their volume. Sentences finish before replies, and captions appear only for speech directed at the player. The opening remains skippable and supports reduced motion.
 - **Landscape mobile experience:** city selection, vehicle selection and driving automatically use a landscape canvas, even when a phone is upright. No rotate-phone prompt or orientation pause. The home page follows the phone normally.
 - **Four selectable gears:** centre buttons or number-row/numpad keys 1–4 select 12, 25, 45 and 65 km/h limits, with smooth downshifts and gear-aware engine sound.
 - **Desktop and touch controls:** simultaneous steering and acceleration, responsive galleries, two camera views (third person and driver eye) with drag-to-look and smooth return, and a HUD with speed, street names, and signal warnings.
@@ -163,7 +163,7 @@ src/
     game.css              Driving interface styles
 public/
   images/                 WebP landing and gallery artwork
-  audio/                  Four street stems, 118 character clips, credits and licenses
+  audio/                  Four street stems, 119 character clips, credits and licenses
 assets/audio/mumbai/      Research recordings, listening catalogue, and manifest
 tests/                   Simulation/layout tests and browser flows
 docs/                    Playable guide, game plan, storyboards, and research
@@ -258,7 +258,7 @@ Audio is drawn from credited Freesound recordings. The [research library attribu
 
 The four gameplay excerpts have their own [deployed credits](public/audio/credits.html), available at `/audio/credits.html` and through the pause panel. The horn excerpt comes from a Jaipur electric-rickshaw recording; its provenance is documented with the other clips. Preserve the credits and modification notes when reusing audio.
 
-The [118 character recordings](docs/mumbai-characters/VOICE-LINES.md) use free-account ElevenLabs voices and require attribution and non-commercial use. They do not inherit the field recordings' Creative Commons licenses. See the [voice production guide](assets/audio/mumbai/voices/README.md) for casting, every person's assignment, generation commands, and verification. [Listen to the voice pack](public/audio/mumbai/voices/index.html).
+The [119 character recordings](docs/mumbai-characters/VOICE-LINES.md) use free-account ElevenLabs voices and require attribution and non-commercial use. They do not inherit the field recordings' Creative Commons licenses. See the [voice production guide](assets/audio/mumbai/voices/README.md) for casting, every person's assignment, generation commands, and verification. [Listen to the voice pack](public/audio/mumbai/voices/index.html).
 
 The municipal reference illustration uses DataMeet data under **CC BY-SA 2.5 India**; see the [map attribution](docs/research/mumbai/README.md). Landing/gallery images and storyboards are original generated concept artwork. Font licenses are included with their upstream Fontsource packages.
 

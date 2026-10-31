@@ -70,13 +70,13 @@ export default function Game({ onExit }: { onExit: () => void }) {
     setLow(false);
     setStats(initial);
     void loadGameAssets(controller.signal)
-      .then((assets) => {
+      .then(async (assets) => {
         if (!active) {
           disposeGameAssets(assets);
           return;
         }
         try {
-          engine.current = createEngine(
+          const created = await createEngine(
             host.current!,
             (s) => {
               if (active) setStats(s);
@@ -89,7 +89,11 @@ export default function Game({ onExit }: { onExit: () => void }) {
             },
             assets.autoModel,
             assets.characterModels,
+            undefined,
+            controller.signal,
           );
+          if (!active) { created.dispose(); return; }
+          engine.current = created;
           setLoaded(true);
         } catch (e) {
           disposeGameAssets(assets);

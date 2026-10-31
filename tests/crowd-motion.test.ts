@@ -112,12 +112,15 @@ test("opposing walkers make room, pass one another and keep personal space", () 
 test("dense crowd separation keeps named homes fixed and body transforms apart", () => {
   const actors = createActors(),
     motion = createCrowdMotion(actors);
+  const settled = motion.sample(0).map(({ x, z }) => ({ x, z }));
   for (let tick = 0; tick <= 100; tick++) {
     const poses = motion.sample(tick * 0.05);
     if (tick % 20) continue;
     const grid = new Map<string, number[]>();
     poses.forEach((p, i) => {
       assert.ok(Number.isFinite(p.x + p.z + p.yaw));
+      if (actors[i].activity !== "walk")
+        assert.deepEqual({ x: p.x, z: p.z }, settled[i], "Standing neighbours must not jitter between updates");
       if (actors[i].home)
         assert.deepEqual(
           { x: p.x, z: p.z },

@@ -56,7 +56,7 @@ export function atmosphere(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   sun.shadow.normalBias = 0.08;
   scene.add(sun, sun.target);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
   let last = -1,
     low = false;

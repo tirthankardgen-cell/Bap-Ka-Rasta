@@ -1,10 +1,11 @@
 import { enginePitch, type Gear } from "./gears.ts";
 import { createVoiceAudio } from "./voice-audio.ts";
-import type { DialogueCue } from "./dialogue.ts";
+import type { DialogueCue, SpeechProgress } from "./dialogue.ts";
 // Field-recorded stems, fetched only after the player's sound gesture.
 export function createStreetAudio(
   report: (state: string) => void,
   reportVoice: (state: string, clipId: string) => void = () => {},
+  speechProgress: (event: SpeechProgress) => void = () => {},
 ) {
   let context: AudioContext | null = null,
     enabled = false,
@@ -12,7 +13,7 @@ export function createStreetAudio(
     disposed = false;
   let loading: Promise<void> | null = null;
   let voice: ReturnType<typeof createVoiceAudio> | null = null;
-  let dialogue: DialogueCue | null = null;
+  let dialogue: readonly DialogueCue[] = [];
   let listener = { x: 0, z: 0, yaw: 0 };
   let speaking = false;
   const abort = new AbortController();
@@ -22,7 +23,8 @@ export function createStreetAudio(
   >();
   const shots = new Set<AudioBufferSourceNode>();
   let hornBuffer: AudioBuffer | null = null,
-    lastHorn = -10;
+    lastHorn = -10,
+    syncVersion = 0;
   function level(name: string, value: number, fade: number) {
     const loop = loops.get(name);
     if (!loop || !context) return;
@@ -56,9 +58,15 @@ export function createStreetAudio(
   }
   function sync() {
     if (!context || disposed) return;
+    const version = ++syncVersion;
     voice?.pause(paused);
     if (enabled && !paused)
-      void context.resume().catch(() => report("unavailable"));
+      void context.resume().catch(() => {
+        if (disposed || version !== syncVersion) return;
+        enabled = false;
+        voice?.enable(false);
+        report("unavailable");
+      });
     else {
       for (const source of shots) source.stop();
       shots.clear();
@@ -109,16 +117,19 @@ export function createStreetAudio(
     }
   }
   return {
+    get caption() { return voice?.caption ?? null; },
+    get pendingDialogue() { return voice?.pendingForeground ?? false; },
+    get voiceStats() { return voice?.stats ?? { playing: 0, loading: 0, cached: 0, channels: 0 }; },
     enable(value: boolean) {
       if (disposed) return false;
       enabled = value;
       try {
         if (value) {
           context ??= new AudioContext();
-          voice ??= createVoiceAudio(context, reportVoice, duck);
+          voice ??= createVoiceAudio(context, reportVoice, duck, speechProgress);
           voice.enable(true);
           sync();
-          voice.cue(dialogue, listener);
+          voice.scene(dialogue, listener);
           loading ??= load();
         } else {
           voice?.enable(false);
@@ -135,13 +146,13 @@ export function createStreetAudio(
       paused = value;
       sync();
     },
-    dialogue(cue: DialogueCue | null, position: { x: number; z: number; yaw: number }) {
-      dialogue = cue;
+    dialogue(cues: readonly DialogueCue[], position: { x: number; z: number; yaw: number }) {
+      dialogue = cues;
       listener = position;
-      voice?.cue(cue, position);
+      voice?.scene(cues, position);
     },
     clearDialogue() {
-      dialogue = null;
+      dialogue = [];
       voice?.clear();
     },
     update(

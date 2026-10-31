@@ -3,8 +3,8 @@ test("slow impact scolds without ending the drive", async ({ page }) => {
   await page.goto(
     "http://127.0.0.1:4176/tests/browser/fixtures/incident.html?slow",
   );
-  await expect(page.locator(".character-subtitle")).toContainText(
-    /bhau|dada|Kay re/,
+  await expect(page.locator(".character-subtitle")).toHaveAttribute(
+    "data-clip-id", /_warning_01$/,
     { timeout: 60000 },
   );
   await expect(page.locator(".game")).toHaveAttribute("data-incident", "none");

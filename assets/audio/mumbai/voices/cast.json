@@ -16,7 +16,7 @@
         "stability": 0.55,
         "similarityBoost": 0.75
       },
-      "direction": "Warm, relaxed Mumbai auto driver; quiet confidence and a small smile.",
+      "direction": "Warm Mumbai driver, speaking easily rather than announcing catchphrases.",
       "reason": "Grounded, warm driver; conversational mid-register male."
     },
     {
@@ -33,7 +33,7 @@
         "stability": 0.7,
         "similarityBoost": 0.75
       },
-      "direction": "Affectionate older driver; weathered, unhurried, with dry humour.",
+      "direction": "Older driver with affectionate dry humour; an easy conversation.",
       "reason": "Older, balanced male voice for an affectionate senior driver."
     },
     {
@@ -50,7 +50,7 @@
         "stability": 0.52,
         "similarityBoost": 0.75
       },
-      "direction": "Warm, resonant chai-stall owner; brisk and inviting, never shrill.",
+      "direction": "Chai-stall owner, warm and busy, with a smile in her voice.",
       "reason": "Bright, warm mature female voice for brisk chai-stall calls."
     },
     {
@@ -67,7 +67,7 @@
         "stability": 0.58,
         "similarityBoost": 0.75
       },
-      "direction": "Young mechanic; practical medium-low voice, clipped and reassuring.",
+      "direction": "Practical young mechanic, low and conversational, amused by workshop life.",
       "reason": "Smooth, trustworthy male voice for a practical mechanic."
     },
     {
@@ -84,7 +84,7 @@
         "stability": 0.48,
         "similarityBoost": 0.75
       },
-      "direction": "Clear young commuter; focused, lightly hurried, conversational.",
+      "direction": "Young office commuter, alert and slightly hurried, talking to a neighbour.",
       "reason": "Clear young female voice for a focused commuter."
     },
     {
@@ -101,7 +101,7 @@
         "stability": 0.42,
         "similarityBoost": 0.75
       },
-      "direction": "Bright college student; easy banter and playful timing, no shouting.",
+      "direction": "College student, playful and quick, chatting without shouting.",
       "reason": "Youthful, energetic male voice for easy college banter."
     },
     {
@@ -118,7 +118,7 @@
         "stability": 0.52,
         "similarityBoost": 0.75
       },
-      "direction": "Mature flower seller; earthy warmth and a gentle musical Marathi cadence.",
+      "direction": "Mature flower seller with a gentle Marathi cadence and earthy humour.",
       "reason": "Textured mature female delivery for rhythmic flower-seller calls."
     },
     {
@@ -135,7 +135,7 @@
         "stability": 0.72,
         "similarityBoost": 0.75
       },
-      "direction": "Male traffic constable; grounded, firm diction and controlled authority.",
+      "direction": "Male traffic constable, firm and clear, relaxed when chatting off duty.",
       "reason": "Firm, clear male voice for the male traffic constable."
     },
     {
@@ -152,7 +152,7 @@
         "stability": 0.56,
         "similarityBoost": 0.75
       },
-      "direction": "Dabbawala; brisk, light and efficient, with friendly short calls.",
+      "direction": "Dabbawala, brisk but friendly, speaking in short natural phrases.",
       "reason": "Friendly, light male voice for efficient dabbawala exchanges."
     },
     {
@@ -169,7 +169,7 @@
         "stability": 0.52,
         "similarityBoost": 0.75
       },
-      "direction": "Adult fruit seller; bright, steady market projection and easy Hindi.",
+      "direction": "Confident fruit seller, clear market projection, easy neighbourhood gossip.",
       "reason": "Confident adult female voice for clear fruit-stall conversation."
     },
     {
@@ -186,7 +186,7 @@
         "stability": 0.7,
         "similarityBoost": 0.75
       },
-      "direction": "Older newspaper seller; lightly textured voice, short rhythmic calls.",
+      "direction": "Older newspaper seller, textured and wry, never a loud announcer.",
       "reason": "Warm, resonant mature male voice for the newspaper seller."
     },
     {
@@ -203,7 +203,7 @@
         "stability": 0.76,
         "similarityBoost": 0.75
       },
-      "direction": "Young nurse after a shift; soft, clear, practical and slightly tired.",
+      "direction": "Young nurse after her shift, soft, tired and gently funny.",
       "reason": "Gentler, steady delivery of Sarah for a tired young nurse."
     },
     {
@@ -220,7 +220,7 @@
         "stability": 0.62,
         "similarityBoost": 0.75
       },
-      "direction": "Office commuter; contained mid-register voice, mild urgency and dry humour.",
+      "direction": "Office commuter, contained and dryly amused by daily life.",
       "reason": "Contained, casual male voice for an office commuter."
     },
     {
@@ -237,7 +237,7 @@
         "stability": 0.45,
         "similarityBoost": 0.75
       },
-      "direction": "Young artist; airy, curious and quietly expressive.",
+      "direction": "Curious young artist, light and expressive, speaking to a friend.",
       "reason": "Expressive young female voice for an artist's curiosity."
     },
     {
@@ -254,7 +254,7 @@
         "stability": 0.45,
         "similarityBoost": 0.75
       },
-      "direction": "Delivery rider; energetic, quick and natural, with clear short phrases.",
+      "direction": "Young delivery rider, energetic, informal and lightly sarcastic.",
       "reason": "Quick, energetic young male voice for a delivery rider."
     },
     {
@@ -271,7 +271,7 @@
         "stability": 0.65,
         "similarityBoost": 0.75
       },
-      "direction": "Safai saathi; low-mid voice, matter-of-fact warmth and deliberate speech.",
+      "direction": "Street worker, steady and matter-of-fact, with understated wit.",
       "reason": "Clear, mature female voice for matter-of-fact street-worker lines."
     },
     {
@@ -288,7 +288,7 @@
         "stability": 0.8,
         "similarityBoost": 0.75
       },
-      "direction": "Older local grandmother; warm, measured and gently amused, never a frail parody.",
+      "direction": "Older grandmother, warm, measured and amused, without a frail caricature.",
       "reason": "Measured, softer delivery of Lily for the elder; an approximation, not a native elderly Marathi recording."
     },
     {
@@ -305,7 +305,7 @@
         "stability": 0.55,
         "similarityBoost": 0.75
       },
-      "direction": "Polite photographer; light voice, clear Hindi and quiet curiosity.",
+      "direction": "Photographer, polite and curious, clear conversational Hindi.",
       "reason": "Clear, steady male diction for the polite photographer."
     },
     {
@@ -322,7 +322,7 @@
         "stability": 0.45,
         "similarityBoost": 0.75
       },
-      "direction": "Upbeat jogger; clear, energetic short phrases, lightly breathy without panting.",
+      "direction": "Upbeat jogger, energetic and a little breathy, talking normally.",
       "reason": "Bright, upbeat young female voice for the jogger."
     },
     {
@@ -339,7 +339,7 @@
         "stability": 0.6,
         "similarityBoost": 0.75
       },
-      "direction": "Adult shop worker; resonant, practical voice and short projected requests.",
+      "direction": "Shop worker, resonant, practical and friendly, with an ordinary speaking voice.",
       "reason": "Deep, resonant adult male voice for the shop worker."
     }
   ]

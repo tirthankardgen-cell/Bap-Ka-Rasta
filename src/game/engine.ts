@@ -1,4 +1,5 @@
 import { renderPose } from "./render-pose";
+import { setupCheckpoint, abortableSetup } from "./setup-work";
 import { createRenderBudget } from "./render-budget";
 import { type Gear } from "./gears";
 import { type IncidentReport, type PedestrianHit } from "./pedestrian-rules";
@@ -53,7 +54,7 @@ export type Stats = {
   impact: boolean;
   fps: number;
 };
-export function createEngine(
+export async function createEngine(
   host: HTMLElement,
   onStats: (s: Stats) => void,
   onPause: () => void,
@@ -61,7 +62,10 @@ export function createEngine(
   autoModel: THREE.Group,
   characterModels: CharacterModels,
   initialDrive = newDrive(),
+  startupSignal?: AbortSignal,
 ) {
+  const checkpoint = setupCheckpoint(startupSignal);
+  await checkpoint(true);
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     powerPreference: "high-performance",
@@ -81,14 +85,27 @@ export function createEngine(
   );
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
-  const lighting = atmosphere(renderer, scene);
-  lighting.quality(!automaticShadows);
-  const world = makeWorld(scene, characterModels);
-  const player = autoRickshaw(autoModel);
-  scene.add(player.root);
+  let lighting!: ReturnType<typeof atmosphere>;
+  let world!: Awaited<ReturnType<typeof makeWorld>>;
+  let player!: ReturnType<typeof autoRickshaw>;
+  let placeTraffic!: Awaited<ReturnType<typeof trafficVisuals>>;
   const traffic = newTraffic();
   const trafficHorn = createTrafficHornScheduler();
-  const placeTraffic = trafficVisuals(scene, traffic, autoModel);
+  try {
+    lighting = atmosphere(renderer, scene);
+    lighting.quality(!automaticShadows);
+    await checkpoint(true);
+    world = await makeWorld(scene, characterModels, startupSignal);
+    player = autoRickshaw(autoModel);
+    scene.add(player.root);
+    placeTraffic = await trafficVisuals(scene, traffic, autoModel, startupSignal);
+    await checkpoint(true);
+  } catch (error) {
+    disposeSceneResources(scene);
+    lighting?.dispose();
+    renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+    throw error;
+  }
   // Traffic keeps its cheap anonymous drivers; Sachin is the reference-cast model.
   autoModel.traverse((object) => {
     if (object.userData.driver) {
@@ -118,6 +135,7 @@ export function createEngine(
   const touch = new Map<number, keyof Input>();
   let paused = true,
     disposed = false,
+    prepared = false,
     raf = 0,
     last = performance.now(),
     accumulator = 0,
@@ -130,6 +148,7 @@ export function createEngine(
     lastHorn = 0;
   let dialogueClock = 0;
   let currentDialogue: DialogueCue | null = null;
+  let streetDialogues: readonly DialogueCue[] = [];
   const streetAudio = createStreetAudio(
     (status) => {
       audioStatus = status;
@@ -138,6 +157,14 @@ export function createEngine(
     (status, clipId) => {
       renderer.domElement.dataset.voiceStatus = status;
       renderer.domElement.dataset.voiceClip = clipId;
+    },
+    (event) => {
+      world.crowd.voiceProgress(event, dialogueClock);
+      if (event.state === "playing") {
+        renderer.domElement.dataset.voiceStarted = event.key;
+        renderer.domElement.dataset.voiceDuration = String(event.duration ?? 0);
+      }
+      if (event.state === "ended") renderer.domElement.dataset.voiceEnded = event.key;
     },
   );
   let incident: IncidentReport | null = null;
@@ -155,12 +182,16 @@ export function createEngine(
     lookTarget = new THREE.Vector3();
   function publish() {
     const frame = introFrame(introTime, reducedMotion);
-    if (!introStarted || incident) currentDialogue = null;
-    else if (introActive) currentDialogue = introDialogue(introTime);
-    else if (!paused) currentDialogue = world.crowd.greeting(
+    if (!introStarted || incident) streetDialogues = [];
+    else if (introActive) streetDialogues = [introDialogue(introTime)];
+    else if (!paused) streetDialogues = world.crowd.greeting(
       state.time, state.x, state.z, state.speed, dialogueClock, state.signal,
     );
-    streetAudio.dialogue(currentDialogue, state);
+    streetAudio.dialogue(streetDialogues, state);
+    currentDialogue = streetAudio.caption ?? streetDialogues.find((cue) => cue.audience === "player") ?? null;
+    renderer.domElement.dataset.worldSpeakers = String(streetDialogues.filter((cue) => cue.audience === "neighbours").length);
+    renderer.domElement.dataset.audibleSpeakers = String(streetAudio.voiceStats.playing);
+    renderer.domElement.dataset.voiceLoads = String(streetAudio.voiceStats.loading);
     const stage = !introStarted ? "ready" : introActive ? frame.stage : "done";
     renderer.domElement.dataset.introStage = stage;
     renderer.domElement.dataset.characterCount = String(world.crowd.count);
@@ -280,6 +311,7 @@ export function createEngine(
   function finishIntro() {
     if (!introActive && introStarted) return;
     streetAudio.clearDialogue();
+    streetDialogues = [];
     world.crowd.clearDialogue(dialogueClock + 3);
     currentDialogue = null;
     introActive = false;
@@ -291,7 +323,7 @@ export function createEngine(
     driverVisibility(true);
     place(true);
     publish();
-    renderer.render(scene, camera);
+    if (prepared) renderer.render(scene, camera);
   }
   function beginIntro() {
     if (introStarted) return;
@@ -310,7 +342,7 @@ export function createEngine(
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     place(true);
-    renderer.render(scene, camera);
+    if (prepared) renderer.render(scene, camera);
   }
   const observer = new ResizeObserver(resize);
   observer.observe(host);
@@ -481,6 +513,7 @@ export function createEngine(
     if (incident) return;
     if (introActive) finishIntro();
     streetAudio.clearDialogue();
+    streetDialogues = [];
     world.crowd.clearDialogue(dialogueClock + 3);
     currentDialogue = null;
     resetDrive(state, traffic);
@@ -509,6 +542,7 @@ export function createEngine(
     state.speed = 0;
     accumulator = 0;
     streetAudio.clearDialogue();
+    streetDialogues = [];
     world.crowd.clearDialogue();
     currentDialogue = null;
     streetAudio.pause(true);
@@ -557,10 +591,10 @@ export function createEngine(
         }
       }
     } else if (!paused && introActive) {
-      introTime = advanceIntro(introTime, Math.min(elapsed, 0.5), false);
+      introTime = Math.min(INTRO_DURATION, advanceIntro(introTime, Math.min(elapsed, 0.5), false));
       placeIntro();
       lighting.update(state.x, state.z, introTime);
-      if (introTime >= INTRO_DURATION) finishIntro();
+      if (introTime >= INTRO_DURATION && !streetAudio.pendingDialogue) finishIntro();
       renderer.render(scene, camera);
     } else if (!paused) {
       if (!lowQuality) {
@@ -640,10 +674,44 @@ export function createEngine(
     }
     renderer.domElement.dataset.horn = now - lastHorn < 250 ? "on" : "off";
   }
-  place(true);
-  resize();
-  publish();
-  raf = requestAnimationFrame(loop);
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    cancelAnimationFrame(raf);
+    observer.disconnect();
+    canvas.removeEventListener("pointerdown", lookDown);
+    canvas.removeEventListener("pointermove", lookMove);
+    canvas.removeEventListener("pointerup", lookUp);
+    canvas.removeEventListener("pointercancel", lookUp);
+    canvas.removeEventListener("lostpointercapture", lookUp);
+    window.removeEventListener("keydown", down);
+    window.removeEventListener("keyup", up);
+    window.removeEventListener("blur", blur);
+    document.removeEventListener("visibilitychange", visibility);
+    renderer.domElement.removeEventListener("webglcontextlost", lost);
+    clear(); streetAudio.dispose();
+    disposeSceneResources(scene);
+    lighting.dispose();
+    renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+  }
+  try {
+    place(true);
+    resize();
+    await checkpoint(true);
+    // Compile before the ready button appears, without blocking browser frames.
+    await abortableSetup(renderer.compileAsync(scene, camera), startupSignal);
+    if (automaticShadows) {
+      lighting.quality(true);
+      await abortableSetup(renderer.compileAsync(scene, camera), startupSignal);
+      lighting.quality(false);
+    }
+    startupSignal?.throwIfAborted();
+    prepared = true;
+    renderer.render(scene, camera);
+    await checkpoint(true);
+    publish();
+    raf = requestAnimationFrame(loop);
+  } catch (error) { dispose(); throw error; }
   return {
     selectGear,
     cycleCamera,
@@ -669,50 +737,25 @@ export function createEngine(
       lighting.quality(low || !automaticShadows);
       resize();
     },
-    dispose() {
-      disposed = true;
-      cancelAnimationFrame(raf);
-      observer.disconnect();
-      canvas.removeEventListener("pointerdown", lookDown);
-      canvas.removeEventListener("pointermove", lookMove);
-      canvas.removeEventListener("pointerup", lookUp);
-      canvas.removeEventListener("pointercancel", lookUp);
-      canvas.removeEventListener("lostpointercapture", lookUp);
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-      window.removeEventListener("blur", blur);
-      document.removeEventListener("visibilitychange", visibility);
-      renderer.domElement.removeEventListener("webglcontextlost", lost);
-      clear();
-      streetAudio.dispose();
-      const geometries = new Set<THREE.BufferGeometry>(),
-        materials = new Set<THREE.Material>(),
-        textures = new Set<THREE.Texture>();
-      scene.traverse((o) => {
-        if (o instanceof THREE.Mesh) {
-          geometries.add(o.geometry);
-          if (o.customDepthMaterial) materials.add(o.customDepthMaterial);
-          if (o.customDistanceMaterial) materials.add(o.customDistanceMaterial);
-          for (const mat of Array.isArray(o.material)
-            ? o.material
-            : [o.material]) {
-            materials.add(mat);
-            for (const value of [
-              ...Object.values(mat),
-              ...Object.values(mat.userData),
-            ])
-              if (value instanceof THREE.Texture) textures.add(value);
-          }
-        }
-      });
-      geometries.forEach((g) => g.dispose());
-      textures.forEach((t) => t.dispose());
-      materials.forEach((m) => m.dispose());
-      lighting.dispose();
-      renderer.dispose();
-      renderer.forceContextLoss();
-      renderer.domElement.remove();
-    },
+    dispose,
   };
 }
-export type Engine = ReturnType<typeof createEngine>;
+export type Engine = Awaited<ReturnType<typeof createEngine>>;
+
+function disposeSceneResources(scene: THREE.Scene) {
+  const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
+  scene.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    geometries.add(object.geometry);
+    if (object.customDepthMaterial) materials.add(object.customDepthMaterial);
+    if (object.customDistanceMaterial) materials.add(object.customDistanceMaterial);
+    for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+      materials.add(material);
+      for (const value of [...Object.values(material), ...Object.values(material.userData)])
+        if (value instanceof THREE.Texture) textures.add(value);
+    }
+  });
+  geometries.forEach((value) => value.dispose());
+  textures.forEach((value) => value.dispose());
+  materials.forEach((value) => value.dispose());
+}

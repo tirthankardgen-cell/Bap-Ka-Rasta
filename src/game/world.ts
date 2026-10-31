@@ -1,10 +1,11 @@
 import { localInstances } from "./static-visibility";
+import { setupCheckpoint, runSetupWork } from "./setup-work";
 import { makeCones } from "./cone-visuals";
-import { buildingLots } from "./buildings";
+import { buildingLotWork } from "./buildings";
 import { boundaryBuildings } from "./boundaries";
 import { makeCrowd } from "./crowd";
 import type { CharacterModels } from "./character-models";
-import { pavementLayout, PAVEMENT_TOP } from "./pavements";
+import { pavementWork, PAVEMENT_TOP } from "./pavements";
 import * as THREE from "three";
 import {
   streets,
@@ -132,10 +133,13 @@ ${glass ? "" : sea ? "diffuseColor.rgb*=.96+.04*sin(vSurfaceWorld.x*.3+sin(vSurf
   return material;
 }
 
-export function makeWorld(
+export async function makeWorld(
   scene: THREE.Scene,
   characterModels: CharacterModels,
+  signal?: AbortSignal,
 ) {
+  const checkpoint = setupCheckpoint(signal);
+  await checkpoint(true);
   const grainCanvas = document.createElement("canvas");
   grainCanvas.width = 128;
   grainCanvas.height = 128;
@@ -174,7 +178,7 @@ export function makeWorld(
     rounded: new RoundedBoxGeometry(1, 1, 1, 2, 0.12),
   };
   const dummy = new THREE.Object3D();
-  const pavement = pavementLayout();
+  const pavement = await runSetupWork(pavementWork(), signal);
   function add(
     shape: keyof typeof geometries,
     color: string,
@@ -266,6 +270,7 @@ export function makeWorld(
     ribbonBatches.get(color)!.push(geo);
   }
   for (const e of streets) {
+    await checkpoint();
     const g = geometry(e.id),
       mid = lanePosition(e.id, e.a, g.length / 2, 0),
       yaw = mid.yaw;
@@ -369,6 +374,7 @@ export function makeWorld(
     yaw: number;
   }[] = [];
   for (const n of junctions) {
+    await checkpoint();
     if (n.ring) continue;
     const incident = streets.filter((e) => e.a === n.id || e.b === n.id);
     for (const e of incident) {
@@ -437,8 +443,9 @@ export function makeWorld(
     "#e1cea0",
     "#b5b4ba",
   ];
-  const lots = buildingLots();
+  const lots = await runSetupWork(buildingLotWork(), signal);
   for (const p of lots) {
+    await checkpoint();
     const e = streets[p.edge],
       d = p.distance,
       side = p.side;
@@ -655,6 +662,7 @@ export function makeWorld(
       box("#ece2bd", -170 + x, 0.75, z, 0.08, 1.2, 0.08);
   sign("OVAL MAIDAN", -220, 3, 65, Math.PI / 2, 7);
   for (const e of streets) {
+    await checkpoint();
     if (e.oneWay) continue;
     const g = geometry(e.id);
     for (let d = 35; d < g.length - 30; d += 43)
@@ -708,6 +716,7 @@ export function makeWorld(
   }
   // BEST-style bus stops, small stalls, parked taxis and a shoulder repair zone.
   for (const e of streets.filter((e) => !e.oneWay && e.id % 6 === 0)) {
+    await checkpoint();
     const g = geometry(e.id),
       p = lanePosition(e.id, e.a, g.length * 0.5, 16);
     box("#af4437", p.x, 2.9, p.z, 3, 0.22, 7, p.yaw);
@@ -733,6 +742,7 @@ export function makeWorld(
     );
   }
   for (const o of obstacles) {
+    await checkpoint();
     const taxi = trafficCar(0);
     taxi.position.set(o.x, 0, o.z);
     scene.add(taxi);
@@ -741,6 +751,7 @@ export function makeWorld(
   // Kerbside carts leave through lanes and pedestrian crossings open.
   const vendors: { x: number; z: number }[] = [];
   for (const e of streets) {
+    await checkpoint();
     if (e.oneWay) continue;
     const g = geometry(e.id);
     for (let d = 58; d < g.length - 45; d += 72) {
@@ -859,6 +870,7 @@ export function makeWorld(
   }
   // A continuous inhabited land-side edge; the west stays open to the seawall.
   for (const block of boundaryBuildings) {
+    await checkpoint();
     const { x, z, width, depth, yaw, height: h } = block;
     const local = (along: number, out: number) => ({
       x: x + Math.cos(yaw) * along + Math.sin(yaw) * out,
@@ -958,6 +970,7 @@ export function makeWorld(
     add("cone", "#f7eed2", x, 4, z, 2.5, 6, 0.15);
   }
   for (const [color, pieces] of ribbonBatches) {
+    await checkpoint();
     const geo = mergeGeometries(pieces);
     pieces.forEach((p) => p.dispose());
     const mesh = new THREE.Mesh(geo, surfaceMaterial(color, grain));
@@ -969,6 +982,7 @@ export function makeWorld(
     matrices: THREE.Matrix4[];
   }[] = [];
   for (const b of batches.values()) {
+    await checkpoint();
     const mesh = new THREE.InstancedMesh(b.geo, b.material, b.matrices.length);
     b.matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -1076,14 +1090,17 @@ function scooterModel() {
   return g;
 }
 
-export function trafficVisuals(
+export async function trafficVisuals(
   scene: THREE.Scene,
   traffic: Traffic[],
   autoModel: THREE.Group,
+  signal?: AbortSignal,
 ) {
+  const checkpoint = setupCheckpoint(signal);
   const batches: { mesh: THREE.InstancedMesh; ids: number[] }[] = [];
   const transform = new THREE.Object3D();
   for (let kind = 0; kind < 6; kind++) {
+    await checkpoint();
     const ids = traffic
       .map((t, i) => (t.kind === kind ? i : -1))
       .filter((i) => i >= 0);
@@ -1123,6 +1140,7 @@ export function trafficVisuals(
       groups.get(key)!.geos.push(geometry);
     });
     for (const group of groups.values()) {
+      await checkpoint();
       const geometry = mergeGeometries(group.geos);
       group.geos.forEach((g) => g.dispose());
       if (!geometry) continue;

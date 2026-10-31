@@ -2,7 +2,7 @@ import { createCrowdMotion } from "./crowd-motion.ts";
 import { createPedestrianRules, fallPose } from "./pedestrian-rules.ts";
 import * as THREE from "three";
 import { characters, createActors, type Actor } from "./characters.ts";
-import { createDialogueDirector } from "./dialogue.ts";
+import { createDialogueDirector, type SpeechProgress } from "./dialogue.ts";
 
 import {
   CHARACTER_DETAIL_LIMIT,
@@ -252,7 +252,7 @@ export function makeCrowd(
             : 3
           : a.named && a.character === 1 && time < 6
             ? 2
-            : dialogue.cue?.actorId === a.id && !p.moving
+            : dialogue.isTalking(a.id) && !p.moving
               ? 2
             : !p.moving && a.activity === "work"
               ? 1
@@ -280,6 +280,9 @@ export function makeCrowd(
     },
     clearDialogue(until = 0) {
       dialogue.clear(until);
+    },
+    voiceProgress(event: SpeechProgress, clock: number) {
+      dialogue.playback(event, clock);
     },
   };
 }

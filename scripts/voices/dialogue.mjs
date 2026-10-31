@@ -1,175 +1,185 @@
-// Authored Mumbai recording script. Only `text` is sent to ElevenLabs.
-// Hindi carries the meaning; familiar Marathi words supply the local flavour.
+// Original Mumbai dialogue. Only the Devanagari text is sent to ElevenLabs.
 const line = (event, subtitle, text, meaning) => ({ event, subtitle, text, meaning });
 const person = (id, age, gender, direction, lines) => ({ id, age, gender, direction, lines });
 
 export const dialogue = [
-  person("sachin", 32, "male", "Warm, relaxed Mumbai auto driver; quiet confidence and a small smile.", [
-    line("ignition", "Chala, Mumbai! Aaram se chalenge, maza aayega.", "चला, मुंबई! आराम से चलेंगे, मज़ा आएगा।", "Let's go, Mumbai! An easy drive will be fun."),
-    line("red_wait", "Signal laal hai, bhau. Thamba, abhi hara hoga.", "सिग्नल लाल है, भाऊ। थांबा, अभी हरा होगा।", "The signal is red, friend. Wait, it will turn green."),
-    line("waterfront", "Samundar ki hawa mast hai! Isi mein toh Mumbai ka maza hai.", "समुंदर की हवा मस्त है! इसी में तो मुंबई का मज़ा है।", "What a sea breeze! This is the joy of Mumbai."),
-    line("stand", "Apna adda aa gaya. Chala, ek cutting ho jaaye.", "अपना अड्डा आ गया। चला, एक कटिंग हो जाए।", "Back at our stand. Let's have a cutting chai."),
+  person("sachin", 32, "male", "Warm Mumbai driver, speaking easily rather than announcing catchphrases.", [
+    line("ignition", "Meter chaalu. Aaj samundar wale raste se nikalte hain.", "मीटर चालू। आज समंदर वाले रास्ते से निकलते हैं।", "Meter on. Let's take the seaside road today."),
+    line("red_wait", "Laal batti hai. Jaldi karke bhi kya milna hai?", "लाल बत्ती है। जल्दी करके भी क्या मिलना है?", "It's a red light. What's the point of rushing?"),
+    line("waterfront", "Is hawa ke liye toh roz idhar aana banta hai.", "इस हवा के लिए तो रोज़ इधर आना बनता है।", "This breeze is worth coming here every day."),
+    line("stand", "Apna adda! Dekhein, aaj kiski kahaani chal rahi hai.", "अपना अड्डा! देखें, आज किसकी कहानी चल रही है।", "Our stand! Let's hear today's stories."),
   ]),
-  person("raju", 58, "male", "Affectionate older driver; weathered, unhurried, with dry humour.", [
-    line("greet_intro", "Arre Sachin bhau! Aaj kidhar ki sawaari?", "अरे सचिन भाऊ! आज किधर की सवारी?", "Hey, Sachin! Where are you heading today?"),
-    line("ambient", "Bhau, tula kya bolun? Cutting chai se din banta hai.", "भाऊ, तुला क्या बोलूँ? कटिंग चाय से दिन बनता है।", "What can I tell you, friend? Cutting chai makes the day."),
-    line("ambient", "Itni chik-chik mat kar, bhau. Do minute aaram kar!", "इतनी चिक-चिक मत कर, भाऊ। दो मिनट आराम कर!", "Don't fuss so much, friend. Take a two-minute break!"),
-    line("warning", "Arre bhau! Dekh ke chala, rasta tere baap ka hai kya?", "अरे भाऊ! देख के चला, रास्ता तेरे बाप का है क्या?", "Hey! Watch where you're driving. Do you own this road?"),
+  person("raju", 58, "male", "Older driver with affectionate dry humour; an easy conversation.", [
+    line("greet_intro", "Sachin! Chaabi le li? Aaj lambi sair ka iraada hai?", "सचिन! चाबी ले ली? आज लंबी सैर का इरादा है?", "Sachin! Got the keys? Planning a long drive today?"),
+    line("ambient", "Paintees saal se meter chala raha hoon. Kisse bahut hain.", "पैंतीस साल से मीटर चला रहा हूँ। किस्से बहुत हैं।", "Thirty-five years behind a meter. Plenty of stories."),
+    line("warning", "O driver! Sadak dekh, mujhe retirement toh lene de!", "ओ ड्राइवर! सड़क देख, मुझे रिटायरमेंट तो लेने दे!", "Watch the road, driver! Let me reach retirement!"),
   ]),
-  person("meera", 43, "female", "Warm, resonant chai-stall owner; brisk and inviting, never shrill.", [
-    line("ambient", "Cutting chai, bhau? Garam hai, aaram se peena.", "कटिंग चाय, भाऊ? गरम है, आराम से पीना।", "Cutting chai, friend? It's hot, sip it slowly."),
-    line("ambient", "Chala tai, chai tayyar! Adrak bhi mast daala hai.", "चला ताई, चाय तैयार! अदरक भी मस्त डाला है।", "Come along, sister, the chai is ready! Plenty of ginger too."),
-    line("ambient", "Pehle chai, phir bhaag-daud. Mumbai ka yahi rule hai!", "पहले चाय, फिर भाग-दौड़। मुंबई का यही रूल है!", "Chai first, rushing around later. That's Mumbai's rule!"),
-    line("warning", "Arre bhau, sambhal! Garam chai gir jaati abhi!", "अरे भाऊ, संभल! गरम चाय गिर जाती अभी!", "Careful! You nearly spilled the hot chai!"),
+  person("meera", 43, "female", "Chai-stall owner, warm and busy, with a smile in her voice.", [
+    line("ambient", "Adrak ki chai! Biscuit dubana, par cup mein chhodna mat.", "अदरक की चाय! बिस्कुट डुबाना, पर कप में छोड़ना मत।", "Ginger chai! Dip your biscuit, but don't leave it in the cup."),
+    line("warning", "Garam ketli hai! Gaadi zara udhar rakhna!", "गरम केतली है! गाड़ी ज़रा उधर रखना!", "This kettle's hot! Keep your vehicle over there!"),
   ]),
-  person("sameer", 28, "male", "Young mechanic; practical medium-low voice, clipped and reassuring.", [
-    line("ambient", "Engine ki awaaz sun, bhau. Apna auto ekdum fit hai.", "इंजन की आवाज़ सुन, भाऊ। अपना ऑटो एकदम फिट है।", "Listen to that engine, friend. Our auto is in great shape."),
-    line("ambient", "Chala, pehle tyre dekh le. Hawa sahi toh safar sahi.", "चला, पहले टायर देख ले। हवा सही तो सफ़र सही।", "Let's check the tyres first. Right pressure, smooth journey."),
-    line("ambient", "Gaadi ko bhi aaram chahiye, bhau. Machine hai, jadugar nahi.", "गाड़ी को भी आराम चाहिए, भाऊ। मशीन है, जादूगर नहीं।", "Even a vehicle needs rest. It's a machine, not a magician."),
-    line("warning", "Aye bhau! Dheere chala, yahaan kaam chal raha hai!", "ऐ भाऊ! धीरे चला, यहाँ काम चल रहा है!", "Slow down, friend! There's work going on here!"),
+  person("sameer", 28, "male", "Practical young mechanic, low and conversational, amused by workshop life.", [
+    line("ambient", "Pana kidhar gaya? Abhi toh yahin rakha tha.", "पाना किधर गया? अभी तो यहीं रखा था।", "Where's my spanner? I just put it here."),
+    line("warning", "Brake daba! Yahaan neeche auzaar pade hain!", "ब्रेक दबा! यहाँ नीचे औज़ार पड़े हैं!", "Hit the brakes! There are tools down here!"),
   ]),
-  person("aarti", 27, "female", "Clear young commuter; focused, lightly hurried, conversational.", [
-    line("ambient", "Bhau, train mil jaaye bas. Meeting mein late nahi hona.", "भाऊ, ट्रेन मिल जाए बस। मीटिंग में लेट नहीं होना।", "I just need to catch the train. Can't be late for the meeting."),
-    line("ambient", "Thamba zara, bag ki chain khuli reh gayi!", "थांबा ज़रा, बैग की चेन खुली रह गई!", "Wait a moment, I left my bag unzipped!"),
-    line("ambient", "Office se pehle cutting mil jaaye, toh din mast jaaye.", "ऑफ़िस से पहले कटिंग मिल जाए, तो दिन मस्त जाए।", "A cutting chai before work makes the day better."),
-    line("warning", "Arre bhau! Dekh ke chala, office pahunchna hai mujhe!", "अरे भाऊ! देख के चला, ऑफ़िस पहुँचना है मुझे!", "Watch where you're driving! I need to reach my office!"),
+  person("aarti", 27, "female", "Young office commuter, alert and slightly hurried, talking to a neighbour.", [
+    line("ambient", "Phone ki battery gayi. Ab boss ko kya bahaana doon?", "फ़ोन की बैटरी गई। अब बॉस को क्या बहाना दूँ?", "My phone's dead. What excuse do I give my boss?"),
+    line("warning", "Saamne dekhiye! Bag se zyada meri jaan keemti hai!", "सामने देखिए! बैग से ज़्यादा मेरी जान कीमती है!", "Look ahead! My life's worth more than my bag!"),
   ]),
-  person("imran", 21, "male", "Bright college student; easy banter and playful timing, no shouting.", [
-    line("ambient", "Chala, chai peete hain. Class mein abhi time hai!", "चला, चाय पीते हैं। क्लास में अभी टाइम है!", "Let's have chai. There's still time before class!"),
-    line("ambient", "Assignment kal dena hai, bhau. Aaj thoda Mumbai ghoomein?", "असाइनमेंट कल देना है, भाऊ। आज थोड़ा मुंबई घूमें?", "The assignment is due tomorrow. Shall we explore Mumbai today?"),
-    line("ambient", "Kya mast hawa hai, yaar! Lecture ke baad idhar hi baithte hain.", "क्या मस्त हवा है, यार! लेक्चर के बाद इधर ही बैठते हैं।", "What a breeze! Let's sit here after the lecture."),
-    line("warning", "Aye bhau! Brake bhi diya hai auto mein, use kar na!", "ऐ भाऊ! ब्रेक भी दिया है ऑटो में, यूज़ कर ना!", "Hey! The auto has brakes too. Use them!"),
+  person("imran", 21, "male", "College student, playful and quick, chatting without shouting.", [
+    line("ambient", "Attendance kam hai, par canteen waala mujhe roz dekhta hai.", "अटेंडेंस कम है, पर कैंटीन वाला मुझे रोज़ देखता है।", "My attendance is low, but the canteen guy sees me daily."),
+    line("warning", "Hero, picture ki shooting nahi chal rahi! Brake maar!", "हीरो, पिक्चर की शूटिंग नहीं चल रही! ब्रेक मार!", "Hero, this isn't a film shoot! Brake!"),
   ]),
-  person("lata", 55, "female", "Mature flower seller; earthy warmth and a gentle musical Marathi cadence.", [
-    line("ambient", "Taaze phool le lo, tai! Mogra ekdum mast hai.", "ताज़े फूल ले लो, ताई! मोगरा एकदम मस्त है।", "Fresh flowers, sister! The jasmine is lovely."),
-    line("ambient", "Chala bhau, ek gajra le jaao. Ghar mein khushboo ho jaayegi.", "चला भाऊ, एक गजरा ले जाओ। घर में ख़ुशबू हो जाएगी।", "Take a flower garland home, friend. It'll smell wonderful."),
-    line("ambient", "Aaram se dekho, tai. Aaj ke phool abhi aaye hain.", "आराम से देखो, ताई। आज के फूल अभी आए हैं।", "Take your time, sister. Today's flowers just arrived."),
-    line("warning", "Arre bhau! Phool hain, football nahi. Sambhal ke!", "अरे भाऊ! फूल हैं, फ़ुटबॉल नहीं। संभल के!", "Hey! These are flowers, not footballs. Be careful!"),
+  person("lata", 55, "female", "Mature flower seller with a gentle Marathi cadence and earthy humour.", [
+    line("ambient", "Mogryacha gajra ghya! Aaj ke phool bade khushboodaar hain.", "मोगऱ्याचा गजरा घ्या! आज के फूल बड़े ख़ुशबूदार हैं।", "Take a jasmine garland! Today's flowers smell wonderful."),
+    line("warning", "Tokri bachao! Subah se piroye hain ye phool!", "टोकरी बचाओ! सुबह से पिरोए हैं ये फूल!", "Mind the basket! I've been threading these flowers all morning!"),
   ]),
-  person("patil", 45, "male", "Male traffic constable; grounded, firm diction and controlled authority.", [
-    line("ambient", "Bhau, signal ka dhyaan rakho. Sabko ghar jaana hai.", "भाऊ, सिग्नल का ध्यान रखो। सबको घर जाना है।", "Mind the signals, friend. Everyone needs to get home."),
-    line("ambient", "Chala, line mein raho. Raasta sabka hai.", "चला, लाइन में रहो। रास्ता सबका है।", "Keep in line. The road belongs to everyone."),
-    line("ambient", "Crossing khaali rakhna, bhau. Logon ko jagah chahiye.", "क्रॉसिंग खाली रखना, भाऊ। लोगों को जगह चाहिए।", "Keep the crossing clear. People need room to pass."),
-    line("warning", "Bhau, gaadi sambhalo! Log chal rahe hain yahaan!", "भाऊ, गाड़ी संभालो! लोग चल रहे हैं यहाँ!", "Control your vehicle! People are walking here!"),
+  person("patil", 45, "male", "Male traffic constable, firm and clear, relaxed when chatting off duty.", [
+    line("ambient", "Zebra crossing khaali rakhiye. Paidal waalon ko bhi nikalne dijiye.", "ज़ेब्रा क्रॉसिंग खाली रखिए। पैदल वालों को भी निकलने दीजिए।", "Keep the crossing clear. Let people walk through."),
+    line("warning", "Gaadi roko! Logon ke beech aise chalaate hain kya?", "गाड़ी रोको! लोगों के बीच ऐसे चलाते हैं क्या?", "Stop! Is that how you drive around people?"),
   ]),
-  person("nilesh", 38, "male", "Dabbawala; brisk, light and efficient, with friendly short calls.", [
-    line("ambient", "Dabbe tayyar, bhau! Chala, time pe pahunchana hai.", "डब्बे तैयार, भाऊ! चला, टाइम पे पहुँचाना है।", "The tiffins are ready! Let's deliver them on time."),
-    line("ambient", "Bhau, zara jagah dena. Kisi ka garam khaana jaa raha hai.", "भाऊ, ज़रा जगह देना। किसी का गरम खाना जा रहा है।", "A little room, friend. Someone's hot lunch is coming through."),
-    line("ambient", "Apna dabba sahi jagah jaata hai. Mumbai ka bharosa hai, bhau.", "अपना डब्बा सही जगह जाता है। मुंबई का भरोसा है, भाऊ।", "Our tiffins reach the right place. Mumbai trusts us."),
-    line("warning", "Arre bhau, dheere! Dabbe giraayega toh lunch kaun dega?", "अरे भाऊ, धीरे! डब्बे गिराएगा तो लंच कौन देगा?", "Slow down! If you drop these tiffins, who's bringing lunch?"),
+  person("nilesh", 38, "male", "Dabbawala, brisk but friendly, speaking in short natural phrases.", [
+    line("ambient", "Naam dekh ke dabba uthao. Kal sabzi badal gayi thi!", "नाम देख के डब्बा उठाओ। कल सब्ज़ी बदल गई थी!", "Check the name on the tiffin. Yesterday the lunches got swapped!"),
+    line("warning", "Khaana gir jaayega! Thodi jagah chhod ke chalo!", "खाना गिर जाएगा! थोड़ी जगह छोड़ के चलो!", "You'll spill the food! Leave some room!"),
   ]),
-  person("farah", 36, "female", "Adult fruit seller; bright, steady market projection and easy Hindi.", [
-    line("ambient", "Seb, kele, sab taaza hai! Dekh lo, bhau.", "सेब, केले, सब ताज़ा है! देख लो, भाऊ।", "Apples, bananas, all fresh! Have a look, friend."),
-    line("ambient", "Tai, aaram se chuno. Meetha phal ghar le jaana.", "ताई, आराम से चुनो। मीठा फल घर ले जाना।", "Take your time choosing, sister. Bring something sweet home."),
-    line("ambient", "Chala bhau, phal bhi khaaya karo. Sirf chai pe mat chalo!", "चला भाऊ, फल भी खाया करो। सिर्फ़ चाय पे मत चलो!", "Have some fruit too, friend. You can't run on chai alone!"),
-    line("warning", "Aye bhau! Thela dikh nahi raha? Zara sambhal ke!", "ऐ भाऊ! ठेला दिख नहीं रहा? ज़रा संभल के!", "Can't you see the cart? Be careful!"),
+  person("farah", 36, "female", "Confident fruit seller, clear market projection, easy neighbourhood gossip.", [
+    line("ambient", "Papita meetha niklega. Shakal pe mat jaao iski!", "पपीता मीठा निकलेगा। शक्ल पे मत जाओ इसकी!", "This papaya will be sweet. Don't judge its looks!"),
+    line("warning", "Mera thela! Nazar road pe rakho, phone pe nahi!", "मेरा ठेला! नज़र रोड पे रखो, फ़ोन पे नहीं!", "My cart! Eyes on the road, not your phone!"),
   ]),
-  person("suresh", 61, "male", "Older newspaper seller; lightly textured voice, short rhythmic calls.", [
-    line("ambient", "Aaj ka akhbaar, bhau! Taazi khabar padh lo.", "आज का अख़बार, भाऊ! ताज़ी ख़बर पढ़ लो।", "Today's paper! Read the latest news."),
-    line("ambient", "Chai ke saath paper ho, toh subah mast ho jaaye.", "चाय के साथ पेपर हो, तो सुबह मस्त हो जाए।", "A newspaper with chai makes a lovely morning."),
-    line("ambient", "Thamba bhau, chhutte de deta hoon. Paper hawa mein ud raha hai!", "थांबा भाऊ, छुट्टे दे देता हूँ। पेपर हवा में उड़ रहा है!", "Wait, I'll get your change. The paper is flying in this wind!"),
-    line("warning", "Arre bhau! Khabar padhni hai, khabar banna nahi hai!", "अरे भाऊ! ख़बर पढ़नी है, ख़बर बनना नहीं है!", "I want to read the news, not become the news!"),
+  person("suresh", 61, "male", "Older newspaper seller, textured and wry, never a loud announcer.", [
+    line("ambient", "Akhbaar le lo! Mobile ki battery se toh nahi chalta.", "अख़बार ले लो! मोबाइल की बैटरी से तो नहीं चलता।", "Get your newspaper! It doesn't run on phone batteries."),
+    line("warning", "Khabar bechta hoon, khud khabar nahi banna mujhe!", "ख़बर बेचता हूँ, ख़ुद ख़बर नहीं बनना मुझे!", "I sell the news. I don't want to become the news!"),
   ]),
-  person("pooja", 26, "female", "Young nurse after a shift; soft, clear, practical and slightly tired.", [
-    line("ambient", "Shift khatam, bhau. Ab ghar ki chai chahiye bas.", "शिफ़्ट ख़त्म, भाऊ। अब घर की चाय चाहिए बस।", "Shift's over. All I want is chai at home."),
-    line("ambient", "Thamba zara. Pehle aaram se road paar kar lete hain.", "थांबा ज़रा। पहले आराम से रोड पार कर लेते हैं।", "Wait a moment. Let's cross the road carefully first."),
-    line("ambient", "Aaj hawa mast hai. Do minute baithun, phir nikalti hoon.", "आज हवा मस्त है। दो मिनट बैठूँ, फिर निकलती हूँ।", "Lovely breeze today. I'll sit for two minutes before heading off."),
-    line("warning", "Bhau, sambhal ke! Hospital se aayi hoon, wapas mat bhejo!", "भाऊ, संभल के! हॉस्पिटल से आई हूँ, वापस मत भेजो!", "Careful! I just left the hospital, don't send me back!"),
+  person("pooja", 26, "female", "Young nurse after her shift, soft, tired and gently funny.", [
+    line("ambient", "Aaj bina alarm ke soungi. Koi phone mat karna.", "आज बिना अलार्म के सोऊँगी। कोई फ़ोन मत करना।", "I'm sleeping without an alarm today. Nobody call me."),
+    line("warning", "Hospital se nikli hoon abhi! Waapas bhejne ka iraada hai?", "हॉस्पिटल से निकली हूँ अभी! वापस भेजने का इरादा है?", "I just left the hospital! Are you sending me back?"),
   ]),
-  person("vikram", 35, "male", "Office commuter; contained mid-register voice, mild urgency and dry humour.", [
-    line("ambient", "Meeting se pehle chai mil jaaye, bhau. Phir sab set hai.", "मीटिंग से पहले चाय मिल जाए, भाऊ। फिर सब सेट है।", "A chai before the meeting and I'm all set."),
-    line("ambient", "Haan, nikal gaya hoon. Mumbai ka traffic hai, thoda thamba!", "हाँ, निकल गया हूँ। मुंबई का ट्रैफ़िक है, थोड़ा थांबा!", "Yes, I've left. It's Mumbai traffic, give me a moment!"),
-    line("ambient", "Chala, aaj time pe ghar. Laptop bhi aaram karega.", "चला, आज टाइम पे घर। लैपटॉप भी आराम करेगा।", "Let's get home on time today. Even the laptop needs a rest."),
-    line("warning", "Arre bhau! Laptop sambhalun ya khud ko? Dheere chala!", "अरे भाऊ! लैपटॉप संभालूँ या ख़ुद को? धीरे चला!", "Should I save my laptop or myself? Slow down!"),
+  person("vikram", 35, "male", "Office commuter, contained and dryly amused by daily life.", [
+    line("ambient", "Meeting khatam hui, toh uski meeting ka mail aa gaya.", "मीटिंग ख़त्म हुई, तो उसकी मीटिंग का मेल आ गया।", "The meeting ended, then an email arrived about another meeting."),
+    line("warning", "Laptop toot jaayega! Insurance mein tera naam likhwaaun kya?", "लैपटॉप टूट जाएगा! इंश्योरेंस में तेरा नाम लिखवाऊँ क्या?", "You'll break my laptop! Should I name you on the claim?"),
   ]),
-  person("zoya", 22, "female", "Young artist; airy, curious and quietly expressive.", [
-    line("ambient", "Woh balcony dekho, bhau. Kitni mast design hai!", "वो बालकनी देखो, भाऊ। कितनी मस्त डिज़ाइन है!", "Look at that balcony. What a lovely design!"),
-    line("ambient", "Thamba, bas do minute. Sketch ka last corner bacha hai.", "थांबा, बस दो मिनट। स्केच का लास्ट कॉर्नर बचा है।", "Wait, just two minutes. One corner of the sketch is left."),
-    line("ambient", "Mumbai mein har gali ka apna rang hai. Maza aa gaya!", "मुंबई में हर गली का अपना रंग है। मज़ा आ गया!", "Every Mumbai lane has its own colour. I love it!"),
-    line("warning", "Aye bhau! Sketch bana rahi hoon, stunt nahi. Dekh ke!", "ऐ भाऊ! स्केच बना रही हूँ, स्टंट नहीं। देख के!", "I'm making a sketch, not doing a stunt. Watch out!"),
+  person("zoya", 22, "female", "Curious young artist, light and expressive, speaking to a friend.", [
+    line("ambient", "Purani imaaraton ke rang photo se zyada sundar lagte hain.", "पुरानी इमारतों के रंग फ़ोटो से ज़्यादा सुंदर लगते हैं।", "Old buildings have lovelier colours in person than in photos."),
+    line("warning", "Meri drawing! Itni chaudi sadak bhi kam pad rahi hai?", "मेरी ड्रॉइंग! इतनी चौड़ी सड़क भी कम पड़ रही है?", "My drawing! Isn't this road wide enough for you?"),
   ]),
-  person("bala", 25, "male", "Delivery rider; energetic, quick and natural, with clear short phrases.", [
-    line("ambient", "Bhau, yahi building hai na? Address toh idhar ka hai.", "भाऊ, यही बिल्डिंग है ना? एड्रेस तो इधर का है।", "This is the building, right? The address says here."),
-    line("ambient", "Parcel aa gaya! Chala, neeche aa jaao.", "पार्सल आ गया! चला, नीचे आ जाओ।", "Your parcel is here! Come downstairs."),
-    line("ambient", "Ek delivery aur, phir cutting. Mast plan hai, bhau!", "एक डिलीवरी और, फिर कटिंग। मस्त प्लान है, भाऊ!", "One more delivery, then chai. Great plan!"),
-    line("warning", "Bhau, dekh ke! Parcel naazuk hai, main bhi hoon!", "भाऊ, देख के! पार्सल नाज़ुक है, मैं भी हूँ!", "Watch out! The parcel is fragile, and so am I!"),
+  person("bala", 25, "male", "Young delivery rider, energetic, informal and lightly sarcastic.", [
+    line("ambient", "Address mein 'bade ped ke paas' likha hai. Kaunsa ped?", "एड्रेस में बड़े पेड़ के पास लिखा है। कौन सा पेड़?", "The address says near the big tree. Which tree?"),
+    line("warning", "Dekh ke! Parcel pe fragile likha hai, mujhpe bhi samajh!", "देख के! पार्सल पे फ़्रैजाइल लिखा है, मुझपे भी समझ!", "Watch it! The parcel says fragile. So am I!"),
   ]),
-  person("jyoti", 41, "female", "Safai saathi; low-mid voice, matter-of-fact warmth and deliberate speech.", [
-    line("ambient", "Zara side, bhau. Safai ho jaaye toh sabko achha lagega.", "ज़रा साइड, भाऊ। सफ़ाई हो जाए तो सबको अच्छा लगेगा।", "A little room, friend. Everyone likes a clean street."),
-    line("ambient", "Chala, yeh kona bhi saaf. Ab gali mast lag rahi hai.", "चला, ये कोना भी साफ़। अब गली मस्त लग रही है।", "There, this corner is clean too. The lane looks lovely now."),
-    line("ambient", "Kachra dabbe mein, bhau. Mumbai apna ghar hai.", "कचरा डब्बे में, भाऊ। मुंबई अपना घर है।", "Rubbish in the bin, friend. Mumbai is our home."),
-    line("warning", "Arre bhau! Jhaadu dikh raha hai na? Zara jagah de!", "अरे भाऊ! झाड़ू दिख रहा है ना? ज़रा जगह दे!", "You can see the broom, right? Give me a little room!"),
+  person("jyoti", 41, "female", "Street worker, steady and matter-of-fact, with understated wit.", [
+    line("ambient", "Kachra dabbe ke andar daalo. Paas mein nahi, andar!", "कचरा डब्बे के अंदर डालो। पास में नहीं, अंदर!", "Put rubbish inside the bin. Not beside it, inside!"),
+    line("warning", "Jhaadu dikh raha hai? Safai karoon ya tujhe bachaaun?", "झाड़ू दिख रहा है? सफ़ाई करूँ या तुझे बचाऊँ?", "See the broom? Should I clean or dodge your vehicle?"),
   ]),
-  person("shanta", 70, "female", "Older local grandmother; warm, measured and gently amused, never a frail parody.", [
-    line("ambient", "Aaramat, beta. Mumbai kahin bhaagi nahi jaa rahi.", "आरामात, बेटा। मुंबई कहीं भागी नहीं जा रही।", "Take it easy, dear. Mumbai isn't going anywhere."),
-    line("ambient", "Hawa mast hai aaj. Chala, thodi der baithte hain.", "हवा मस्त है आज। चला, थोड़ी देर बैठते हैं।", "Lovely breeze today. Let's sit for a while."),
-    line("ambient", "Bhau, bachpan se yahi gali dekhi hai. Har din nayi lagti hai.", "भाऊ, बचपन से यही गली देखी है। हर दिन नई लगती है।", "I've known this lane since childhood. It feels new every day."),
-    line("warning", "Arre bhau, aaram se! Aaji ko bhi ghar pahunchna hai.", "अरे भाऊ, आराम से! आजी को भी घर पहुँचना है।", "Easy there! Grandma needs to get home too."),
+  person("shanta", 70, "female", "Older grandmother, warm, measured and amused, without a frail caricature.", [
+    line("ambient", "Amchya veli yahaan cycle chalti thi. Ab sabko jaldi hai.", "आमच्या वेळी यहाँ साइकिल चलती थी। अब सबको जल्दी है।", "In our day, bicycles came through here. Now everyone's rushing."),
+    line("warning", "Beta, aankhein khol! Mujhe ghar tak toh pahunchne de!", "बेटा, आँखें खोल! मुझे घर तक तो पहुँचने दे!", "Open your eyes, dear! At least let me get home!"),
   ]),
-  person("dev", 30, "male", "Polite photographer; light voice, clear Hindi and quiet curiosity.", [
-    line("ambient", "Ek photo aur, bhau. Yeh building mast aa rahi hai!", "एक फ़ोटो और, भाऊ। ये बिल्डिंग मस्त आ रही है!", "One more photo. This building looks wonderful in the shot!"),
-    line("ambient", "Samundar ki taraf yahi raasta hai na, bhau?", "समुंदर की तरफ़ यही रास्ता है ना, भाऊ?", "This is the way towards the sea, right?"),
-    line("ambient", "Chala, roshni badalne se pehle ek aur photo lete hain.", "चला, रोशनी बदलने से पहले एक और फ़ोटो लेते हैं।", "Let's take one more photo before the light changes."),
-    line("warning", "Arre bhau! Camera bacha, par tu zara brake maar!", "अरे भाऊ! कैमरा बचा, पर तू ज़रा ब्रेक मार!", "My camera survived, but please hit the brakes!"),
+  person("dev", 30, "male", "Photographer, polite and curious, clear conversational Hindi.", [
+    line("ambient", "Kabootar bhi pose de raha hai. Insaan hi jaldi mein hain.", "कबूतर भी पोज़ दे रहा है। इंसान ही जल्दी में हैं।", "Even the pigeon is posing. Only people are in a hurry."),
+    line("warning", "Camera sambhalun ya khud ko? Horn se sab nahi hota!", "कैमरा संभालूँ या ख़ुद को? हॉर्न से सब नहीं होता!", "Save my camera or myself? A horn doesn't solve everything!"),
   ]),
-  person("asha", 29, "female", "Upbeat jogger; clear, energetic short phrases, lightly breathy without panting.", [
-    line("ambient", "Bas ek chakkar aur. Phir mast cutting chai!", "बस एक चक्कर और। फिर मस्त कटिंग चाय!", "One more jogging loop, then a lovely cutting chai!"),
-    line("ambient", "Thamba, paani pee loon. Aaj dhoop tez hai, bhau.", "थांबा, पानी पी लूँ। आज धूप तेज़ है, भाऊ।", "Wait, let me drink some water. It's sunny today."),
-    line("ambient", "Chala, aaram se jogging. Samundar ki hawa ka maza lo!", "चला, आराम से जॉगिंग। समुंदर की हवा का मज़ा लो!", "Let's jog at an easy pace. Enjoy the sea breeze!"),
-    line("warning", "Aye bhau! Main jogging kar rahi hoon, race nahi laga rahi!", "ऐ भाऊ! मैं जॉगिंग कर रही हूँ, रेस नहीं लगा रही!", "I'm jogging, not racing your auto!"),
+  person("asha", 29, "female", "Upbeat jogger, energetic and a little breathy, talking normally.", [
+    line("ambient", "Ghadi bolti hai das hazaar steps. Pair bolte hain bas.", "घड़ी बोलती है दस हज़ार स्टेप्स। पैर बोलते हैं बस।", "My watch says ten thousand steps. My feet say enough."),
+    line("warning", "Footpath pe bhi race? Mujhe jogging toh karne do!", "फ़ुटपाथ पे भी रेस? मुझे जॉगिंग तो करने दो!", "Racing on the pavement too? Let me jog!"),
   ]),
-  person("ganesh", 40, "male", "Adult shop worker; resonant, practical voice and short projected requests.", [
-    line("ambient", "Maal aa gaya, bhau. Chala, yeh peti andar rakhte hain.", "माल आ गया, भाऊ। चला, ये पेटी अंदर रखते हैं।", "The stock is here. Let's carry this crate inside."),
-    line("ambient", "Zara jagah dena, bhau. Peti bhaari hai, mazaak nahi!", "ज़रा जगह देना, भाऊ। पेटी भारी है, मज़ाक नहीं!", "A little room, friend. This crate is seriously heavy!"),
-    line("ambient", "Kaam ho gaya. Ab do minute chai ka maza lete hain.", "काम हो गया। अब दो मिनट चाय का मज़ा लेते हैं।", "Work's done. Let's enjoy a two-minute chai break."),
-    line("warning", "Arre bhau! Peti gira di toh saara maal sadak pe aayega!", "अरे भाऊ! पेटी गिरा दी तो सारा माल सड़क पे आएगा!", "If you knock this crate down, the stock will be all over the road!"),
+  person("ganesh", 40, "male", "Shop worker, resonant, practical and friendly, with an ordinary speaking voice.", [
+    line("ambient", "Udhaar kal se band. Ye board roz lagana padta hai.", "उधार कल से बंद। ये बोर्ड रोज़ लगाना पड़ता है।", "No credit from tomorrow. I put that sign up every day."),
+    line("warning", "Peti girti toh saara maal toot jaata! Sambhaal gaadi!", "पेटी गिरती तो सारा माल टूट जाता! संभाल गाड़ी!", "If this crate fell, the stock would break! Control your vehicle!"),
   ]),
 ];
 
-// A reply is only paired with a nearby person discussing the same topic.
-// These are conversations between locals, not announcements to the player.
+// Shared topics have compatible meanings; two topics per person vary each pair.
+const talk = (topic, ask, reply) => ({ topic, ask, reply });
 const conversations = {
-  raju: ["chai", ["Chala, ek cutting peete hain?", "चला, एक कटिंग पीते हैं?", "Shall we have a cutting chai?"], ["Haan, chai se hi din banta hai!", "हाँ, चाय से ही दिन बनता है!", "Yes, chai makes the day!"]],
-  meera: ["chai", ["Chai loge? Abhi banayi hai.", "चाय लोगे? अभी बनाई है।", "Would you like chai? I just made it."], ["Chala, garam chai tayyar hai!", "चला, गरम चाय तैयार है!", "Come along, the hot chai is ready!"]],
-  sameer: ["chai", ["Kaam ke baad ek chai ho jaaye?", "काम के बाद एक चाय हो जाए?", "How about chai after work?"], ["Haan, bas haath saaf kar loon.", "हाँ, बस हाथ साफ़ कर लूँ।", "Yes, just let me clean my hands."]],
-  aarti: ["busy", ["Aaj bhi kitni bhaag-daud hai na?", "आज भी कितनी भाग-दौड़ है ना?", "Another busy day, isn't it?"], ["Haan, bas time pe pahunch jaayein!", "हाँ, बस टाइम पे पहुँच जाएँ!", "Yes, let's just get there on time!"]],
-  imran: ["breeze", ["Aaj hawa mast hai na, yaar?", "आज हवा मस्त है ना, यार?", "Lovely breeze today, isn't it?"], ["Ekdum! Idhar baithne ka maza hi alag hai.", "एकदम! इधर बैठने का मज़ा ही अलग है।", "Absolutely! It's lovely sitting here."]],
-  lata: ["chai", ["Thak gaye? Chala, chai peete hain.", "थक गए? चला, चाय पीते हैं।", "Tired? Let's have chai."], ["Haan, adrak wali ho toh mast!", "हाँ, अदरक वाली हो तो मस्त!", "Yes, ginger chai would be lovely!"]],
-  patil: ["busy", ["Aaj road pe kaafi bheed hai na?", "आज रोड पे काफ़ी भीड़ है ना?", "The road is quite busy today, isn't it?"], ["Haan, aaram se chalo. Sab pahunch jaayenge.", "हाँ, आराम से चलो। सब पहुँच जाएँगे।", "Yes, take it easy. Everyone will get there."]],
-  nilesh: ["chai", ["Dabbe rakh diye. Chala, chai piyein?", "डब्बे रख दिए। चला, चाय पिएँ?", "The tiffins are put away. Shall we have chai?"], ["Haan, ek cutting. Phir kaam pe!", "हाँ, एक कटिंग। फिर काम पे!", "Yes, one cutting chai, then back to work!"]],
-  farah: ["chai", ["Chala, ek cutting mangwa lein?", "चला, एक कटिंग मँगवा लें?", "Shall we order a cutting chai?"], ["Haan, yeh tokri rakh doon pehle.", "हाँ, ये टोकरी रख दूँ पहले।", "Yes, let me put this basket down first."]],
-  suresh: ["busy", ["Mumbai ki bhaag-daud kabhi rukti hai kya?", "मुंबई की भाग-दौड़ कभी रुकती है क्या?", "Does Mumbai's rush ever stop?"], ["Haan, roz ki kahaani hai. Aaram se!", "हाँ, रोज़ की कहानी है। आराम से!", "Yes, it's the everyday story. Take it easy!"]],
-  pooja: ["breeze", ["Aaj bahar ki hawa kitni mast hai na?", "आज बाहर की हवा कितनी मस्त है ना?", "The breeze outside is lovely today, isn't it?"], ["Haan, do minute mein thakaan utar gayi.", "हाँ, दो मिनट में थकान उतर गई।", "Yes, two minutes here and I feel refreshed."]],
-  vikram: ["chai", ["Meeting se pehle ek cutting ho jaaye?", "मीटिंग से पहले एक कटिंग हो जाए?", "How about a cutting chai before the meeting?"], ["Haan, chai ke bina meeting kaise hogi!", "हाँ, चाय के बिना मीटिंग कैसे होगी!", "Yes, how can there be a meeting without chai!"]],
-  zoya: ["breeze", ["Hawa mast hai. Yahin baithte hain na?", "हवा मस्त है। यहीं बैठते हैं ना?", "Lovely breeze. Shall we sit here?"], ["Haan, roshni bhi kitni sundar hai!", "हाँ, रोशनी भी कितनी सुंदर है!", "Yes, and the light is beautiful too!"]],
-  bala: ["busy", ["Aaj traffic kuch zyada hai na?", "आज ट्रैफ़िक कुछ ज़्यादा है ना?", "There's more traffic than usual today, right?"], ["Haan, phir bhi aaram se hi chalna hai.", "हाँ, फिर भी आराम से ही चलना है।", "Yes, but we still have to take it easy."]],
-  jyoti: ["busy", ["Itni bhaag-daud! Do minute aaram nahi milta na?", "इतनी भाग-दौड़! दो मिनट आराम नहीं मिलता ना?", "So much rushing around! Hard to find a break, isn't it?"], ["Haan, bas yeh kaam ho jaaye. Phir break.", "हाँ, बस ये काम हो जाए। फिर ब्रेक।", "Yes, once this job is done, then a break."]],
-  shanta: ["breeze", ["Hawa achhi hai na? Chala, thoda baitho.", "हवा अच्छी है ना? चला, थोड़ा बैठो।", "Nice breeze, isn't it? Come, sit a while."], ["Haan beta, aise hi aaramat rehna chahiye.", "हाँ बेटा, ऐसे ही आरामात रहना चाहिए।", "Yes, dear, this is how we should take it easy."]],
-  dev: ["breeze", ["Kya mast hawa hai! Idhar rukte hain?", "क्या मस्त हवा है! इधर रुकते हैं?", "What a lovely breeze! Shall we stop here?"], ["Haan, yahin se photo bhi mast aayega.", "हाँ, यहीं से फ़ोटो भी मस्त आएगा।", "Yes, the photo will look great from here too."]],
-  asha: ["breeze", ["Aaj ki hawa mein maza aa raha hai na?", "आज की हवा में मज़ा आ रहा है ना?", "Enjoying today's breeze, aren't you?"], ["Haan! Chala, do minute yahin rukte hain.", "हाँ! चला, दो मिनट यहीं रुकते हैं।", "Yes! Let's stop here for two minutes."]],
-  ganesh: ["chai", ["Maal rakh diya. Chala, ek chai?", "माल रख दिया। चला, एक चाय?", "The stock is put away. How about chai?"], ["Haan, kaam ke baad chai ka maza hai!", "हाँ, काम के बाद चाय का मज़ा है!", "Yes, chai is lovely after work!"]],
+  raju: [
+    talk("cricket", ["Kal ka match dekha? Aakhri over mein jaan atak gayi!", "कल का मैच देखा? आख़िरी ओवर में जान अटक गई!", "Saw the match? That last over was tense!"], ["Hamare adde pe toh sab kursi chhod ke khade the!", "हमारे अड्डे पे तो सब कुर्सी छोड़ के खड़े थे!", "Everyone at our stand was out of their seat!"]),
+    talk("prices", ["Sabzi ka bhaav suna? Tamatar bade akad mein hain!", "सब्ज़ी का भाव सुना? टमाटर बड़े अकड़ में हैं!", "Seen vegetable prices? Tomatoes are getting rather proud!"], ["Pehle thaila bharta tha. Ab jeb khaali hoti hai.", "पहले थैला भरता था। अब जेब खाली होती है।", "The bag used to fill up. Now the pocket just empties."]),
+  ],
+  meera: [
+    talk("cricket", ["Aakhri ball pe sab cheekhe na? Chai bhi uchhal gayi!", "आख़िरी बॉल पे सब चीखे ना? चाय भी उछल गई!", "Everyone yelled on that last ball, right? Even the chai jumped!"], ["Meri tapri pe toh cup rakhne ki jagah nahi thi!", "मेरी टपरी पे तो कप रखने की जगह नहीं थी!", "My stall was so packed there was nowhere for a cup!"]),
+    talk("prices", ["Bazaar mein aaj phir rate badhe kya?", "बाज़ार में आज फिर रेट बढ़े क्या?", "Did market prices go up again today?"], ["Sab mehenga. Chai mein pyaar abhi bhi muft hai!", "सब महँगा। चाय में प्यार अभी भी मुफ़्त है!", "Everything's costly. Love in the chai is still free!"]),
+  ],
+  sameer: [
+    talk("cricket", ["Us match ka aakhri over! Tune saans li thi kya?", "उस मैच का आख़िरी ओवर! तूने साँस ली थी क्या?", "That last over! Were you even breathing?"], ["Garage ka kaam rok diya tha. Kya finish tha!", "गैराज का काम रोक दिया था। क्या फ़िनिश था!", "We stopped work at the garage. What a finish!"]),
+    talk("rain", ["Baadal dekh. Lagta hai aaj paani barsega?", "बादल देख। लगता है आज पानी बरसेगा?", "Look at those clouds. Think it'll rain?"], ["Auzaar andar kar leta hoon. Zang phir saaf karna padega.", "औज़ार अंदर कर लेता हूँ। ज़ंग फिर साफ़ करना पड़ेगा।", "I'll bring the tools in. Otherwise I'll be cleaning off rust."]),
+  ],
+  aarti: [
+    talk("train", ["Subah ki local mein khade hone ki jagah mili?", "सुबह की लोकल में खड़े होने की जगह मिली?", "Was there even standing room on the morning local?"], ["Bag andar tha, main darwaaze pe. Roz ka yoga!", "बैग अंदर था, मैं दरवाज़े पे। रोज़ का योगा!", "My bag was inside; I was at the door. Daily yoga!"]),
+    talk("rent", ["Tera bhi kiraya badha kya? Malik ka message aaya hai.", "तेरा भी किराया बढ़ा क्या? मालिक का मैसेज आया है।", "Did your rent go up too? My landlord texted."], ["Tankhwaah wahi, kiraya naya. Hisaab kaise baithega?", "तनख़्वाह वही, किराया नया। हिसाब कैसे बैठेगा?", "Same salary, new rent. How will that add up?"]),
+  ],
+  imran: [
+    talk("cricket", ["Bhai, kal ka finish dekha? Poora hostel uchhal pada!", "भाई, कल का फ़िनिश देखा? पूरा हॉस्टल उछल पड़ा!", "Saw yesterday's finish? The whole hostel jumped!"], ["Highlights teen baar dekhe. Phir bhi dhadkan tez hoti hai!", "हाइलाइट्स तीन बार देखे। फिर भी धड़कन तेज़ होती है!", "Watched the highlights three times. Still gets my heart racing!"]),
+    talk("train", ["Aaj local mein chadh paaye? Bheed zabardast thi.", "आज लोकल में चढ़ पाए? भीड़ ज़बरदस्त थी।", "Managed to board the local? It was packed."], ["Chadh toh gaya. Utarne ka plan agle station pe bana.", "चढ़ तो गया। उतरने का प्लान अगले स्टेशन पे बना।", "I got on. Figured out getting off at the next station."]),
+  ],
+  lata: [
+    talk("prices", ["Bhaji ke daam dekhe? Aaj toh kamaal ho gaya.", "भाजी के दाम देखे? आज तो कमाल हो गया।", "Seen vegetable prices? Today was something else."], ["Aadha kilo liya, phir bhi sau ka note gaya.", "आधा किलो लिया, फिर भी सौ का नोट गया।", "Bought half a kilo and still lost a hundred."]),
+    talk("rain", ["Paaoos yenaar ka? Aasmaan ka rang badal raha hai.", "पाऊस येणार का? आसमान का रंग बदल रहा है।", "Will it rain? The sky's changing colour."], ["Phool dhak deti hoon. Bheeg gaye toh kaun lega?", "फूल ढक देती हूँ। भीग गए तो कौन लेगा?", "I'll cover the flowers. Who'd buy them soaked?"]),
+  ],
+  patil: [
+    talk("train", ["Local ki bheed ka kya haal tha aaj?", "लोकल की भीड़ का क्या हाल था आज?", "How crowded was the local today?"], ["Platform bhi bhara tha. Sab ek hi waqt nikalte hain.", "प्लैटफ़ॉर्म भी भरा था। सब एक ही वक़्त निकलते हैं।", "Even the platform was full. Everyone leaves at the same time."]),
+    talk("rain", ["Aaj baarish lag rahi hai. Chhatri laaye ho?", "आज बारिश लग रही है। छतरी लाए हो?", "Looks like rain. Did you bring an umbrella?"], ["Raincoat chowki mein hai. Bas pehle wahaan pahunch jaaun.", "रेनकोट चौकी में है। बस पहले वहाँ पहुँच जाऊँ।", "My raincoat's at the post. Hope I get there first."]),
+  ],
+  nilesh: [
+    talk("train", ["Subah train mein pair rakhne ki jagah thi kya?", "सुबह ट्रेन में पैर रखने की जगह थी क्या?", "Was there room to put a foot on the train?"], ["Dabbon ko jagah mili. Mujhe kisi tarah mil gayi.", "डब्बों को जगह मिली। मुझे किसी तरह मिल गई।", "The tiffins got space. I somehow squeezed in."]),
+    talk("prices", ["Aaj sabzi khareedi? Rate sun ke paseena aa gaya.", "आज सब्ज़ी ख़रीदी? रेट सुन के पसीना आ गया।", "Bought vegetables today? Those prices made me sweat."], ["Ghar se list aayi thi. Aadhee hi le paaya.", "घर से लिस्ट आई थी। आधी ही ले पाया।", "Got a shopping list from home. Could only buy half."]),
+  ],
+  farah: [
+    talk("prices", ["Sabzi mandi mein bhaav badh gaye, suna tune?", "सब्ज़ी मंडी में भाव बढ़ गए, सुना तूने?", "Heard the vegetable wholesale prices went up?"], ["Khareedne waala bhi roye, bechne waala bhi. Kamaal hai!", "ख़रीदने वाला भी रोए, बेचने वाला भी। कमाल है!", "The buyer cries, the seller cries. Amazing!"]),
+    talk("rain", ["Ye baadal toh barasne waale lag rahe hain, nahi?", "ये बादल तो बरसने वाले लग रहे हैं, नहीं?", "Those clouds look ready to rain, don't they?"], ["Tirpaal taiyaar hai. Pichhli baar sab bheeg gaya tha.", "तिरपाल तैयार है। पिछली बार सब भीग गया था।", "The tarpaulin's ready. Last time everything got soaked."]),
+  ],
+  suresh: [
+    talk("cricket", ["Kal match ke waqt gali ka shor suna tha?", "कल मैच के वक़्त गली का शोर सुना था?", "Heard the lane during yesterday's match?"], ["Akhbaar ki headline bhi wahi. Kamaal ka match tha.", "अख़बार की हेडलाइन भी वही। कमाल का मैच था।", "It made the paper's headline too. Wonderful match."]),
+    talk("rent", ["Makaan waalon ne phir kiraya badha diya kya?", "मकान वालों ने फिर किराया बढ़ा दिया क्या?", "Did the landlords raise rent again?"], ["Purane din yaad aate hain. Tab kamra sasta tha.", "पुराने दिन याद आते हैं। तब कमरा सस्ता था।", "I miss the old days. A room was affordable then."]),
+  ],
+  pooja: [
+    talk("train", ["Local mein aaj bhi dhakka-mukki thi kya?", "लोकल में आज भी धक्का-मुक्की थी क्या?", "Was everyone jostling on the local again?"], ["Baithna toh door, bag rakhna mushkil tha.", "बैठना तो दूर, बैग रखना मुश्किल था।", "Forget sitting; even finding room for a bag was hard."]),
+    talk("rent", ["Is mahine kiraya badha? Mere yahaan bhi baat chal rahi hai.", "इस महीने किराया बढ़ा? मेरे यहाँ भी बात चल रही है।", "Did rent rise this month? They're discussing it at mine too."], ["Roommate dhoondhni padegi. Akele ab mushkil ho raha hai.", "रूममेट ढूँढनी पड़ेगी। अकेले अब मुश्किल हो रहा है।", "I'll need a roommate. It's getting hard on my own."]),
+  ],
+  vikram: [
+    talk("rent", ["Kiraye ka naya message aaya kya? Darr lagta hai kholne se.", "किराए का नया मैसेज आया क्या? डर लगता है खोलने से।", "Got the new rent message? I'm afraid to open mine."], ["Balkani utni hi chhoti. Kiraya bada hota jaa raha hai.", "बालकनी उतनी ही छोटी। किराया बड़ा होता जा रहा है।", "The balcony stays tiny. The rent keeps growing."]),
+    talk("cricket", ["Aakhri over wala match dekha na? Kya chakkar tha!", "आख़िरी ओवर वाला मैच देखा ना? क्या चक्कर था!", "Saw that match go to the last over? What a ride!"], ["Office group mein abhi tak usi ki charcha hai.", "ऑफ़िस ग्रुप में अभी तक उसी की चर्चा है।", "The office group is still talking about it."]),
+  ],
+  zoya: [
+    talk("rain", ["Aasmaan dekho. Baarish hone waali hai kya?", "आसमान देखो। बारिश होने वाली है क्या?", "Look at the sky. Is it about to rain?"], ["Kaagaz andar rakh loon. Ye rang paani mein beh jaayenge.", "काग़ज़ अंदर रख लूँ। ये रंग पानी में बह जाएँगे।", "I'll put the paper away. These colours will wash off."]),
+    talk("rent", ["Tumhare yahaan bhi kiraya badh raha hai?", "तुम्हारे यहाँ भी किराया बढ़ रहा है?", "Is the rent going up at your place too?"], ["Itne mein toh deewar pe painting bhi meri honi chahiye.", "इतने में तो दीवार पे पेंटिंग भी मेरी होनी चाहिए।", "For that price, I should at least get to paint the walls."]),
+  ],
+  bala: [
+    talk("train", ["Aaj local phir thoons ke bhari thi kya?", "आज लोकल फिर ठूँस के भरी थी क्या?", "Was the local crammed full again today?"], ["Ek station ke liye chadha, teen aage jaake utara.", "एक स्टेशन के लिए चढ़ा, तीन आगे जाके उतरा।", "Got on for one stop, managed to get off three later."]),
+    talk("rent", ["Tera landlord bhi kiraya badha raha hai kya?", "तेरा लैंडलॉर्ड भी किराया बढ़ा रहा है क्या?", "Is your landlord raising the rent too?"], ["Kamra chhota, bill bada. Mumbai ka alag hi hisaab hai.", "कमरा छोटा, बिल बड़ा। मुंबई का अलग ही हिसाब है।", "Small room, big bill. Mumbai has its own maths."]),
+  ],
+  jyoti: [
+    talk("rain", ["Hawa badal gayi. Aaj baarish hogi na?", "हवा बदल गई। आज बारिश होगी ना?", "The wind changed. It'll rain today, won't it?"], ["Naala saaf kar diya. Ab log kachra na daalein bas.", "नाला साफ़ कर दिया। अब लोग कचरा ना डालें बस।", "The drain's clear. I just hope nobody throws rubbish in."]),
+    talk("prices", ["Sabzi waale ne naya bhaav bataya? Kitna badh gaya!", "सब्ज़ी वाले ने नया भाव बताया? कितना बढ़ गया!", "Heard the new vegetable prices? They've shot up!"], ["Daam badhte hain, tankhwaah sochti hi reh jaati hai.", "दाम बढ़ते हैं, तनख़्वाह सोचती ही रह जाती है।", "Prices go up; the salary is still thinking about it."]),
+  ],
+  shanta: [
+    talk("prices", ["Batao, aaj bhaji kitne ki mili? Bhaav sunke darr lagta hai.", "बताओ, आज भाजी कितने की मिली? भाव सुनके डर लगता है।", "What did vegetables cost today? The prices scare me."], ["Pehle das rupaye mein thaila bharta tha, beta.", "पहले दस रुपये में थैला भरता था, बेटा।", "Once, ten rupees filled a bag, dear."]),
+    talk("rent", ["Pados ke ghar ka kiraya bhi badha kya?", "पड़ोस के घर का किराया भी बढ़ा क्या?", "Did the neighbours' rent go up too?"], ["Ghar wahi purana, par bhaav har saal naya.", "घर वही पुराना, पर भाव हर साल नया।", "Same old house, a new price every year."]),
+  ],
+  dev: [
+    talk("rain", ["Ye kaale baadal dekhe? Baarish kareeb lag rahi hai.", "ये काले बादल देखे? बारिश करीब लग रही है।", "Seen those dark clouds? Rain looks close."], ["Camera dhak liya. Bheegi sadak ki photo achhi aayegi.", "कैमरा ढक लिया। भीगी सड़क की फ़ोटो अच्छी आएगी।", "Camera's covered. The wet road will make a lovely photo."]),
+    talk("cricket", ["Kal ke match mein poori gali jaag rahi thi, na?", "कल के मैच में पूरी गली जाग रही थी, ना?", "The whole lane was awake for yesterday's match, right?"], ["Us jeet ke baad chehron ki photo leni chahiye thi.", "उस जीत के बाद चेहरों की फ़ोटो लेनी चाहिए थी।", "I should've photographed those faces after the win."]),
+  ],
+  asha: [
+    talk("cricket", ["Match ka woh aakhri over yaad hai? Neend ud gayi thi!", "मैच का वो आख़िरी ओवर याद है? नींद उड़ गई थी!", "Remember that last over? It kept me wide awake!"], ["Cheekh-cheekh ke gala baith gaya. Mazedaar match tha!", "चीख चीख के गला बैठ गया। मज़ेदार मैच था!", "Lost my voice cheering. What a fun match!"]),
+    talk("rain", ["Aaj baarish padegi kya? Baadal toh poore taiyaar hain.", "आज बारिश पड़ेगी क्या? बादल तो पूरे तैयार हैं।", "Will it rain today? The clouds certainly look ready?"], ["Bheegte hue daudna achha lagta hai. Phone bachana padega.", "भीगते हुए दौड़ना अच्छा लगता है। फ़ोन बचाना पड़ेगा।", "I like running in the rain. Need to protect my phone."]),
+  ],
+  ganesh: [
+    talk("prices", ["Mandi ke rate dekhe? Sabzi bhi sona ho gayi.", "मंडी के रेट देखे? सब्ज़ी भी सोना हो गई।", "Seen market prices? Vegetables are gold now."], ["Grahak mujhse lade, main kisse ladoon? Daam hi aise hain.", "ग्राहक मुझसे लड़े, मैं किससे लड़ूँ? दाम ही ऐसे हैं।", "Customers argue with me. Who do I argue with? Those prices!"]),
+    talk("train", ["Local ki bheed se bach paaye aaj?", "लोकल की भीड़ से बच पाए आज?", "Managed to escape the local's crowd today?"], ["Do train chhodi. Teesri mein kisi tarah chadha.", "दो ट्रेन छोड़ी। तीसरी में किसी तरह चढ़ा।", "Let two trains go. Somehow boarded the third."]),
+  ],
 };
 
 export function recordingLines() {
   return dialogue.flatMap((character) => {
     const counts = new Map();
-    const conversation = conversations[character.id];
     const entries = [...character.lines];
-    if (conversation) {
-      const [topic, ask, reply] = conversation;
+    for (const { topic, ask, reply } of conversations[character.id] ?? []) {
       entries.push({ ...line("chat", ...ask), topic }, { ...line("reply", ...reply), topic });
     }
     return entries.map((entry) => {
       const index = (counts.get(entry.event) ?? 0) + 1;
       counts.set(entry.event, index);
-      return {
-        id: `mum_${character.id}_${entry.event}_${String(index).padStart(2, "0")}`,
-        characterId: character.id,
-        language: "hi",
-        secondaryLanguage: "mr",
-        direction: character.direction,
-        ...entry,
-      };
+      return { id: `mum_${character.id}_${entry.event}_${String(index).padStart(2, "0")}`, characterId: character.id, direction: character.direction, ...entry };
     });
   });
 }

@@ -17,7 +17,7 @@ The research collection contains Freesound recordings distributed under individu
 
 Four edited excerpts are shipped in the game. Their [deployed credits](public/audio/credits.html) identify the source, license, and changes. Preserve these credits and the accompanying license texts when redistributing the excerpts. CC BY material requires attribution and disclosure of modifications.
 
-The separate [Mumbai character voice pack](assets/audio/mumbai/voices/README.md) contains 118 ElevenLabs recordings generated on a free account. These require **non-commercial use and ElevenLabs attribution** under the provider's terms; they are not Creative Commons recordings. Paid library voices and voice cloning were not used. The production manifest preserves the selected free presets, script, model, settings, dates and file hashes. See the [ElevenLabs terms](https://elevenlabs.io/terms-of-use) and keep the deployed attribution with these assets.
+The separate [Mumbai character voice pack](assets/audio/mumbai/voices/README.md) contains 119 ElevenLabs recordings generated on a free account. These require **non-commercial use and ElevenLabs attribution** under the provider's terms; they are not Creative Commons recordings. Paid library voices and voice cloning were not used. The production manifest preserves the selected free presets, script, model, settings, dates and file hashes. See the [ElevenLabs terms](https://elevenlabs.io/terms-of-use) and keep the deployed attribution with these assets.
 
 ## Map reference
 

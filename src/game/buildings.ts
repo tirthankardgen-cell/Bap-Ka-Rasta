@@ -6,6 +6,7 @@ import {
   WORLD_BOUNDS,
 } from "./network.ts";
 import { boundaryBuildings } from "./boundaries.ts";
+import { runSetupWorkSync } from "./setup-work.ts";
 
 export type BuildingLot = {
   x: number;
@@ -37,25 +38,16 @@ export function footprintPoint(p: Footprint, x: number, z: number) {
 }
 /** Separating-axis check keeps complete rotated buildings apart. */
 export function footprintsOverlap(a: Footprint, b: Footprint) {
-  const axes = (p: Footprint) => [
-    { x: Math.cos(p.yaw), z: -Math.sin(p.yaw), radius: p.halfWidth },
-    { x: Math.sin(p.yaw), z: Math.cos(p.yaw), radius: p.halfLength },
-  ];
-  const aa = axes(a),
-    bb = axes(b);
-  for (const axis of [...aa, ...bb]) {
-    const projected = (list: typeof aa) =>
-      list.reduce(
-        (sum, v) => sum + Math.abs(v.x * axis.x + v.z * axis.z) * v.radius,
-        0,
-      );
-    if (
-      Math.abs((a.x - b.x) * axis.x + (a.z - b.z) * axis.z) >=
-      projected(aa) + projected(bb)
-    )
-      return false;
-  }
-  return true;
+  const dx = a.x - b.x, dz = a.z - b.z;
+  const reach = a.halfWidth + a.halfLength + b.halfWidth + b.halfLength;
+  if (Math.abs(dx) >= reach || Math.abs(dz) >= reach) return false;
+  const ca = Math.cos(a.yaw), sa = Math.sin(a.yaw), cb = Math.cos(b.yaw), sb = Math.sin(b.yaw);
+  const aligned = Math.abs(ca * cb + sa * sb), crossed = Math.abs(sa * cb - ca * sb);
+  // Project onto each box's two axes without allocating arrays or closures.
+  return Math.abs(dx * ca - dz * sa) < a.halfWidth + b.halfWidth * aligned + b.halfLength * crossed &&
+    Math.abs(dx * sa + dz * ca) < a.halfLength + b.halfWidth * crossed + b.halfLength * aligned &&
+    Math.abs(dx * cb - dz * sb) < b.halfWidth + a.halfWidth * aligned + a.halfLength * crossed &&
+    Math.abs(dx * sb + dz * cb) < b.halfLength + a.halfWidth * crossed + a.halfLength * aligned;
 }
 const reserved: Footprint[] = [
   // Keep the maidan and the inhabited perimeter intact.
@@ -67,6 +59,9 @@ const reserved: Footprint[] = [
   })),
 ];
 export function buildingLots(): BuildingLot[] {
+  return runSetupWorkSync(buildingLotWork());
+}
+export function* buildingLotWork(): Generator<void, BuildingLot[]> {
   const lots: BuildingLot[] = [];
   const occupied = [...reserved];
   function place(
@@ -102,6 +97,7 @@ export function buildingLots(): BuildingLot[] {
   }
   // Reserve both ends first, so mid-block rows cannot consume corner lots.
   for (const e of streets) {
+    yield;
     if (e.oneWay) continue;
     const g = geometry(e.id);
     for (const [node, end] of [
@@ -122,8 +118,10 @@ export function buildingLots(): BuildingLot[] {
   for (const e of streets) {
     if (e.oneWay) continue;
     const length = geometry(e.id).length;
-    for (let d = 20; d < length - 18; d += 4)
+    for (let d = 20; d < length - 18; d += 4) {
+      yield;
       for (const side of [-1, 1]) place(e.id, d, side, false);
+    }
   }
   return lots;
 }

@@ -12,17 +12,22 @@ export function createCrowdMotion(
 ) {
   let last = -Infinity;
   let current: CrowdPose[] = [];
+  let anchors: Array<CrowdPose | undefined> = [];
   const gridSize = 2;
   const keyFor = (x: number, z: number) => x * 65536 + z;
+  const grid = new Map<number, number>();
+  const neighbours = new Map<number, number>();
+  const nextInCell = new Int32Array(actors.length);
+  const nextNeighbour = new Int32Array(actors.length);
+  const minimumSquared = (PERSONAL_SPACE - 0.001) ** 2;
   function resolve(poses: CrowdPose[], fixed: boolean[]) {
     for (let pass = 0; pass < 8; pass++) {
-      const grid = new Map<number, number[]>();
+      grid.clear();
       for (let i = 0; i < poses.length; i++) {
         const p = poses[i],
           key = keyFor(Math.floor(p.x / gridSize), Math.floor(p.z / gridSize));
-        const bucket = grid.get(key);
-        if (bucket) bucket.push(i);
-        else grid.set(key, [i]);
+        nextInCell[i] = grid.get(key) ?? -1;
+        grid.set(key, i);
       }
       let changed = false;
       for (let i = 0; i < poses.length; i++) {
@@ -31,13 +36,14 @@ export function createCrowdMotion(
           gz = Math.floor(p.z / gridSize);
         for (let x = gx - 1; x <= gx + 1; x++)
           for (let z = gz - 1; z <= gz + 1; z++)
-            for (const j of grid.get(keyFor(x, z)) ?? []) {
+            for (let j = grid.get(keyFor(x, z)) ?? -1; j !== -1; j = nextInCell[j]) {
               if (j <= i || (fixed[i] && fixed[j])) continue;
               const q = poses[j],
                 dx = q.x - p.x,
-                dz = q.z - p.z,
-                d = Math.hypot(dx, dz);
-              if (d >= PERSONAL_SPACE - 0.001) continue;
+                dz = q.z - p.z;
+              const squared = dx * dx + dz * dz;
+              if (squared >= minimumSquared) continue;
+              const d = Math.sqrt(squared);
               const angle =
                 ((actors[i].id * 17 + actors[j].id * 31) % 628) / 100;
               const nx = d > 0.0001 ? dx / d : Math.cos(angle),
@@ -55,18 +61,18 @@ export function createCrowdMotion(
     }
   }
   function tick(time: number, dt: number, reset: boolean) {
-    const desired = actors.map((a) => actorPose(a, time));
-    const fixed = actors.map((a) => !!a.home || !!hold(a, time));
-    const neighbours = new Map<number, number[]>();
+    const held = actors.map((a) => hold(a, time));
+    const desired = actors.map((a, i) => !reset && anchors[i] ? anchors[i]! : actorPose(a, time));
+    const fixed = actors.map((a, i) => !!a.home || (!reset && !!anchors[i]) || !!held[i]);
+    neighbours.clear();
     if (!reset)
       current.forEach((p, i) => {
         const key = keyFor(Math.floor(p.x / 2), Math.floor(p.z / 2));
-        const bucket = neighbours.get(key);
-        if (bucket) bucket.push(i);
-        else neighbours.set(key, [i]);
+        nextNeighbour[i] = neighbours.get(key) ?? -1;
+        neighbours.set(key, i);
       });
     const next = desired.map((goal, i) => {
-      const stopped = hold(actors[i], time);
+      const stopped = held[i];
       if (stopped) return { ...goal, ...stopped, moving: false };
       if (reset || fixed[i]) return { ...goal };
       const old = current[i],
@@ -84,7 +90,7 @@ export function createCrowdMotion(
         let blocked = false;
         for (let x = gx - 1; x <= gx + 1; x++)
           for (let z = gz - 1; z <= gz + 1; z++)
-            for (const j of neighbours.get(keyFor(x, z)) ?? []) {
+            for (let j = neighbours.get(keyFor(x, z)) ?? -1; j !== -1; j = nextNeighbour[j]) {
               if (j === i) continue;
               const px = current[j].x - old.x,
                 pz = current[j].z - old.z;
@@ -101,6 +107,9 @@ export function createCrowdMotion(
       return { ...goal, x: old.x + vx, z: old.z + vz };
     });
     resolve(next, fixed);
+    // Keep settled neighbours anchored; pulling them back into overlap every tick
+    // made them jitter and ran the separation solver repeatedly for static people.
+    if (reset) anchors = next.map((p, i) => actors[i].activity !== "walk" || actors[i].home ? { ...p, moving: false } : undefined);
     // Face actual movement when sidestepping or waiting, rather than moonwalking.
     if (!reset)
       for (let i = 0; i < next.length; i++) {

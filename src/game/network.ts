@@ -161,9 +161,9 @@ export const obstacles = [
   { x: -249.5, z: 115, r: 1.5, kind: "parked" },
   { x: 300.5, z: 100, r: 1.5, kind: "parked" },
 ];
-export const isCurved = (edge: number) =>
-  streets[edge].oneWay ||
-  ["Bazaar Galli", "Chawl Lane", "Dukaan Lane"].includes(streets[edge].name);
+const curved = streets.map((street) => street.oneWay ||
+  ["Bazaar Galli", "Chawl Lane", "Dukaan Lane"].includes(street.name));
+export const isCurved = (edge: number) => curved[edge];
 type Sample = Point & { distance: number };
 const paths = new Map<number, Sample[]>();
 const bounds = new Map<
@@ -207,12 +207,20 @@ export function streetPath(edge: number): Sample[] {
   });
   return points;
 }
-export function geometry(edge: number, from = streets[edge].a) {
+type StreetGeometry = Readonly<{
+  a: Junction; b: Junction; length: number; dx: number; dz: number; width: number;
+}>;
+// The authored network is fixed. Pavement/collision checks reuse both directions
+// instead of allocating and measuring the same road millions of times at setup.
+const geometries: Array<Map<number, StreetGeometry>> = [];
+export function geometry(edge: number, from = streets[edge].a): StreetGeometry {
+  const cached = geometries[edge]?.get(from);
+  if (cached) return cached;
   const e = streets[edge],
     a = junctions[from],
     b = junctions[e.a === from ? e.b : e.a];
   const chord = Math.hypot(b.x - a.x, b.z - a.z);
-  return {
+  const result = {
     a,
     b,
     length: streetPath(edge).at(-1)!.distance,
@@ -220,6 +228,8 @@ export function geometry(edge: number, from = streets[edge].a) {
     dz: (b.z - a.z) / chord,
     width: e.width,
   };
+  (geometries[edge] ??= new Map()).set(from, result);
+  return result;
 }
 export const margin = (length: number) => Math.min(26, length * 0.22);
 export function lanePosition(

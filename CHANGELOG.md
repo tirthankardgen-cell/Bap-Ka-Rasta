@@ -1,5 +1,7 @@
 # Changelog
 
+- Rewrote and regenerated the Mumbai script as 119 clips with varied openings and two conversation topics per local. Street gossip now runs independently of the auto, fades with distance and finishes sentences before replies. Captions are limited to player-directed dialogue. Added bounded concurrent audio mixing, cooperative scene construction, cached road geometry and steadier, faster crowd motion.
+
 - Added 118 short Mumbai Hindi/Marathi voice recordings using only free ElevenLabs presets, with a new line list and voice assignments for all 1,543 people. Nearby locals exchange related question/reply clips and turn toward each other; vendors and impact reactions use matching character voices. Added asynchronous positional playback, ambience ducking, pause/mute/skip cleanup, bounded caching, an offline generator, audio verification and non-commercial free-plan attribution.
 
 - Replaced box-part pedestrians with the complete 20-character Blender cast based on the Mumbai concept boards, including shaped faces and hair, patterned clothing, modelled accessories, animated detail/distant meshes, and matching seated Sachin and first-person hands. Added a packed GLB, editable labelled Blender library, comparison renders, reproducible asset scripts, bounded parallel loading and resource cleanup.

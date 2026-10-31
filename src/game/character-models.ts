@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { characters } from "./characters.ts";
 import { disposeAutoModel } from "./auto-model.ts";
+import { runSetupWork, runSetupWorkSync } from "./setup-work.ts";
 
 export const CHARACTER_MODEL_URL = "/models/mumbai-characters.glb";
 export const CHARACTER_DETAIL_LIMIT = 24;
@@ -21,7 +22,7 @@ export type CharacterModels = {
 };
 
 /** Convert Blender's rigid skin weights to per-vertex joint data for GPU instancing. */
-function articulatedGeometry(mesh: THREE.SkinnedMesh) {
+function* articulatedGeometry(mesh: THREE.SkinnedMesh): Generator<void, THREE.BufferGeometry> {
   const geometry = mesh.geometry;
   const positions = geometry.getAttribute("position");
   const normals = geometry.getAttribute("normal");
@@ -75,6 +76,7 @@ function articulatedGeometry(mesh: THREE.SkinnedMesh) {
     };
   });
   for (let i = 0; i < count; i++) {
+    if (i % 4096 === 0) yield;
     let component = 0;
     for (let j = 1; j < 4; j++)
       if (skinWeight.getComponent(i, j) > skinWeight.getComponent(i, component))
@@ -105,30 +107,33 @@ function articulatedGeometry(mesh: THREE.SkinnedMesh) {
 }
 
 /** Exported for validation against the real GLB, without requiring a renderer. */
-export function prepareCharacterModels(source: THREE.Group): CharacterModels {
+function* prepareCharacterWork(source: THREE.Group): Generator<void, CharacterModels> {
   const cast: CharacterModels["cast"] = new Map();
   const player: CharacterModels["player"] = new Map();
   source.updateMatrixWorld(true);
+  const objects: THREE.Mesh[] = [];
+  source.traverse((object) => { if (object instanceof THREE.Mesh) objects.push(object); });
   for (const character of characters) {
     const levels: Partial<Record<"detail" | "crowd", Template>> = {};
-    source.traverse((object) => {
-      if (!(object instanceof THREE.SkinnedMesh)) return;
-      if (object.userData.cast_id !== character.id) return;
+    for (const object of objects) {
+      if (!(object instanceof THREE.SkinnedMesh)) continue;
+      if (object.userData.cast_id !== character.id) continue;
       const lod = object.userData.lod as "detail" | "crowd";
-      if (lod !== "detail" && lod !== "crowd") return;
+      if (lod !== "detail" && lod !== "crowd") continue;
       if (levels[lod])
         throw new Error(`Duplicate ${character.id} ${lod} model`);
       const material = object.material as THREE.MeshStandardMaterial;
       material.vertexColors = true;
       if (material.map) material.map.anisotropy = 4;
-      levels[lod] = { geometry: articulatedGeometry(object), material };
-    });
+      levels[lod] = { geometry: yield* articulatedGeometry(object), material };
+      yield;
+    }
     if (!levels.detail || !levels.crowd)
       throw new Error(`Blender cast is missing ${character.id}`);
     cast.set(character.id, { detail: levels.detail, crowd: levels.crowd });
   }
-  source.traverse((object) => {
-    if (!(object instanceof THREE.Mesh) || !object.userData.player_part) return;
+  for (const object of objects) {
+    if (!object.userData.player_part) continue;
     // Expand normalized integer attributes before applying metre-space transforms.
     for (const name of ["position", "normal"]) {
       const attr = object.geometry.getAttribute(name);
@@ -136,8 +141,10 @@ export function prepareCharacterModels(source: THREE.Group): CharacterModels {
         new Float32Array(attr.count * 3),
         3,
       );
-      for (let i = 0; i < attr.count; i++)
+      for (let i = 0; i < attr.count; i++) {
+        if (i % 4096 === 0) yield;
         out.setXYZ(i, attr.getX(i), attr.getY(i), attr.getZ(i));
+      }
       object.geometry.setAttribute(name, out);
     }
     object.geometry.applyMatrix4(object.matrixWorld);
@@ -145,12 +152,18 @@ export function prepareCharacterModels(source: THREE.Group): CharacterModels {
       geometry: object.geometry,
       material: object.material as THREE.MeshStandardMaterial,
     });
-  });
+    yield;
+  }
   for (const part of ["seated", "hand_left", "hand_right", "keys"])
     if (!player.has(part)) throw new Error(`Blender player is missing ${part}`);
   source.name = "Blender character resources";
   source.visible = false;
   return { source, cast, player, time: { value: 0 } };
+}
+
+/** Synchronous entry for offline GLB validation; the browser uses cooperative batches. */
+export function prepareCharacterModels(source: THREE.Group): CharacterModels {
+  return runSetupWorkSync(prepareCharacterWork(source));
 }
 
 export async function loadCharacterModels(signal?: AbortSignal) {
@@ -172,7 +185,7 @@ export async function loadCharacterModels(signal?: AbortSignal) {
       .parseAsync(data, "/models/");
     source = gltf.scene;
     controller.signal.throwIfAborted();
-    return prepareCharacterModels(source);
+    return await runSetupWork(prepareCharacterWork(source), controller.signal);
   } catch (error) {
     if (source) disposeAutoModel(source);
     throw error;

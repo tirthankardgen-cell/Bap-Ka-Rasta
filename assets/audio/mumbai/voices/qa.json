@@ -1,108 +1,84 @@
 {
-  "checkedOn": "2026-10-31",
-  "method": "Automated transcription of 24 normalized runtime clips, including one from every character and extra colloquial Marathi samples.",
+  "checkedOn": "2026-10-31T09:57:56.204Z",
+  "method": "One automated Scribe v2 transcription of eight new runtime recordings, including the opening, Marathi phrases, a rain question/reply pair and a player warning.",
   "model": "scribe_v2",
   "language": "hin",
   "languageProbability": 1,
+  "scriptSha256": "edbdb8de5d75551c04deeff9bb3ab4dbdfb208f34180674467d08624eb25bcfa",
   "samples": [
     {
       "id": "mum_sachin_ignition_01",
-      "text": "चला, मुंबई! आराम से चलेंगे, मज़ा आएगा।"
+      "sha256": "094557fb7dbaafd5a451fbde8ca8de7d95d76901eab5f1fa2cae3dafaaf07649",
+      "expected": "मीटर चालू। आज समंदर वाले रास्ते से निकलते हैं।",
+      "start": 0,
+      "end": 3.728125,
+      "transcript": "मीटर चालू। आज समंदर वाले रास्ते से निकलते हैं।"
     },
     {
       "id": "mum_raju_greet_intro_01",
-      "text": "अरे सचिन भाऊ! आज किधर की सवारी?"
-    },
-    {
-      "id": "mum_meera_ambient_01",
-      "text": "कटिंग चाय, भाऊ? गरम है, आराम से पीना।"
-    },
-    {
-      "id": "mum_sameer_ambient_01",
-      "text": "इंजन की आवाज़ सुन, भाऊ। अपना ऑटो एकदम फिट है।"
-    },
-    {
-      "id": "mum_aarti_ambient_01",
-      "text": "भाऊ, ट्रेन मिल जाए बस। मीटिंग में लेट नहीं होना।"
-    },
-    {
-      "id": "mum_imran_ambient_01",
-      "text": "चला, चाय पीते हैं। क्लास में अभी टाइम है!"
+      "sha256": "b9ff4456bb6abef26e5b3c9f6b2455e3dcef27acc6ee480829bec4154f47b177",
+      "expected": "सचिन! चाबी ले ली? आज लंबी सैर का इरादा है?",
+      "start": 4.328125,
+      "end": 8.59525,
+      "transcript": "सचिन, चाबी ले ली? आज लंबी सैर का इरादा है।"
     },
     {
       "id": "mum_lata_ambient_01",
-      "text": "ताज़े फूल ले लो, ताई! मोगरा एकदम मस्त है।"
-    },
-    {
-      "id": "mum_patil_ambient_01",
-      "text": "भाऊ, सिग्नल का ध्यान रखो। सबको घर जाना है।"
-    },
-    {
-      "id": "mum_nilesh_ambient_01",
-      "text": "डब्बे तैयार, भाऊ! चला, टाइम पे पहुँचाना है।"
-    },
-    {
-      "id": "mum_farah_ambient_01",
-      "text": "सेब, केले, सब ताज़ा है! देख लो, भाऊ।"
-    },
-    {
-      "id": "mum_suresh_ambient_01",
-      "text": "आज का अख़बार, भाऊ! ताज़ी ख़बर पढ़ लो।"
-    },
-    {
-      "id": "mum_pooja_ambient_01",
-      "text": "शिफ़्ट ख़त्म, भाऊ। अब घर की चाय चाहिए बस।"
-    },
-    {
-      "id": "mum_vikram_ambient_01",
-      "text": "मीटिंग से पहले चाय मिल जाए, भाऊ। फिर सब सेट है।"
-    },
-    {
-      "id": "mum_zoya_ambient_01",
-      "text": "वो बालकनी देखो, भाऊ। कितनी मस्त डिज़ाइन है!"
-    },
-    {
-      "id": "mum_bala_ambient_01",
-      "text": "भाऊ, यही बिल्डिंग है ना? एड्रेस तो इधर का है।"
-    },
-    {
-      "id": "mum_jyoti_ambient_01",
-      "text": "ज़रा साइड, भाऊ। सफ़ाई हो जाए तो सबको अच्छा लगेगा।"
+      "sha256": "82486454c142684339c837bee92ad4665d57b7366c1fffa50315780fbb6ab7a5",
+      "expected": "मोगऱ्याचा गजरा घ्या! आज के फूल बड़े ख़ुशबूदार हैं।",
+      "start": 9.19525,
+      "end": 13.4341875,
+      "transcript": "मोगऱ्याचा गजरा घ्या। आज के फूल बड़े खुशबूदार हैं।"
     },
     {
       "id": "mum_shanta_ambient_01",
-      "text": "आरामात, बेटा। मुंबई कहीं भागी नहीं जा रही।"
+      "sha256": "ee905d550389ff593e654d12af46714c17a31aea8033707bd9a218ae13247e45",
+      "expected": "आमच्या वेळी यहाँ साइकिल चलती थी। अब सबको जल्दी है।",
+      "start": 14.034187499999998,
+      "end": 18.344125,
+      "transcript": "आमच्या वेळी यहां cycle चलती थी। अब सबको जल्दी है।"
     },
     {
-      "id": "mum_dev_ambient_01",
-      "text": "एक फ़ोटो और, भाऊ। ये बिल्डिंग मस्त आ रही है!"
+      "id": "mum_lata_chat_02",
+      "sha256": "dd667cf8a960febe43bb9f9e38291fbb2c4bfd36612d6a98fd7511b6e84ce934",
+      "expected": "पाऊस येणार का? आसमान का रंग बदल रहा है।",
+      "start": 18.944125,
+      "end": 22.5396875,
+      "transcript": "पाऊस येणार का? आसमान का रंग बदल रहा है।"
     },
     {
-      "id": "mum_asha_ambient_01",
-      "text": "बस एक चक्कर और। फिर मस्त कटिंग चाय!"
+      "id": "mum_sameer_reply_02",
+      "sha256": "86e607ca0a8a39c8f20cf0ac00df92a0f33022a3023179138a7aef8100d486a0",
+      "expected": "औज़ार अंदर कर लेता हूँ। ज़ंग फिर साफ़ करना पड़ेगा।",
+      "start": 23.1396875,
+      "end": 26.867250000000002,
+      "transcript": "औजार अंदर कर लेता हूँ। ज़ंग फिर साफ करना पड़ेगा।"
     },
     {
-      "id": "mum_ganesh_ambient_01",
-      "text": "माल आ गया, भाऊ। चला, ये पेटी अंदर रखते हैं।"
+      "id": "mum_meera_warning_01",
+      "sha256": "1f6db15fcd7b8840eb2ecd0e0a7ffe75ecb166d21bcdf88ff0cd271b6e73d6a0",
+      "expected": "गरम केतली है! गाड़ी ज़रा उधर रखना!",
+      "start": 27.46725,
+      "end": 30.5459375,
+      "transcript": "गरम केतली है। गाड़ी जरा उधर रखना।"
     },
     {
-      "id": "mum_raju_ambient_01",
-      "text": "भाऊ, तुला क्या बोलूँ? कटिंग चाय से दिन बनता है।"
-    },
-    {
-      "id": "mum_raju_ambient_02",
-      "text": "इतनी चिक-चिक मत कर, भाऊ। दो मिनट आराम कर!"
-    },
-    {
-      "id": "mum_aarti_ambient_02",
-      "text": "थांबा ज़रा, बैग की चेन खुली रह गई!"
-    },
-    {
-      "id": "mum_shanta_warning_01",
-      "text": "अरे भाऊ, आराम से! आजी को भी घर पहुँचना है।"
+      "id": "mum_zoya_reply_01",
+      "sha256": "db9a90761f20aefbed042a2aabcab3bb1ec59c6fd9dad49b94297ba3e4750ca2",
+      "expected": "काग़ज़ अंदर रख लूँ। ये रंग पानी में बह जाएँगे।",
+      "start": 31.1459375,
+      "end": 35.1819375,
+      "transcript": "कागज़ अंदर रख लूं। ये रंग पानी में बह जाएंगे।"
     }
   ],
-  "transcript": "चला Mumbai आराम से चलेंगे, मजा आएगा। अरे Sachin भाऊ आज किधर की सवारी? Cutting चाय भाऊ गरम है, आराम से पीना। Engine की आवाज़ सुन भाऊ, अपना auto एकदम fit है। भाऊ train मिल जाए बस, meeting में late नहीं होना। चला चाय पीते हैं, class में अभी time है। ताजे फूल ले लो ताई, मोगरा एकदम मस्त है। भाऊ signal का ध्यान रखो, सबको घर जाना है। डब्बे तैयार भाऊ चला time पर पहुंचाना है। सेब, केले सब ताजा है। देख लो भाऊ। आज का अखबार भाऊ ताज़ी खबर पढ़ लो। Shift खत्म भाऊ अब घर की चाय चाहिए बस। Meeting से पहले चाय मिल जाए भाऊ फिर सब set है। वो balcony देखो भाऊ कितनी मस्त design है। भाऊ यही building है ना? Address तो इधर का है। ज़रा side भाऊ सफाई हो जाए तो सबको अच्छा लगेगा। आरामात बेटा Mumbai कहीं भागी नहीं जा रही। एक photo और भाऊ ये building मस्त आ रही है। बस एक चक्कर और फिर मस्त cutting चाय। माल आ गया भाऊ चला ये पेटी अंदर रखते हैं। भाऊ तुला क्या बोलूं? Cutting चाय से दिन बनता है। इतनी चिक-चिक मत कर भाऊ। दो minute आराम कर। थांबा ज़रा bag की chain खुली रह गई। अरे भाऊ आराम से आजी को भी घर पहुंचना है।",
-  "review": "The transcript preserves the intended meaning of the sampled lines, including bhau, chala, tai, tula, thamba, aaramat, aaji and chik-chik. English loanwords are sometimes transcribed in Latin script.",
-  "limits": "Transcription is a speech-content check, not a native-accent certification or a human listening review. The remaining files are covered by full MP3 decoding, manifest and duration checks."
+  "transcript": "मीटर चालू। आज समंदर वाले रास्ते से निकलते हैं। सचिन, चाबी ले ली? आज लंबी सैर का इरादा है। मोगऱ्याचा गजरा घ्या। आज के फूल बड़े खुशबूदार हैं। आमच्या वेळी यहां cycle चलती थी। अब सबको जल्दी है। पाऊस येणार का? आसमान का रंग बदल रहा है। औजार अंदर कर लेता हूँ। ज़ंग फिर साफ करना पड़ेगा। गरम केतली है। गाड़ी जरा उधर रखना। कागज़ अंदर रख लूं। ये रंग पानी में बह जाएंगे।",
+  "review": "All eight transcripts preserve the intended new lines, including Mogryacha gajra ghya, Amchya veli, Paaoos yenaar ka and the matching rain reply. Differences are punctuation, nukta spelling and the English loanword cycle. Each sample is tied to its runtime SHA-256 hash.",
+  "limits": "A sampled content check, not certification of a native accent or a human listening review. Every MP3 is separately covered by checksums, duration checks and complete decoding.",
+  "usage": {
+    "accountTier": "free",
+    "before": 9719,
+    "after": 9719,
+    "includedLimit": 10000,
+    "audioSeconds": 35.78
+  }
 }
