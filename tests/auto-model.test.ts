@@ -12,10 +12,13 @@ import {
 
 test("exported auto fits the game and has grounded, independent wheel pivots", async () => {
   const file = await readFile(new URL("../public/models/mumbai-auto.glb", import.meta.url));
+  const gltf = JSON.parse(file.subarray(20, 20 + file.readUInt32LE(12)).toString());
+  assert.equal(gltf.scenes.length, 1, "other open Blender scenes must not enter the export");
+  assert.equal(gltf.images?.length ?? 0, 0, "reference photos must not enter the runtime asset");
   const { scene } = await new GLTFLoader().parseAsync(
     file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength), "",
   );
-  const { wheels, steering } = autoRickshaw(scene);
+  const { wheels, steering, speedometer, setSpeed } = autoRickshaw(scene);
   const bounds = new Box3().setFromObject(scene);
   const size = bounds.getSize(new Vector3());
   assert.ok(Math.abs(bounds.min.y) < 0.015, "tires must meet the ground");
@@ -49,5 +52,19 @@ test("exported auto fits the game and has grounded, independent wheel pivots", a
   assert.ok(driver > 0 && canopy > 0, "interior cameras can hide driver and canopy");
   assert.ok(AUTO_DRIVER_EYE_HEIGHT > 1.36 && AUTO_DRIVER_EYE_HEIGHT < 1.85);
   assert.ok(triangles < 45_000, "hero mesh triangle budget");
+  const meter = new Box3(), partition = new Box3();
+  scene.traverse((object) => {
+    if (object.userData.part === "fare_meter") meter.union(new Box3().setFromObject(object));
+    if (object.userData.part === "partition") partition.union(new Box3().setFromObject(object));
+  });
+  assert.ok(!meter.isEmpty() && !partition.isEmpty(), "passenger meter and divider are present");
+  assert.ok(meter.max.z < -.06 && meter.min.z > -.30, "meter belongs behind the driver and ahead of the passenger bench");
+  assert.ok(meter.min.y > 1.05 && meter.max.y < 1.4, "meter is mounted on the divider");
+  assert.ok(partition.min.x < -.55 && partition.max.x > .55, "divider spans the cabin");
+  setSpeed(0); assert.equal(speedometer.rotation.y, 2.35);
+  setSpeed(40 / 3.6); assert.ok(Math.abs(speedometer.rotation.y) < 1e-9);
+  setSpeed(-40 / 3.6); assert.ok(Math.abs(speedometer.rotation.y) < 1e-9);
+  setSpeed(100); assert.equal(speedometer.rotation.y, -2.35);
+  setSpeed(Number.NaN); assert.equal(speedometer.rotation.y, 2.35);
   disposeAutoModel(scene);
 });

@@ -1,9 +1,24 @@
 {
-  "triangles": 37552,
-  "meshes": 34,
-  "bytes": 1667468,
+  "triangles": 38602,
+  "meshes": 53,
+  "bytes": 1273580,
   "wheel_radius": 0.265,
   "source": "original Blender geometry",
   "front": "+Z",
-  "up": "+Y"
+  "up": "+Y",
+  "references": [
+    "ref vech/auto front.png",
+    "ref vech/auto side.png",
+    "ref vech/auto.png",
+    "ref vech/auto interior dashboard.png"
+  ],
+  "features": [
+    "twin round headlamps",
+    "pressed open-backed cowl",
+    "black front mudguard",
+    "driver-passenger partition",
+    "passenger-facing rear fare meter",
+    "working speedometer",
+    "independent wheel pivots"
+  ]
 }

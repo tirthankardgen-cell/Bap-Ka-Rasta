@@ -11,8 +11,14 @@ The repository's existing licensing status applies; no new reuse license is gran
 
 The design uses Mumbai's black body/canopy and yellow windscreen surround, a curved RE-style
 front cowl, twin round lamps, an open side entry, rear passenger bench, handlebar controls,
-fare meter, wiper, mirrors, rear ventilation, CNG marking and fictional MH 02 registration.
+rear passenger-facing fare meter on a driver/passenger partition, a handlebar
+speedometer with a working needle, wiper, mirrors, rear ventilation, CNG marking
+and fictional MH 02 registration. The 2 November revision follows the user's
+front/side/dashboard photographs in `ref vech/`, including the black front
+mudguard, indicator band, twin lamp pods and folded screen side returns.
 It is a game model inspired by the vehicle class, not a manufacturer CAD replica.
+
+![Driver dashboard and passenger fare meter](cabin-preview.webp)
 
 ## References and provenance
 
@@ -29,6 +35,10 @@ The three `wheel_rear_left`, `wheel_rear_right` and `wheel_front` nodes have axl
 pivots, rotate around local X, and have a 0.265 m radius. `driver` and `cabinRoof` extras
 allow the interior cameras to hide only the relevant parts. Materials are glTF PBR;
 all surfaces, lettering and trim are geometry, with no texture requests or decoder needed.
+The `speedometer_needle` pivot rotates in its tilted dial's local Y plane after
+GLB export. `part=partition` and `part=fare_meter` retain the two cabin assemblies.
+The [complete vehicle library](../gallery-traffic/README.md) includes this auto
+and all twelve other traffic models in one editable Blender scene.
 
 The game loads the asset asynchronously before enabling driving. Each game session owns
 its resources. Traffic copies are baked into material-based instance batches, with unused

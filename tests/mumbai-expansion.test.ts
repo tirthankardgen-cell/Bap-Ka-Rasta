@@ -4,9 +4,7 @@ import { streets, junctions, geometry, streetPath, roadContains, isCurved, WORLD
 import { landmarkSites, landmarkApproaches } from "../src/game/landmark-layout.ts";
 import { buildingLots, footprintPoint, footprintsOverlap, lotFootprint } from "../src/game/buildings.ts";
 import { newTraffic } from "../src/game/simulation.ts";
-import { trafficDimensions, vehicleContact } from "../src/game/world-scale.ts";
-import { trafficCar } from "../src/game/vehicles.ts";
-import { Box3, Vector3 } from "three";
+import { vehicleContact } from "../src/game/world-scale.ts";
 
 test("the enlarged map has connected, curved two-lane streets in every quadrant", () => {
   assert.ok(streets.length >= 200);
@@ -86,16 +84,8 @@ test("complete landmark and shop forecourts clear every road, building and neigh
   }
 });
 
-test("car and bus meshes use metre-scale bodies with grounded circular wheels", () => {
-  for(const kind of [0,1,2,3]) {
-    const model=trafficCar(kind), b=new Box3().setFromObject(model);
-    const size=b.getSize(new Vector3()), expected=trafficDimensions(kind);
-    assert.ok(Math.abs(b.min.y)<.001);
-    assert.ok(Math.abs(size.y-expected.height)<.02,`kind ${kind} height ${size.y}`);
-    assert.ok(Math.abs(size.z-expected.length)<.05,`kind ${kind} length ${size.z}`);
-    assert.ok(size.x>=expected.width&&size.x<expected.width+.35);
-  }
-});
+// Shipped vehicle geometry is checked in traffic-models.test.ts and
+// auto-model.test.ts, including all thirteen Blender models and their pivots.
 
 test("collisions include the front and rear of a full-length bus without blocking adjacent lanes", () => {
   for(const yaw of [0,Math.PI/4,Math.PI/2]) {

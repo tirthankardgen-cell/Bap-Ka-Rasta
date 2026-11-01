@@ -90,6 +90,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
             assets.autoModel,
             assets.characterModels,
             assets.landmarkModels,
+            assets.trafficModels,
             undefined,
             controller.signal,
           );

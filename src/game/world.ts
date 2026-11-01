@@ -27,7 +27,8 @@ import {
 import type { Traffic } from "./simulation";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
-import { trafficCar } from "./vehicles";
+import type { TrafficModels } from "./traffic-models";
+import { TRAFFIC_KIND_COUNT } from "./world-scale";
 export { autoRickshaw } from "./auto-model";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
@@ -142,11 +143,13 @@ export async function makeWorld(
   scene: THREE.Scene,
   characterModels: CharacterModels,
   landmarkModels: LandmarkModels,
+  trafficModels: TrafficModels,
   signal?: AbortSignal,
 ) {
   const checkpoint = setupCheckpoint(signal);
   await checkpoint(true);
   const updateLandmarks = placeLandmarks(scene, landmarkModels);
+  scene.add(trafficModels.source);
   const grainCanvas = document.createElement("canvas");
   grainCanvas.width = 128;
   grainCanvas.height = 128;
@@ -800,7 +803,8 @@ export async function makeWorld(
   }
   for (const o of obstacles) {
     await checkpoint();
-    const taxi = trafficCar(0);
+    const taxi = trafficModels.vehicles.get(8)!.clone(true);
+    taxi.name = "Parked Mumbai taxi | Blender";
     taxi.position.set(o.x, 0, o.z);
     scene.add(taxi);
   }
@@ -1069,129 +1073,86 @@ export async function makeWorld(
   };
 }
 
-export function scooterModel() {
-  const g = new THREE.Group();
-  const box = (
-    w: number,
-    h: number,
-    d: number,
-    x: number,
-    y: number,
-    z: number,
-    c: string,
-  ) => {
-    const m = new THREE.Mesh(
-      y > 1.7 || c === "#9b8161"
-        ? new THREE.BoxGeometry(w, h, d)
-        : new RoundedBoxGeometry(
-            w,
-            h,
-            d,
-            2,
-            Math.min(0.08, w / 3, h / 3, d / 3),
-          ),
-      new THREE.MeshStandardMaterial({
-        color: c,
-        roughness: 0.35,
-        metalness: 0.3,
-      }),
-    );
-    m.position.set(x, y, z);
-    g.add(m);
-  };
-  box(0.62, 0.35, 1.3, 0, 0.55, 0, "#359d9e");
-  box(0.64, 0.68, 0.2, 0, 0.83, 0.62, "#359d9e");
-  box(0.58, 0.14, 0.7, 0, 0.80, -0.22, "#2c3d3e");
-  box(0.72, 0.07, 0.08, 0, 1.20, 0.62, "#334548");
-  box(0.26, 0.28, 0.28, 0, 1.63, 0, "#b98756");
-  box(0.34, 0.22, 0.34, 0, 1.84, 0, "#e5aa3b");
-  box(0.43, 0.55, 0.3, 0, 1.22, 0, "#9b8161");
-  for (const z of [-0.7, 0.7]) {
-    const wheel = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.25, 0.25, 0.16, 16),
-      new THREE.MeshStandardMaterial({ color: "#253538" }),
-    );
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(0, 0.25, z);
-    g.add(wheel);
-  }
-  return g;
-}
-
 export async function trafficVisuals(
   scene: THREE.Scene,
   traffic: Traffic[],
   autoModel: THREE.Group,
+  models: TrafficModels,
   signal?: AbortSignal,
 ) {
   const checkpoint = setupCheckpoint(signal);
   const batches: { mesh: THREE.InstancedMesh; ids: number[] }[] = [];
   const transform = new THREE.Object3D();
-  for (let kind = 0; kind < 6; kind++) {
+  for (let kind = 0; kind < TRAFFIC_KIND_COUNT; kind++) {
     await checkpoint();
     const ids = traffic
       .map((t, i) => (t.kind === kind ? i : -1))
       .filter((i) => i >= 0);
     if (!ids.length) continue;
-    let model: THREE.Group;
+    let model: THREE.Object3D;
     if (kind === 4) model = autoModel.clone(true);
-    else if (kind === 5) {
-      model = scooterModel();
-    } else {
-      model = trafficCar(kind);
-    }
+    else model = models.vehicles.get(kind)!.clone(true);
     model.updateMatrixWorld(true);
     const groups = new Map<
         string,
-        { geos: THREE.BufferGeometry[]; material: THREE.Material }
-      >(),
-      originalGeos = new Set<THREE.BufferGeometry>(),
-      originalMats = new Set<THREE.Material>();
+        { geos: THREE.BufferGeometry[]; material: THREE.Material; transferred?: boolean }
+      >();
     model.traverse((o) => {
       if (!(o instanceof THREE.Mesh)) return;
       const mat = o.material as THREE.MeshStandardMaterial;
-      originalGeos.add(o.geometry);
-      originalMats.add(mat);
       if (mat.transparent || ("map" in mat && mat.map)) return;
-      const key = kind === 4 ? mat.uuid : mat.color.getHexString();
+      const key = mat.uuid;
       if (!groups.has(key))
         groups.set(key, { geos: [], material: mat.clone() });
       const geometry = (
         o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()
-      ).applyMatrix4(o.matrixWorld);
-      // Imported body surfaces and wheel primitives can have different UV sets.
-      // These untextured traffic batches only need positions and normals.
-      if (kind === 4)
-        for (const attribute of Object.keys(geometry.attributes))
-          if (attribute !== "position" && attribute !== "normal")
-            geometry.deleteAttribute(attribute);
+      );
+      // Meshopt may store normalized integers. Expand before baking transforms
+      // so applying a metre-space matrix cannot clamp the imported positions.
+      for (const attribute of Object.keys(geometry.attributes)) {
+        if (attribute !== "position" && attribute !== "normal") {
+          geometry.deleteAttribute(attribute);
+          continue;
+        }
+        const source = geometry.getAttribute(attribute);
+        const values = new Float32Array(source.count * 3);
+        for (let i = 0; i < source.count; i++) {
+          values[i * 3] = source.getX(i);
+          values[i * 3 + 1] = source.getY(i);
+          values[i * 3 + 2] = source.getZ(i);
+        }
+        geometry.setAttribute(attribute, new THREE.BufferAttribute(values, 3));
+      }
+      geometry.applyMatrix4(o.matrixWorld);
       groups.get(key)!.geos.push(geometry);
     });
-    for (const group of groups.values()) {
-      await checkpoint();
-      const geometry = mergeGeometries(group.geos);
-      group.geos.forEach((g) => g.dispose());
-      if (!geometry) continue;
-      const mesh = new THREE.InstancedMesh(
-        geometry,
-        group.material,
-        ids.length,
-      );
-      mesh.frustumCulled = false;
-      mesh.castShadow = false;
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-      batches.push({ mesh, ids });
+    try {
+      for (const group of groups.values()) {
+        await checkpoint();
+        const geometry = mergeGeometries(group.geos);
+        group.geos.forEach((g) => g.dispose());
+        group.geos.length = 0;
+        if (!geometry) continue;
+        const mesh = new THREE.InstancedMesh(geometry, group.material, ids.length);
+        mesh.name = `Traffic ${kind} | ${model.name}`;
+        mesh.userData.trafficKind = kind;
+        mesh.frustumCulled = false;
+        mesh.castShadow = false;
+        mesh.receiveShadow = true;
+        scene.add(mesh);
+        group.transferred = true;
+        batches.push({ mesh, ids });
+      }
+    } finally {
+      // Cancellation can occur between batches. Release temporary geometry and
+      // materials that never reached the scene's normal disposal path.
+      for (const group of groups.values()) {
+        group.geos.forEach((g) => g.dispose());
+        if (!group.transferred) group.material.dispose();
+      }
     }
-    // The imported traffic template borrows the player's mesh resources.
-    // Only its baked instance geometries belong to traffic; engine disposal owns originals.
-    if (kind !== 4) originalGeos.forEach((g) => g.dispose());
-    if (kind !== 4)
-      originalMats.forEach((m) => {
-        const map = (m as THREE.MeshStandardMaterial).map;
-        map?.dispose();
-        m.dispose();
-      });
+    // All templates borrow session-owned resources. Only the baked geometries
+    // and cloned materials belong to traffic batches; originals survive retries.
   }
   return (x: number, z: number) => {
     for (const b of batches) {

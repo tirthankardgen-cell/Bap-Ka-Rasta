@@ -46,6 +46,7 @@ function Fixture() {
         assets.autoModel,
         assets.characterModels,
         assets.landmarkModels,
+        assets.trafficModels,
         drive,
         controller.signal,
       );

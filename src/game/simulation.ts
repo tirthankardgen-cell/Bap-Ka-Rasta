@@ -1,5 +1,5 @@
 import { gearedSpeed, type Gear } from "./gears.ts";
-import { trafficDimensions, vehicleContact } from "./world-scale.ts";
+import { trafficDimensions, vehicleContact, TRAFFIC_KIND_COUNT } from "./world-scale.ts";
 import {
   streets,
   trafficLane,
@@ -110,16 +110,16 @@ export function newTraffic(): Traffic[] {
     const p = lanePosition(edge, from, progress, lane);
     if (Math.hypot(p.x - SPAWN.x, p.z - SPAWN.z) < 32) continue;
     if (result.some((t) => Math.hypot(t.x - p.x, t.z - p.z) < Math.max(9,
-      (trafficDimensions(t.kind).length + trafficDimensions(i % 6).length) / 2 + 2))) continue;
+      (trafficDimensions(t.kind).length + trafficDimensions(i % TRAFFIC_KIND_COUNT).length) / 2 + 2))) continue;
     result.push({
       id: i,
       edge,
       from,
       progress,
       lane,
-      kind: i % 6,
+      kind: i % TRAFFIC_KIND_COUNT,
       speed: 0,
-      cruise: i % 6 === 3 ? 7 : 8 + (i % 4),
+      cruise: i % TRAFFIC_KIND_COUNT === 3 ? 7 : 8 + (i % 4),
       turn: null,
       decisions: 0,
       ...p,

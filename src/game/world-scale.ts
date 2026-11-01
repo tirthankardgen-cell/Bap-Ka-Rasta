@@ -12,10 +12,21 @@ export function crowdHeightVariation(variant: number, named: boolean) {
 }
 
 // Body envelopes, not mirrors. Also used for physical vehicle clearance.
+export const TRAFFIC_KIND_COUNT = 13;
 export function trafficDimensions(kind: number) {
+  if (kind === 0) return { width: 1.98, length: 4.42, height: 2.06 };
+  if (kind === 1) return { width: 1.98, length: 5.03, height: 2.03 };
+  if (kind === 2) return { width: 1.49, length: 3.12, height: 2.04 };
   if (kind === 3) return { width: 2.3, length: 9.4, height: 3.1 };
   if (kind === 4) return { width: 1.45, length: 2.75, height: 2.08 };
-  if (kind === 5) return { width: 0.72, length: 1.9, height: 1.95 };
+  if (kind === 5) return { width: 0.71, length: 1.89, height: 1.81 };
+  if (kind === 6) return { width: 0.72, length: 2.13, height: 1.75 };
+  if (kind === 7) return { width: 1.78, length: 4.21, height: 1.57 };
+  if (kind === 8) return { width: 1.78, length: 4.21, height: 1.71 };
+  if (kind === 9) return { width: 1.735, length: 3.91, height: 1.53 };
+  if (kind === 10) return { width: 1.625, length: 3.75, height: 1.73 };
+  if (kind === 11) return { width: 1.79, length: 4.41, height: 1.75 };
+  if (kind === 12) return { width: 1.83, length: 4.89, height: 1.88 };
   return { width: 1.78, length: 4.25, height: 1.55 };
 }
 

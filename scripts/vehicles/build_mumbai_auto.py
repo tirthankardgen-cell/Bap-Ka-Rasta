@@ -63,8 +63,8 @@ material('Rubber', '17191a', .92)
 material('Chassis', '292e2e', .58, .45)
 material('Chrome', 'a5acaa', .24, .85)
 material('Steel wheel', 'a3a18c', .4, .7)
-material('Warm vinyl', '4d3529', .66)
-material('Seat piping', '9e8464', .74)
+material('Warm vinyl', 'b7541e', .60)
+material('Seat piping', 'e28d46', .74)
 material('Window glass', 'b9d8d4', .16, .12, .19)
 material('Headlamp lens', 'efe7c8', .18, .24)
 material('Amber lens', 'ff7d13', .25, .1)
@@ -72,6 +72,7 @@ material('Red lens', 'bf231a', .28, .12)
 material('Lettering cream', 'f1e4ad', .65)
 material('CNG green', '287547', .65)
 material('Meter screen', 'a9cda2', .55)
+material('Dashboard moulding', '686357', .72)
 material('Khaki cotton', '9e8460', .91)
 material('Skin', 'a46d47', .8)
 material('Hair', '24221e', .95)
@@ -107,7 +108,7 @@ def box(name, loc, size, mat, bevel=.025, tag='body'):
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     if bevel:
         m = o.modifiers.new('Pressed rounded edges', 'BEVEL')
-        m.width = bevel; m.segments = 3
+        m.width = min(bevel, min(size)*.45); m.segments = 2
         bpy.ops.object.modifier_apply(modifier=m.name)
         n = o.modifiers.new('Weighted corner normals', 'WEIGHTED_NORMAL')
         bpy.ops.object.modifier_apply(modifier=n.name)
@@ -128,8 +129,9 @@ def cylinder(name, loc, radius, depth, mat, axis=(1,0,0), tag='body', segments=2
     o = register(bpy.context.object, name, mat, tag)
     o.rotation_euler = point(axis).to_track_quat('Z', 'Y').to_euler()
     for p in o.data.polygons: p.use_smooth = len(p.vertices)==4
-    m=o.modifiers.new('Rolled edge','BEVEL'); m.width=.007; m.segments=2
-    bpy.ops.object.modifier_apply(modifier=m.name)
+    if radius >= .02:
+        m=o.modifiers.new('Rolled edge','BEVEL'); m.width=min(.007,depth*.35); m.segments=2
+        bpy.ops.object.modifier_apply(modifier=m.name)
     return o
 
 def ellipsoid(name, loc, scale, mat, tag='body'):
@@ -168,18 +170,23 @@ for s in [-1,1]:
     box('Yellow side belt', (s*.677,1.195,-.87), (.025,.105,.58), YELLOW,.01)
 
 # Curved tapering front leg shield/cowl. The varying ellipse sections form a real shell.
-rings=[(.46,.24,.99,.17),(.62,.41,.98,.24),(.87,.57,.95,.29),(1.13,.65,.89,.34),(1.28,.65,.85,.33),(1.35,.62,.80,.29)]
-verts=[]; faces=[]; N=40
+rings=[(.46,.32,.92,.22),(.62,.48,.89,.29),(.87,.59,.855,.33),(1.13,.65,.825,.335),(1.265,.65,.80,.32)]
+verts=[]; faces=[]; N=32
 for y,w,z,d in rings:
-    for i in range(N):
-        a=2*math.pi*i/N
-        verts.append((w*math.sin(a),y,z+d*math.cos(a)))
+    for i in range(N+1):
+        a=-math.pi/2+math.pi*i/N
+        # Broad, almost flat nose with rounded corners, as on the gallery auto.
+        verts.append((w*math.copysign(abs(math.sin(a))**.48,math.sin(a)),y,
+                      z+d*math.copysign(abs(math.cos(a))**.48,math.cos(a))))
 for r in range(len(rings)-1):
     for i in range(N):
-        a=r*N+i; b=r*N+(i+1)%N
-        faces.append((a,b,b+N,a+N))
-faces.extend([tuple(range(N-1,-1,-1)),tuple((len(rings)-1)*N+i for i in range(N))])
-mesh('Sculpted front cowl',verts,faces,BLACK)
+        a=r*(N+1)+i; b=a+1
+        faces.append((a,b,b+N+1,a+N+1))
+# A pressed shell, not a solid elliptical volume filling the driver's knees and
+# controls. Its open rear exposes the independent handlebar and footwell.
+cowl=mesh('Open backed front cowl',verts,faces,BLACK)
+solid=cowl.modifiers.new('Pressed steel shell thickness','SOLIDIFY'); solid.thickness=.018
+bpy.context.view_layer.objects.active=cowl; bpy.ops.object.modifier_apply(modifier=solid.name)
 
 # Sloping rounded windscreen: an actual open surround and single transparent pane.
 def screen_outline(w,h):
@@ -188,30 +195,50 @@ def screen_outline(w,h):
         a=2*math.pi*i/64
         x=w*math.copysign(abs(math.cos(a))**.38, math.cos(a))
         v=h*math.copysign(abs(math.sin(a))**.38, math.sin(a))
-        points.append((x,1.65+v,.895-.48*v))
+        points.append((x,1.64+v,.895-.43*v))
     return points
-outer=screen_outline(.665,.367); inner=screen_outline(.576,.283)
+outer=screen_outline(.671,.397); inner=screen_outline(.607,.347)
 mesh('Yellow windscreen surround',outer+inner,[(i,(i+1)%64,(i+1)%64+64,i+64) for i in range(64)],YELLOW)
 tube('Windscreen rubber gasket',inner+[inner[0]],.017,RUBBER)
 glass=mesh('Windscreen glass',inner,[tuple(range(64))],'Window glass',smooth=False)
 glass['glass']=True
 tube('Windscreen outer rolled edge',outer+[outer[0]],.013,YELLOW)
+# Pressed side returns connect the screen frame to the canopy supports. Without
+# these narrow yellow cheeks the windshield looked detached in a side view.
+for s in [-1,1]:
+    cheek=[(s*.642,1.28,1.038),(s*.671,1.64,.895),(s*.615,1.93,.770),
+           (s*.579,1.985,.687),(s*.636,1.80,.680),(s*.644,1.28,.786)]
+    o=mesh('Yellow A-pillar return',cheek,[tuple(range(6))],YELLOW,smooth=False)
+    mod=o.modifiers.new('Folded screen surround','SOLIDIFY'); mod.thickness=.010
+    bpy.context.view_layer.objects.active=o; bpy.ops.object.modifier_apply(modifier=mod.name)
 tube('Single windscreen wiper',[(.25,1.395,1.039),(.10,1.71,.879)],.010,RUBBER)
 tube('Wiper blade',[(.20,1.56,.948),(-.045,1.90,.792)],.013,RUBBER)
 
-# Twin round RE headlamps, rectangular indicators and front number plate.
+# Supplied real auto front: broad yellow indicator band, two round lamps in
+# moulded black pods, recessed centre vents and a black wheel mudguard.
+box('Yellow windscreen sill',(0,1.268,1.079),(1.29,.147,.080),YELLOW,.024)
 for s in [-1,1]:
-    cylinder('Headlight bezel',(s*.40,1.055,1.221),.118,.070,CHROME,(0,0,1))
-    cylinder('Headlight glass',(s*.40,1.055,1.263),.098,.018,'Headlamp lens',(0,0,1),segments=32)
+    box('Indicator seal',(s*.451,1.267,1.125),(.259,.074,.015),RUBBER,.019,'front_lamps')
+    box('Amber front indicator',(s*.474,1.267,1.136),(.187,.050,.013),'Amber lens',.013,'front_lamps')
+    box('Indicator clear end',(s*.363,1.267,1.137),(.045,.049,.014),'Headlamp lens',.012,'front_lamps')
+    pod=box('Sculpted headlamp pod',(s*.438,1.059,1.16),(.379,.276,.115),BLACK,.056,'front_lamps')
+    pod.rotation_euler.y=s*.07
+    cylinder('Headlamp rubber socket',(s*.453,1.055,1.224),.111,.045,RUBBER,(0,0,1),'front_lamps',32)
+    cylinder('Headlamp chrome bezel',(s*.453,1.055,1.251),.097,.019,CHROME,(0,0,1),'front_lamps',32)
+    cylinder('Round headlamp reflector',(s*.453,1.055,1.263),.083,.011,'Headlamp lens',(0,0,1),'front_lamps',32)
     for i in range(-3,4):
-        h=math.sqrt(max(0,.09**2-(i*.023)**2))
-        tube('Fluted headlight',[(s*.40+i*.023,1.055-h,1.274),(s*.40+i*.023,1.055+h,1.274)],.002,'Lettering cream')
-for s in [-1,1]:
-    box('Front indicator base',(s*.495,1.204,1.116),(.225,.116,.063),RUBBER,.027)
-    box('Amber indicator',(s*.495,1.204,1.154),(.195,.085,.018),'Amber lens',.015)
-box('Front plate',(0,1.282,1.205),(.38,.09,.014),YELLOW,.004)
-text('Front registration','MH 02 DK 7860',(0,1.283,1.215),.044,RUBBER,'front')
-text('Front RE badge','RE',(0,1.192,1.237),.045,'Lettering cream','front')
+        h=math.sqrt(max(0,.077**2-(i*.020)**2))
+        tube('Fluted headlamp lens',[(s*.453+i*.020,1.055-h,1.270),(s*.453+i*.020,1.055+h,1.270)],.0018,'Lettering cream','front_lamps')
+    for x,y in [(s*.282,1.15),(s*.588,1.15),(s*.282,.97)]:
+        cylinder('Lamp pod fastener',(x,y,1.224),.006,.006,CHROME,(0,0,1),'front_lamps',8)
+    tube('Pressed cowl cheek',[(s*.58,1.00,1.14),(s*.43,.91,1.183),(s*.34,.74,1.184),(s*.33,.53,1.105)],.009,FRAME)
+box('Centre service panel',(0,.992,1.197),(.287,.341,.027),FRAME,.057)
+for i in range(4): box('Front cooling slot',(0,.891+i*.033,1.218),(.155,.014,.009),RUBBER,.004)
+box('Original BR nose badge',(0,1.080,1.219),(.089,.072,.012),CHROME,.014)
+box('Nose badge inset',(0,1.080,1.227),(.070,.054,.006),RUBBER,.009)
+text('Nose badge letters','BR',(0,1.080,1.233),.033,'Lettering cream',facing='front')
+box('Front registration plate',(0,1.244,1.142),(.25,.083,.014),YELLOW,.007)
+text('Front registration','MH 02',(0,1.244,1.154),.040,RUBBER,facing='front')
 
 # Gently crowned fabric canopy, substantially flatter than the previous semicircle.
 roof=[]; faces=[]; nx=24; nz=16
@@ -266,19 +293,62 @@ tube('Bench front piping',[(-.52,.86,-.546),(.52,.86,-.546)],.008,'Seat piping')
 box('Driver seat pedestal',(0,.62,.17),(.46,.24,.41),BLACK,.045)
 box('Driver saddle',(0,.802,.15),(.53,.135,.45),'Warm vinyl',.068)
 box('Driver back pad',(0,.999,-.042),(.49,.29,.07),'Warm vinyl',.032)
-box('Dashboard',(0,1.28,.58),(1.05,.105,.20),BLACK,.035)
-tube('Steering column',[(0,.59,.69),(0,1.17,.60)],.028,FRAME)
+box('Lower dashboard shelf',(0,1.098,.835),(1.13,.075,.33),'Dashboard moulding',.03,'dashboard')
+box('Centre storage lid',(0,1.205,.927),(.48,.082,.20),'Dashboard moulding',.04,'dashboard')
+for s in [-1,1]:
+    tube('Inner leg shield edge',[(s*.56,.54,.89),(s*.63,1.20,.80)],.012,RUBBER)
+    mesh('Moulded dashboard wing',[(s*.23,1.095,.75),(s*.34,1.18,.92),(s*.58,1.19,.86),(s*.60,1.01,.61),(s*.33,.987,.61)],[(0,1,2,3,4)],'Dashboard moulding','dashboard')
+    box('Dash pocket recess',(s*.425,1.137,.807),(.18,.016,.105),RUBBER,.015,'dashboard')
+    tube('Pocket lip',[(s*.33,1.127,.74),(s*.53,1.127,.74)],.010,'Dashboard moulding','dashboard')
+tube('Continuous steering stem',[(0,.58,.95),(0,.73,.83),(0,.91,.74),(0,1.222,.589)],.032,FRAME,'steering_column')
+tube('Fork crown',[(-.124,.72,.83),(0,.73,.83),(.124,.72,.83)],.028,FRAME,'steering_column')
+box('Handlebar clamp',(0,1.207,.585),(.11,.056,.068),FRAME,.012)
 tube('Handlebar',[(-.35,1.2,.46),(-.22,1.23,.57),(0,1.21,.59),(.22,1.23,.57),(.35,1.2,.46)],.019,CHROME)
 for s in [-1,1]:
     tube('Rubber handle grip',[(s*.245,1.211,.514),(s*.359,1.20,.452)],.027,RUBBER)
     tube('Brake lever',[(s*.25,1.185,.52),(s*.35,1.174,.54)],.009,CHROME)
-cylinder('Speedometer',(0,1.342,.586),.081,.013,CHROME,(0,1,0))
-cylinder('Speedometer face',(0,1.352,.586),.071,.008,RUBBER,(0,1,0))
-tube('Speedometer needle',[(0,1.361,.586),(-.04,1.361,.562)],.003,'Lettering cream')
-box('Fare meter',(-.40,1.384,.542),(.23,.177,.14),FRAME,.014)
-box('Fare LCD',(-.40,1.391,.462),(.183,.065,.008),'Meter screen',.003)
-text('Fare display','23.00',(-.40,1.391,.455),.043,RUBBER)
-text('Meter label','FARE',(-.40,1.45,.460),.020,'Lettering cream')
+    box('Handlebar switch housing',(s*.235,1.221,.551),(.058,.053,.07),RUBBER,.013)
+    box('Indicator switch',(s*.235,1.251,.54),(.021,.012,.022),'Lettering cream',.003)
+    tube('Control cable',[(s*.24,1.20,.57),(s*.17,1.09,.65),(s*.10,.71,.70)],.006,RUBBER)
+# A readable gauge pod mounted ON the steering head, tilted toward the driver.
+# Build it flat, then tilt its semantic parent; the independent needle rotates in
+# the local dial plane at runtime and does not need to rebuild any geometry.
+gauge_centre=(0,1.31,.59)
+box('Instrument mounting neck',(0,1.26,.592),(.075,.10,.07),FRAME,.016)
+cylinder('Instrument pod',(0,1.299,.59),.107,.062,FRAME,(0,1,0),'gauge',32)
+cylinder('Speedometer bezel',(0,1.331,.59),.097,.018,CHROME,(0,1,0),'gauge',32)
+cylinder('Speedometer face',(0,1.342,.59),.087,.008,RUBBER,(0,1,0),'gauge',32)
+for i in range(41):
+    # Driver looks toward +Z: positive game X is on the dial's screen-left.
+    a=2.35-i*4.7/40; major=i%5==0
+    tube('Speedometer tick',[(math.sin(a)*(.064 if major else .073),1.348,.59+math.cos(a)*(.064 if major else .073)),(math.sin(a)*.081,1.348,.59+math.cos(a)*.081)],.002 if major else .001,'Lettering cream','gauge')
+    if i%10==0:
+        label=text('Dial speed',str(i*2),(math.sin(a)*.052,1.349,.59+math.cos(a)*.052),.018,'Lettering cream')
+        label.rotation_euler=(0,0,math.pi); label['part']='gauge'
+label=text('Dial units','km/h',(0,1.349,.56),.016,'Lettering cream'); label.rotation_euler=(0,0,math.pi); label['part']='gauge'
+mesh('Working gauge needle',[(-.004,1.355,.577),(.004,1.355,.577),(0,1.355,.663)],[(0,1,2)],'Amber lens','gauge_needle',False)
+cylinder('Gauge centre',(0,1.358,.59),.009,.006,CHROME,(0,1,0),'gauge',12)
+for s in [-1,1]:
+    cylinder('Dashboard status light',(s*.145,1.143,.823),.012,.010,'CNG green' if s<0 else 'Amber lens',(0,1,0),segments=12)
+box('Ignition switch',(.19,1.122,.687),(.07,.048,.04),FRAME,.009)
+cylinder('Key barrel',(.19,1.122,.661),.015,.009,CHROME,(0,0,1),segments=12)
+for x in [-.31,.31]:
+    for j in range(5):
+        box('Dashboard vent',(x+j*.026,1.14,.85),(.013,.005,.07),RUBBER,.001)
+# Seat-back partition: its front face touches the back pad. The side rods tie it
+# into the canopy, as in the gallery, while leaving the passenger doors open.
+box('Driver passenger partition',(0,.79,-.11),(1.19,.55,.065),BLACK,.026,'partition')
+box('Partition padded top',(0,1.075,-.11),(1.21,.07,.085),RUBBER,.025,'partition')
+for s in [-1,1]:
+    tube('Partition roof support',[(s*.59,.51,-.11),(s*.62,1.12,-.11),(s*.64,1.92,-.11)],.023,CHROME,'partition')
+tube('Passenger grab bar',[(-.62,1.19,-.11),(.62,1.19,-.11)],.018,CHROME,'partition')
+box('Meter mounting foot',(-.38,1.113,-.13),(.14,.055,.10),FRAME,.009,'fare_meter')
+box('Fare meter',(-.38,1.242,-.145),(.25,.20,.15),FRAME,.018,'fare_meter')
+box('Fare LCD',(-.38,1.250,-.226),(.199,.075,.008),'Meter screen',.004,'fare_meter')
+text('Fare display','23.00',(-.38,1.25,-.234),.046,RUBBER)['part']='fare_meter'
+text('Meter label','FARE',(-.38,1.311,-.233),.023,'Lettering cream')['part']='fare_meter'
+for x in [-.455,-.415,-.375]:
+    cylinder('Meter button',(x,1.176,-.226),.011,.008,RUBBER,(0,0,1),'fare_meter',12)
 for s in [-1,1]:
     tube('Mirror stalk',[(s*.60,1.40,.66),(s*.82,1.54,.68),(s*.85,1.65,.66)],.012,CHROME)
     ellipsoid('Mirror housing',(s*.855,1.682,.67),(.104,.12,.04),RUBBER)
@@ -321,12 +391,16 @@ def mudguard(name,cx,cy,cz,width,radius,mat):
     o=mesh(name,vv,ff,mat)
     m=o.modifiers.new('Steel thickness','SOLIDIFY'); m.thickness=.012
     bpy.context.view_layer.objects.active=o; bpy.ops.object.modifier_apply(modifier=m.name)
-mudguard('Front sweeping mudguard',0,.265,1.015,.30,.306,BLACK)
+mudguard('Front sweeping mudguard',0,.265,1.015,.35,.315,BLACK)
 for s in [-1,1]:
     mudguard('Rear wheel arch',s*.635,.265,-.78,.245,.313,BLACK)
     box('Rear mudflap',(s*.63,.25,-1.07),(.205,.29,.026),RUBBER,.008)
     tube('Front fork',[(s*.124,.28,1.015),(s*.124,.72,.83)],.025,CHROME)
-tube('Front bumper',[(-.49,.65,1.16),(-.42,.59,1.28),(0,.57,1.33),(.42,.59,1.28),(.49,.65,1.16)],.025,CHROME)
+    coil=[]
+    for i in range(65):
+        t=i/64; a=t*math.pi*16
+        coil.append((s*.124+.039*math.cos(a),.40+t*.24+.015*math.sin(a),.965-t*.096+.034*math.sin(a)))
+    tube('Front suspension spring',coil,.007,FRAME)
 tube('Rear bumper',[(-.67,.48,-1.19),(-.60,.44,-1.26),(.60,.44,-1.26),(.67,.48,-1.19)],.026,CHROME)
 cylinder('Rear axle',(0,.29,-.78),.045,1.28,FRAME)
 
@@ -384,17 +458,32 @@ for tag,centre in wheel_centres.items():
         if o.type=='MESH' and o.get('part')==tag:
             world=o.matrix_world.copy(); o.parent=pivot; o.matrix_world=world
 
+gauge=bpy.data.objects.new('speedometer_gauge',None); asset.objects.link(gauge)
+gauge.location=point(gauge_centre)
+needle=bpy.data.objects.new('speedometer_needle',None); asset.objects.link(needle)
+needle.parent=gauge
+bpy.context.view_layer.update()
+for o in list(asset.objects):
+    if o.type=='MESH' and o.get('part') in ['gauge','gauge_needle']:
+        world=o.matrix_world.copy(); o.parent=needle if o.get('part')=='gauge_needle' else gauge; o.matrix_world=world
+gauge.rotation_euler.x=-.55
+# Blender Z corresponds to game Y. This is the 0 km/h end of the printed scale.
+needle.rotation_euler.z=2.35
+
 scene['asset']='Original Mumbai kaali-peeli auto rickshaw'
+scene['reference']='ref vech/auto front.png; ref vech/auto side.png; ref vech/auto.png'
 scene['axis_contract']='GLB: Y up, +Z forward, metres, ground at Y=0'
 scene['authorship']='Original procedural Blender mesh created for Bap ka Rasta; no third-party mesh or textures.'
 bpy.ops.object.select_all(action='DESELECT')
 for o in asset.objects: o.select_set(True)
 glb=ROOT/'public/models/mumbai-auto.glb'
 glb.parent.mkdir(parents=True,exist_ok=True)
-bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,export_extras=True,export_yup=True,export_apply=True)
+bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,use_active_scene=True,export_extras=True,export_yup=True,export_apply=True,export_texcoords=False)
 triangles=sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in asset.objects if o.type=='MESH')
-stats={'triangles':triangles,'meshes':sum(o.type=='MESH' for o in asset.objects),'bytes':glb.stat().st_size,'wheel_radius':.265,'source':'original Blender geometry','front':'+Z','up':'+Y'}
-(OUT/'model-stats.json').write_text(json.dumps(stats,indent=2))
+stats={'triangles':triangles,'meshes':sum(o.type=='MESH' for o in asset.objects),'bytes':glb.stat().st_size,'wheel_radius':.265,'source':'original Blender geometry','front':'+Z','up':'+Y',
+       'references':['ref vech/auto front.png','ref vech/auto side.png','ref vech/auto.png','ref vech/auto interior dashboard.png'],
+       'features':['twin round headlamps','pressed open-backed cowl','black front mudguard','driver-passenger partition','passenger-facing rear fare meter','working speedometer','independent wheel pivots']}
+(OUT/'model-stats.json').write_text(json.dumps(stats,indent=2)+'\n')
 
 # A separate studio collection remains editable in the source, and is excluded from GLB.
 studio=bpy.data.collections.new('Studio | not exported'); scene.collection.children.link(studio)
@@ -424,5 +513,6 @@ for area in bpy.context.screen.areas:
     if area.type=='VIEW_3D':
         area.spaces.active.region_3d.view_perspective='CAMERA'
         area.spaces.active.shading.type='MATERIAL'
-bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'mumbai-auto.blend'))
+# Write only this vehicle scene, excluding other projects open in Blender.
+bpy.data.libraries.write(str(OUT/'mumbai-auto.blend'),{scene},fake_user=True,compress=True)
 print(json.dumps(stats))

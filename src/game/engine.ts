@@ -9,7 +9,7 @@ import {
   INTRO_DURATION,
   type IntroStage,
 } from "./intro";
-import { driverHands } from "./intro-visuals";
+import { driverHands, seatedDriverView } from "./intro-visuals";
 import { characterPlayerPart, type CharacterModels } from "./character-models";
 import { createStreetAudio } from "./audio";
 import { introDialogue, type DialogueCue } from "./dialogue";
@@ -31,6 +31,7 @@ import { landscapeDelta } from "../LandscapeStage";
 import { createCameraLook, followCamera, type CameraMode } from "./camera";
 import { AUTO_DRIVER_EYE_HEIGHT, AUTO_WHEEL_RADIUS } from "./auto-model";
 import type { LandmarkModels } from "./landmark-models";
+import type { TrafficModels } from "./traffic-models";
 export type { CameraMode } from "./camera";
 export type Stats = {
   gear: Gear;
@@ -63,6 +64,7 @@ export async function createEngine(
   autoModel: THREE.Group,
   characterModels: CharacterModels,
   landmarkModels: LandmarkModels,
+  trafficModels: TrafficModels,
   initialDrive = newDrive(),
   startupSignal?: AbortSignal,
 ) {
@@ -97,10 +99,10 @@ export async function createEngine(
     lighting = atmosphere(renderer, scene);
     lighting.quality(!automaticShadows);
     await checkpoint(true);
-    world = await makeWorld(scene, characterModels, landmarkModels, startupSignal);
+    world = await makeWorld(scene, characterModels, landmarkModels, trafficModels, startupSignal);
     player = autoRickshaw(autoModel);
     scene.add(player.root);
-    placeTraffic = await trafficVisuals(scene, traffic, autoModel, startupSignal);
+    placeTraffic = await trafficVisuals(scene, traffic, autoModel, trafficModels, startupSignal);
     await checkpoint(true);
   } catch (error) {
     disposeSceneResources(scene);
@@ -123,11 +125,13 @@ export async function createEngine(
   renderer.domElement.dataset.landmarkCount = String(landmarkModels.sites.length);
   renderer.domElement.dataset.cameraMode = "third-person";
   renderer.domElement.dataset.trafficCount = String(traffic.length);
+  renderer.domElement.dataset.trafficModels = String(trafficModels.vehicles.size + 1);
   const state = initialDrive;
   const previousPose = { x: state.x, z: state.z, yaw: state.yaw };
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
   scene.add(camera);
   const hands = driverHands(camera, characterModels);
+  const seatedBody = seatedDriverView(player.root, characterModels);
   let introActive = false,
     introStarted = false,
     introTime = 0,
@@ -236,6 +240,7 @@ export async function createEngine(
       : renderPose(previousPose, state, accumulator / STEP);
     player.root.position.set(pose.x, 0, pose.z);
     player.root.rotation.y = pose.yaw;
+    player.setSpeed(state.speed);
     const portrait = host.clientHeight > host.clientWidth;
     const outside = cameraMode === "third-person";
     const distance = outside ? (portrait ? 9 : 7.5) : -0.08;
@@ -276,7 +281,8 @@ export async function createEngine(
     placeTraffic(pose.x, pose.z);
     lighting.update(pose.x, pose.z, state.time);
     world.update(state.time, pose.x, pose.z, lowQuality);
-    hands.update(cameraMode === "driver", false, state.time, reducedMotion);
+    hands.update(false, false, state.time, reducedMotion);
+    seatedBody.visible = cameraMode === "driver" && !introActive;
     if (introActive) placeIntro();
     if (incident) placeIncident();
   }
@@ -308,7 +314,9 @@ export async function createEngine(
       camera.lookAt(state.x, 1.1, state.z - 8);
     }
     camera.updateProjectionMatrix();
-    hands.update(!frame.exterior, introTime < 6, introTime, reducedMotion);
+    const walking = introTime < 6;
+    hands.update(!frame.exterior && walking, walking, introTime, reducedMotion);
+    seatedBody.visible = !frame.exterior && !walking;
     world.update(introTime, state.x, state.z, lowQuality);
   }
   function finishIntro() {
@@ -541,6 +549,7 @@ export async function createEngine(
     cameraMode = "third-person";
     driverVisibility(true);
     hands.update(false, false, state.time, true);
+    seatedBody.visible = false;
     clear();
     state.speed = 0;
     accumulator = 0;

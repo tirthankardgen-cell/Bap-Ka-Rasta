@@ -67,7 +67,14 @@ export function autoRickshaw(root: THREE.Group) {
     steering.add(front);
     front.position.set(0, 0, 0);
   }
-  return { root, wheels, steering };
+  const speedometer = root.getObjectByName("speedometer_needle");
+  if (!speedometer) throw new Error("Mumbai auto is missing its working speedometer");
+  const setSpeed = (metresPerSecond: number) => {
+    const kmh = Number.isFinite(metresPerSecond) ? Math.abs(metresPerSecond) * 3.6 : 0;
+    speedometer.rotation.y = 2.35 - Math.min(80, kmh) / 80 * 4.7;
+  };
+  setSpeed(0);
+  return { root, wheels, steering, speedometer, setSpeed };
 }
 
 /** Used when an async load completes after leaving the game screen. */
