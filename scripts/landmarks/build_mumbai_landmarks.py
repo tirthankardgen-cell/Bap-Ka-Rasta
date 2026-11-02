@@ -857,7 +857,7 @@ for _,root,_ in assets:
     for obj in root.children_recursive: obj.select_set(True)
 RUNTIME.mkdir(parents=True,exist_ok=True)
 glb=RUNTIME/'mumbai-landmarks.glb'
-bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,export_extras=True,export_yup=True,export_apply=True)
+bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,use_active_scene=True,export_extras=True,export_yup=True,export_apply=True)
 
 # The editable Blender file shows the actual game placement and named districts.
 for site,root,groups in assets:
@@ -893,6 +893,6 @@ for area in bpy.context.screen.areas:
         area.spaces.active.shading.type='MATERIAL'
 scene['axis_contract']='GLB +Y up, +Z facade, metres. Source arranged at exact authored game sites.'
 scene['authorship']='Original geometry and original PBR textures. Photo URLs documented as reference only.'
-bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'mumbai-landmarks.blend'),compress=True)
+bpy.data.libraries.write(str(OUT/'mumbai-landmarks.blend'),{scene},fake_user=True,compress=True)
 (OUT/'manifest.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string,'runtime':'/models/mumbai-landmarks.glb','bytes':glb.stat().st_size,'models':stats,'source':'mumbai-landmarks.blend','units':'metres'},indent=2)+'\n')
 print('MUMBAI_LANDMARKS_COMPLETE',len(assets),glb.stat().st_size,flush=True)

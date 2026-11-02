@@ -38,7 +38,7 @@ node scripts/render-game-map.mjs
 
 The stdlib bridge connects to the existing Blender add-on on `127.0.0.1:9876`; it has no Python MCP dependency. Alternatively, run `blender --background --factory-startup --python scripts/landmarks/build_mumbai_landmarks.py` after exporting layout/materials, then pack the GLB with Node.
 
-The builder replaces only its named `Mumbai | Landmark Districts` scene. On the first use of a dirty open scene it writes a safety copy under ignored `output/playwright/`; other scenes are retained. Generated `.blend1` backups are ignored. Always run packing after building: the Blender exporter initially writes an uncompressed GLB.
+The builder replaces only its named `Mumbai | Landmark Districts` scene. On the first use of a dirty open scene it writes a safety copy under ignored `output/playwright/`; other scenes are retained. The source library and GLB contain only the landmark scene, even when other models are open. Generated `.blend1` backups are ignored. Always run packing after building: the Blender exporter initially writes an uncompressed GLB.
 
 ## Review and verify
 

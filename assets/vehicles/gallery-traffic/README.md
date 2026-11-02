@@ -45,6 +45,25 @@ The references are modelling guides, not image planes or textures on the vehicle
   library. Only the auto is currently player-selectable; additional vehicle
   controllers and unlocking remain future gameplay work.
 
+## Save edits from the open Blender session
+
+With both vehicle scenes open and Blender in Object Mode, save the current models
+and update the game's exports without regenerating geometry:
+
+```powershell
+python scripts/landmarks/blender_bridge.py scripts/vehicles/export_open_vehicles.py
+node scripts/vehicles/pack_gallery_traffic.mjs
+blender --background --factory-startup --python-exit-code 1 --python scripts/vehicles/verify_vehicle_library.py
+npm test
+npm run build
+```
+
+The saver first backs up the entire open session and the previous vehicle files
+under ignored `output/playwright/saved-models-*/`. It writes isolated `.blend`
+sources and grounded GLB templates, restores studio placement and rider visibility,
+and refreshes dimensions, wheel centres and geometry counts in the manifests.
+The source check also verifies that the lineup auto matches its dedicated source.
+
 ## Rebuild
 
 Start the Blender bridge on `127.0.0.1:9876`, then run from the repository root

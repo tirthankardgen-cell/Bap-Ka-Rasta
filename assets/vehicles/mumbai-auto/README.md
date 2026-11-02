@@ -15,7 +15,9 @@ rear passenger-facing fare meter on a driver/passenger partition, a handlebar
 speedometer with a working needle, wiper, mirrors, rear ventilation, CNG marking
 and fictional MH 02 registration. The 2 November revision follows the user's
 front/side/dashboard photographs in `ref vech/`, including the black front
-mudguard, indicator band, twin lamp pods and folded screen side returns.
+mudguard, rounded pressed cowl, flush lamp pockets, bowed glass, continuous yellow
+screen surround and a canopy fitted to the windscreen. The passenger entry remains
+open, with the fare meter mounted directly on the divider.
 It is a game model inspired by the vehicle class, not a manufacturer CAD replica.
 
 ![Driver dashboard and passenger fare meter](cabin-preview.webp)
@@ -46,6 +48,8 @@ UV attributes removed; those copies do not dispose of the player's shared source
 The player scene is disposed when exiting, and late loads are disposed if the screen was closed.
 
 ## Rebuild with the open Blender MCP bridge
+
+To save manual edits without rebuilding, use the [open-session saver](../gallery-traffic/README.md#save-edits-from-the-open-blender-session).
 
 Use Python 3.11+ with `pip install -r scripts/vehicles/requirements.txt`.
 Set `BLENDER_MCP_DIR` to your installed `blender-codex-mcp` directory and start the

@@ -10,6 +10,7 @@ import math
 import os
 from pathlib import Path
 from mathutils import Vector
+from mathutils.bvhtree import BVHTree
 
 ROOT = Path(os.environ.get('MUMBAI_AUTO_ROOT', str(Path(__file__).resolve().parents[2])))
 OUT = ROOT / 'assets/vehicles/mumbai-auto'
@@ -156,7 +157,7 @@ BLACK='Midnight black enamel'; YELLOW='Mumbai taxi yellow'; TAR='Tarpaulin black
 CHROME='Chrome'; RUBBER='Rubber'; STEEL='Steel wheel'; FRAME='Chassis'
 
 # Floor, pressed-steel rear tub and engine bay. Actual RE envelope: 2.64 x 1.30 m.
-box('Underframe', (0,.35,-.10), (1.12,.12,1.96), FRAME)
+box('Underframe', (0,.35,-.16), (1.10,.12,1.80), FRAME)
 box('Passenger floor', (0,.47,-.23), (1.30,.12,1.92), BLACK,.045)
 box('Engine housing', (0,.69,-.92), (1.29,.44,.45), BLACK,.08)
 box('Rear steel panel', (0,.90,-1.145), (1.30,.57,.10), BLACK,.045)
@@ -169,85 +170,192 @@ for s in [-1,1]:
         tube('Pressed panel rib', [(s*.674,.78+j*.10,-1.08),(s*.674,.78+j*.10,-.59)], .008, FRAME)
     box('Yellow side belt', (s*.677,1.195,-.87), (.025,.105,.58), YELLOW,.01)
 
-# Curved tapering front leg shield/cowl. The varying ellipse sections form a real shell.
-rings=[(.46,.32,.92,.22),(.62,.48,.89,.29),(.87,.59,.855,.33),(1.13,.65,.825,.335),(1.265,.65,.80,.32)]
-verts=[]; faces=[]; N=32
-for y,w,z,d in rings:
-    for i in range(N+1):
-        a=-math.pi/2+math.pi*i/N
-        # Broad, almost flat nose with rounded corners, as on the gallery auto.
-        verts.append((w*math.copysign(abs(math.sin(a))**.48,math.sin(a)),y,
-                      z+d*math.copysign(abs(math.cos(a))**.48,math.cos(a))))
-for r in range(len(rings)-1):
-    for i in range(N):
-        a=r*(N+1)+i; b=a+1
-        faces.append((a,b,b+N+1,a+N+1))
-# A pressed shell, not a solid elliptical volume filling the driver's knees and
-# controls. Its open rear exposes the independent handlebar and footwell.
-cowl=mesh('Open backed front cowl',verts,faces,BLACK)
-solid=cowl.modifiers.new('Pressed steel shell thickness','SOLIDIFY'); solid.thickness=.018
-bpy.context.view_layer.objects.active=cowl; bpy.ops.object.modifier_apply(modifier=solid.name)
+# The side photograph shows a bowed apron, broad lower leg cheeks and a raised
+# wheel opening. Smooth sections keep that profile continuous into the sill.
+# Each row is height, half width, rear fold, foremost skin (game metres).
+cowl_sections=[(.45,.572,.681,.986),(.57,.616,.666,1.081),
+               (.74,.642,.677,1.164),(.95,.659,.702,1.207),
+               (1.11,.662,.731,1.204),(1.265,.653,.754,1.178)]
 
-# Sloping rounded windscreen: an actual open surround and single transparent pane.
+def cowl_section(y):
+    y=max(cowl_sections[0][0],min(cowl_sections[-1][0],y))
+    i=next((i for i in range(len(cowl_sections)-1) if y<=cowl_sections[i+1][0]),len(cowl_sections)-2)
+    a,b=cowl_sections[i],cowl_sections[i+1]
+    before=cowl_sections[max(0,i-1)]; after=cowl_sections[min(len(cowl_sections)-1,i+2)]
+    t=(y-a[0])/(b[0]-a[0]); d=b[0]-a[0]
+    return tuple((2*t**3-3*t*t+1)*a[j]+(t**3-2*t*t+t)*d*(b[j]-before[j])/(b[0]-before[0])
+                 +(-2*t**3+3*t*t)*b[j]+(t**3-t*t)*d*(after[j]-a[j])/(after[0]-a[0])
+                 for j in range(1,4))
+
+def cowl_skin_z(x,y):
+    w,rear,front=cowl_section(y)
+    q=min(1,abs(x)/w)
+    cosine=math.sqrt(max(0,1-q**(2/.74)))
+    cheek=.021*math.sin(math.pi*max(0,min(1,(y-.45)/.815)))**2*math.exp(-((q-.56)/.19)**2)
+    return rear+(front-rear)*cosine**.64+cheek
+
+verts=[]; faces=[]; N=48; rows=16
+for row in range(rows+1):
+    t=row/rows
+    for i in range(N+1):
+        angle=-math.pi/2+math.pi*i/N
+        q=math.copysign(abs(math.sin(angle))**.74,math.sin(angle))
+        bottom=.462+.217*max(0,1-(abs(q)/.43)**2)**.68
+        y=bottom+(1.204-bottom)*t; w,_,_=cowl_section(y); x=q*w
+        verts.append((x,y,cowl_skin_z(x,y)))
+for row in range(rows):
+    for i in range(N):
+        a=row*(N+1)+i; faces.append((a,a+1,a+N+2,a+N+1))
+cowl=mesh('Rounded pressed front apron with wheel recess',verts,faces,BLACK,'front_cowl')
+solid=cowl.modifiers.new('Pressed steel shell thickness','SOLIDIFY'); solid.thickness=.014
+bpy.context.view_layer.objects.active=cowl; bpy.ops.object.modifier_apply(modifier=solid.name)
+for s in [-1,1]:
+    lip=[]
+    for i in range(19):
+        y=.462+.742*i/18; w,rear,_=cowl_section(y)
+        lip.append((s*w,y,rear))
+    tube('Folded edge of driver entry',lip,.008,BLACK,'front_cowl')
+
+# Both the glass and frame bow in height and wrap around the sides. One connected
+# yellow sheet runs from the glass aperture to the cowl seam and canopy edge.
+# This avoids intersecting sill bars and triangular add-on cheeks.
+def screen_z(x,y):
+    v=(y-1.64)/.397
+    return .895-.43*(y-1.64)+.095*(1-v*v)-.075*(x/.65)**2
+
+screen_steps=96
 def screen_outline(w,h):
     points=[]
-    for i in range(64):
-        a=2*math.pi*i/64
+    for i in range(screen_steps):
+        a=2*math.pi*i/screen_steps
         x=w*math.copysign(abs(math.cos(a))**.38, math.cos(a))
         v=h*math.copysign(abs(math.sin(a))**.38, math.sin(a))
-        points.append((x,1.64+v,.895-.43*v))
+        points.append((x,1.64+v,screen_z(x,1.64+v)))
     return points
-outer=screen_outline(.671,.397); inner=screen_outline(.607,.347)
-mesh('Yellow windscreen surround',outer+inner,[(i,(i+1)%64,(i+1)%64+64,i+64) for i in range(64)],YELLOW)
-tube('Windscreen rubber gasket',inner+[inner[0]],.017,RUBBER)
-glass=mesh('Windscreen glass',inner,[tuple(range(64))],'Window glass',smooth=False)
-glass['glass']=True
-tube('Windscreen outer rolled edge',outer+[outer[0]],.013,YELLOW)
-# Pressed side returns connect the screen frame to the canopy supports. Without
-# these narrow yellow cheeks the windshield looked detached in a side view.
-for s in [-1,1]:
-    cheek=[(s*.642,1.28,1.038),(s*.671,1.64,.895),(s*.615,1.93,.770),
-           (s*.579,1.985,.687),(s*.636,1.80,.680),(s*.644,1.28,.786)]
-    o=mesh('Yellow A-pillar return',cheek,[tuple(range(6))],YELLOW,smooth=False)
-    mod=o.modifiers.new('Folded screen surround','SOLIDIFY'); mod.thickness=.010
-    bpy.context.view_layer.objects.active=o; bpy.ops.object.modifier_apply(modifier=mod.name)
-tube('Single windscreen wiper',[(.25,1.395,1.039),(.10,1.71,.879)],.010,RUBBER)
-tube('Wiper blade',[(.20,1.56,.948),(-.045,1.90,.792)],.013,RUBBER)
+inner=screen_outline(.607,.347)
+frame_width=cowl_section(1.204)[0]
+outer=[]
+for i in range(screen_steps):
+    a=2*math.pi*i/screen_steps; co=math.cos(a); si=math.sin(a)
+    if i<=screen_steps//2:
+        x=frame_width*math.copysign(abs(co)**.30,co)
+        rise=max(0,si)**.25; y=1.204+.839*rise; z=.754-.084*rise
+    else:
+        x=frame_width*math.copysign(abs(co)**.74,co)
+        y=1.204; z=cowl_skin_z(x,y)
+    outer.append((x,y,z))
+# The two side endpoints share the same folded edge as the cowl.
+for i in [0,screen_steps//2]:
+    x=outer[i][0]; outer[i]=(x,1.204,cowl_skin_z(x,1.204))
+fv=[]; ff=[]; frame_rings=5
+for ring in range(frame_rings+1):
+    t=ring/frame_rings
+    for i,(a,b) in enumerate(zip(inner,outer)):
+        bend=1-(1-t)**2.6 if i>screen_steps//2 else t*t*(3-2*t)
+        fv.append((a[0]*(1-t)+b[0]*t,a[1]*(1-t)+b[1]*t,a[2]*(1-bend)+b[2]*bend))
+for ring in range(frame_rings):
+    for i in range(screen_steps):
+        a=ring*screen_steps+i; b=ring*screen_steps+(i+1)%screen_steps
+        ff.append((a,b,b+screen_steps,a+screen_steps))
+surround=mesh('Continuous curved windscreen surround and sill',fv,ff,YELLOW,'windscreen')
+mod=surround.modifiers.new('Folded sheet surround','SOLIDIFY'); mod.thickness=.014
+bpy.context.view_layer.objects.active=surround; bpy.ops.object.modifier_apply(modifier=mod.name)
+frame_surface=BVHTree.FromPolygons([Vector(v) for v in fv],ff)
+def frame_skin_z(x,y):
+    hit,_,_,_=frame_surface.ray_cast(Vector((x,y,2)),Vector((0,0,-1)),3)
+    if hit is None: raise ValueError(f'Front fitting misses the windscreen surround: {x}, {y}')
+    return hit.z
 
-# Supplied real auto front: broad yellow indicator band, two round lamps in
-# moulded black pods, recessed centre vents and a black wheel mudguard.
-box('Yellow windscreen sill',(0,1.268,1.079),(1.29,.147,.080),YELLOW,.024)
+tube('Windscreen rubber gasket',inner+[inner[0]],.011,RUBBER,'windscreen')
+gv=[(0,1.64,screen_z(0,1.64))]; gf=[]
+for r in range(1,7):
+    f=r/6
+    for x,y,_ in inner:
+        x*=f; y=1.64+(y-1.64)*f; gv.append((x,y,screen_z(x,y)))
+    for i in range(screen_steps):
+        if r==1: gf.append((0,1+i,1+(i+1)%screen_steps))
+        else:
+            a=1+(r-2)*screen_steps+i; b=1+(r-2)*screen_steps+(i+1)%screen_steps
+            gf.append((a,b,b+screen_steps,a+screen_steps))
+glass=mesh('Bowed windscreen glass',gv,gf,'Window glass','windscreen')
+glass['glass']=True
+tube('Single windscreen wiper',[(.16-.276*i/8,1.337+.383*i/8,screen_z(.16-.276*i/8,1.337+.383*i/8)+.013) for i in range(9)],.008,RUBBER,'windscreen')
+tube('Wiper blade',[(.015-.245*i/8,1.50+.410*i/8,screen_z(.015-.245*i/8,1.50+.410*i/8)+.019) for i in range(9)],.010,RUBBER,'windscreen')
+
+def curved_front_patch(name,cx,cy,w,h,mat,depth,tag='front_lamps',taper=0,surface=cowl_skin_z):
+    v=[(cx,cy,surface(cx,cy)+depth)]; f=[]
+    for i in range(48):
+        a=2*math.pi*i/48
+        dy=h/2*math.copysign(abs(math.sin(a))**.42,math.sin(a))
+        x=cx+(w/2+taper*dy)*math.copysign(abs(math.cos(a))**.42,math.cos(a))
+        y=cy+dy; v.append((x,y,surface(x,y)+depth))
+        f.append((0,i+1,(i+1)%48+1))
+    return mesh(name,v,f,mat,tag)
+
 for s in [-1,1]:
-    box('Indicator seal',(s*.451,1.267,1.125),(.259,.074,.015),RUBBER,.019,'front_lamps')
-    box('Amber front indicator',(s*.474,1.267,1.136),(.187,.050,.013),'Amber lens',.013,'front_lamps')
-    box('Indicator clear end',(s*.363,1.267,1.137),(.045,.049,.014),'Headlamp lens',.012,'front_lamps')
-    pod=box('Sculpted headlamp pod',(s*.438,1.059,1.16),(.379,.276,.115),BLACK,.056,'front_lamps')
-    pod.rotation_euler.y=s*.07
-    cylinder('Headlamp rubber socket',(s*.453,1.055,1.224),.111,.045,RUBBER,(0,0,1),'front_lamps',32)
-    cylinder('Headlamp chrome bezel',(s*.453,1.055,1.251),.097,.019,CHROME,(0,0,1),'front_lamps',32)
-    cylinder('Round headlamp reflector',(s*.453,1.055,1.263),.083,.011,'Headlamp lens',(0,0,1),'front_lamps',32)
+    curved_front_patch('Indicator seal',s*.451,1.252,.259,.062,RUBBER,.006,surface=frame_skin_z)
+    curved_front_patch('Amber front indicator',s*.474,1.252,.185,.043,'Amber lens',.011,surface=frame_skin_z)
+    curved_front_patch('Indicator clear end',s*.363,1.252,.045,.043,'Headlamp lens',.011,surface=frame_skin_z)
+    # A pressed, softly raised socket blends into the shell around each lamp.
+    cx=s*.443; cy=1.065; centre=Vector((cx,cy,1.194))
+    normal=Vector((s*.34,0,1)).normalized(); across=Vector((normal.z,0,-normal.x))
+    vv=[]; ff=[]; count=48
+    for ring in range(5):
+        t=ring/4; lift=t*t*(3-2*t)
+        for i in range(count):
+            a=2*math.pi*i/count; co=math.cos(a); si=math.sin(a)
+            ox=cx+.186*math.copysign(abs(co)**.47,co)
+            oy=cy+.139*math.copysign(abs(si)**.47,si)
+            ix=cx+across.x*.111*co; iy=cy+.111*si
+            x=ox*(1-t)+ix*t; y=oy*(1-t)+iy*t
+            face_z=centre.z-s*.34*(x-cx)-.006
+            z=(cowl_skin_z(x,y)+.003)*(1-lift)+face_z*lift
+            vv.append((x,y,z))
+    for ring in range(4):
+        for i in range(count):
+            a=ring*count+i; b=ring*count+(i+1)%count
+            ff.append((a,b,b+count,a+count))
+    mesh('Blended pressed headlamp pocket',vv,ff,BLACK,'front_cowl')
+    cylinder('Inset headlamp rubber socket',centre,.110,.020,RUBBER,normal,'front_lamps',32)
+    cylinder('Headlamp chrome bezel',centre+normal*.014,.096,.011,CHROME,normal,'front_lamps',32)
+    lens=centre+normal*.023
+    cylinder('Round headlamp reflector',lens,.083,.007,'Headlamp lens',normal,'front_lamps',32)
     for i in range(-3,4):
         h=math.sqrt(max(0,.077**2-(i*.020)**2))
-        tube('Fluted headlamp lens',[(s*.453+i*.020,1.055-h,1.270),(s*.453+i*.020,1.055+h,1.270)],.0018,'Lettering cream','front_lamps')
-    for x,y in [(s*.282,1.15),(s*.588,1.15),(s*.282,.97)]:
-        cylinder('Lamp pod fastener',(x,y,1.224),.006,.006,CHROME,(0,0,1),'front_lamps',8)
-    tube('Pressed cowl cheek',[(s*.58,1.00,1.14),(s*.43,.91,1.183),(s*.34,.74,1.184),(s*.33,.53,1.105)],.009,FRAME)
-box('Centre service panel',(0,.992,1.197),(.287,.341,.027),FRAME,.057)
-for i in range(4): box('Front cooling slot',(0,.891+i*.033,1.218),(.155,.014,.009),RUBBER,.004)
-box('Original BR nose badge',(0,1.080,1.219),(.089,.072,.012),CHROME,.014)
-box('Nose badge inset',(0,1.080,1.227),(.070,.054,.006),RUBBER,.009)
-text('Nose badge letters','BR',(0,1.080,1.233),.033,'Lettering cream',facing='front')
-box('Front registration plate',(0,1.244,1.142),(.25,.083,.014),YELLOW,.007)
-text('Front registration','MH 02',(0,1.244,1.154),.040,RUBBER,facing='front')
+        p=lens+normal*.005+across*(i*.020)
+        tube('Fluted headlamp lens',[p+Vector((0,-h,0)),p+Vector((0,h,0))],.0018,'Lettering cream','front_lamps')
+curved_front_patch('Flush tapered service panel',0,1.022,.268,.330,FRAME,.010,'front_cowl',.10)
+for i in range(4):
+    y=.90+i*.030
+    box('Front cooling slot',(0,y,cowl_skin_z(0,y)+.014),(.130,.012,.006),RUBBER,.003,'front_cowl')
+badge_z=cowl_skin_z(0,1.10)
+box('Original BR nose badge',(0,1.10,badge_z+.015),(.081,.067,.010),CHROME,.012,'front_cowl')
+box('Nose badge inset',(0,1.10,badge_z+.022),(.065,.051,.006),RUBBER,.009,'front_cowl')
+text('Nose badge letters','BR',(0,1.10,badge_z+.027),.030,'Lettering cream',facing='front')
+plate_z=frame_skin_z(0,1.237)
+box('Front registration plate',(0,1.237,plate_z+.012),(.25,.062,.012),YELLOW,.006)
+text('Front registration','MH 02',(0,1.237,plate_z+.020),.035,RUBBER,facing='front')
 
-# Gently crowned fabric canopy, substantially flatter than the previous semicircle.
+# The canvas follows its actual front hoop and rests on the windscreen frame.
+# Stitched seams share this surface so they cannot float above the fabric.
+def roof_surface(u,z):
+    t=max(0,min(1,(z+1.185)/1.855))
+    x=u*(.706-.062*t**5)
+    y=1.825+.237*math.sqrt(max(0,1-u*u))-.028*(2*t-1)**6
+    front_x=u*.644
+    rise=max(0,1-(abs(front_x)/frame_width)**(2/.30))**(.25/2)
+    front_y=1.212+.839*rise
+    front_z=.760-.084*rise
+    base_front=1.825+.237*math.sqrt(max(0,1-u*u))-.028
+    blend=max(0,min(1,(t-.72)/.28)); blend=blend*blend*(3-2*blend)
+    return (x,y+(front_y-base_front)*blend,z+(front_z-.67)*blend)
+
 roof=[]; faces=[]; nx=24; nz=16
 for j in range(nz+1):
     t=j/nz; z=-1.185+1.855*t
     for i in range(nx+1):
         u=-1+2*i/nx
-        y=1.825+.237*math.sqrt(max(0,1-u*u))-.028*(2*t-1)**6
-        roof.append((u*(.706-.042*t**5),y,z))
+        roof.append(roof_surface(u,z))
 for j in range(nz):
     for i in range(nx):
         k=j*(nx+1)+i; faces.append((k,k+1,k+nx+2,k+nx+1))
@@ -259,17 +367,14 @@ for j,z in enumerate([-.98,-.25,.57]):
     pts=[]
     for i in range(25):
         u=-1+2*i/24
-        pts.append((u*.704,1.833+.237*math.sqrt(max(0,1-u*u)),z))
-    tube('Canopy stitched seam',pts,.004,'Chassis','canopy')
+        x,y,zz=roof_surface(u,z); pts.append((x,y+.002,zz))
+    tube('Canopy stitched seam',pts,.0025,TAR,'canopy')
 for s in [-1,1]:
-    tube('Canopy edge binding',[(s*.706,1.827,-1.17),(s*.706,1.84,-.35),(s*.665,1.813,.67)],.014,RUBBER,'canopy')
+    tube('Canopy edge binding',[roof_surface(s,-1.17+1.84*i/24) for i in range(25)],.009,RUBBER,'canopy')
     mesh('Rear canvas side',[(s*.69,1.23,-1.17),(s*.706,1.83,-1.17),(s*.704,1.85,-.59),(s*.69,1.23,-.59)],[(0,1,2,3)],TAR,smooth=False)
     tube('Rear curtain welt',[(s*.715,1.21,-.59),(s*.719,1.81,-.59)],.012,RUBBER)
     for y in [1.27,1.50,1.73]:
         ellipsoid('Canvas press stud',(s*.72,y,-.60),(.012,.012,.012),CHROME)
-    tube('Front roof pillar',[(s*.626,.59,.65),(s*.638,1.27,.59),(s*.615,1.82,.67),(s*.575,1.945,.68)],.023,YELLOW)
-    tube('Passenger grab rail',[(s*.626,.53,-.50),(s*.65,1.24,-.50),(s*.674,1.85,-.52)],.019,CHROME)
-    tube('Rear passenger safety rail',[(s*.68,1.15,-1.08),(s*.68,1.15,-.47)],.017,CHROME)
 
 # Rear canvas frame leaves a real window aperture.
 box('Rear canvas lower',(0,1.315,-1.19),(1.37,.18,.027),TAR,.014)
@@ -296,7 +401,6 @@ box('Driver back pad',(0,.999,-.042),(.49,.29,.07),'Warm vinyl',.032)
 box('Lower dashboard shelf',(0,1.098,.835),(1.13,.075,.33),'Dashboard moulding',.03,'dashboard')
 box('Centre storage lid',(0,1.205,.927),(.48,.082,.20),'Dashboard moulding',.04,'dashboard')
 for s in [-1,1]:
-    tube('Inner leg shield edge',[(s*.56,.54,.89),(s*.63,1.20,.80)],.012,RUBBER)
     mesh('Moulded dashboard wing',[(s*.23,1.095,.75),(s*.34,1.18,.92),(s*.58,1.19,.86),(s*.60,1.01,.61),(s*.33,.987,.61)],[(0,1,2,3,4)],'Dashboard moulding','dashboard')
     box('Dash pocket recess',(s*.425,1.137,.807),(.18,.016,.105),RUBBER,.015,'dashboard')
     tube('Pocket lip',[(s*.33,1.127,.74),(s*.53,1.127,.74)],.010,'Dashboard moulding','dashboard')
@@ -335,13 +439,10 @@ cylinder('Key barrel',(.19,1.122,.661),.015,.009,CHROME,(0,0,1),segments=12)
 for x in [-.31,.31]:
     for j in range(5):
         box('Dashboard vent',(x+j*.026,1.14,.85),(.013,.005,.07),RUBBER,.001)
-# Seat-back partition: its front face touches the back pad. The side rods tie it
-# into the canopy, as in the gallery, while leaving the passenger doors open.
+# The divider reaches the floor and supports its meter directly. The passenger
+# opening has no additional side rods or projecting crossbar.
 box('Driver passenger partition',(0,.79,-.11),(1.19,.55,.065),BLACK,.026,'partition')
 box('Partition padded top',(0,1.075,-.11),(1.21,.07,.085),RUBBER,.025,'partition')
-for s in [-1,1]:
-    tube('Partition roof support',[(s*.59,.51,-.11),(s*.62,1.12,-.11),(s*.64,1.92,-.11)],.023,CHROME,'partition')
-tube('Passenger grab bar',[(-.62,1.19,-.11),(.62,1.19,-.11)],.018,CHROME,'partition')
 box('Meter mounting foot',(-.38,1.113,-.13),(.14,.055,.10),FRAME,.009,'fare_meter')
 box('Fare meter',(-.38,1.242,-.145),(.25,.20,.15),FRAME,.018,'fare_meter')
 box('Fare LCD',(-.38,1.250,-.226),(.199,.075,.008),'Meter screen',.004,'fare_meter')
@@ -350,9 +451,9 @@ text('Meter label','FARE',(-.38,1.311,-.233),.023,'Lettering cream')['part']='fa
 for x in [-.455,-.415,-.375]:
     cylinder('Meter button',(x,1.176,-.226),.011,.008,RUBBER,(0,0,1),'fare_meter',12)
 for s in [-1,1]:
-    tube('Mirror stalk',[(s*.60,1.40,.66),(s*.82,1.54,.68),(s*.85,1.65,.66)],.012,CHROME)
-    ellipsoid('Mirror housing',(s*.855,1.682,.67),(.104,.12,.04),RUBBER)
-    ellipsoid('Mirror silver',(s*.855,1.682,.636),(.087,.102,.008),CHROME)
+    tube('Mirror stalk',[(s*.640,1.74,frame_skin_z(s*.640,1.74)+.003),(s*.805,1.80,.812),(s*.841,1.86,.805)],.010,FRAME)
+    ellipsoid('Mirror housing',(s*.841,1.90,.805),(.084,.102,.034),RUBBER)
+    ellipsoid('Mirror silver',(s*.841,1.90,.777),(.071,.088,.007),CHROME)
 
 # Three independent rolling groups with proper axle centres and tire profiles.
 wheel_centres={'wheel_rear_left':(-.635,.265,-.78),'wheel_rear_right':(.635,.265,-.78),'wheel_front':(0,.265,1.015)}

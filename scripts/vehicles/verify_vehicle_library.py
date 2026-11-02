@@ -1,7 +1,9 @@
 """Read-only source-library check: run in a fresh background Blender process."""
 import bpy
+import hashlib
 import json
 import math
+from collections import Counter
 from pathlib import Path
 
 if not bpy.app.background:
@@ -32,4 +34,17 @@ parts={o.get('part') for o in auto.children_recursive}
 assert {'partition','fare_meter','gauge','gauge_needle'} <= parts
 with bpy.data.libraries.load(str(ROOT/'assets/vehicles/mumbai-auto/mumbai-auto.blend'),link=False) as (source,loaded):
     assert source.scenes==['Mumbai Auto - Game Asset'], source.scenes
-print(json.dumps({'vehicles':sorted(report,key=lambda o:o['kind']),'packed_reference_boards':len(refs),'scene_isolated':True,'all_checks_passed':True}))
+    loaded.scenes=list(source.scenes)
+hero=loaded.scenes[0]
+export_collection=next(c for c in hero.collection.children if c.name.startswith('Mumbai Auto | export'))
+
+def mesh_signature(obj):
+    digest=hashlib.sha256()
+    digest.update(str([tuple(v.co) for v in obj.data.vertices]).encode())
+    digest.update(str([tuple(p.vertices) for p in obj.data.polygons]).encode())
+    return (obj.get('part'),digest.hexdigest())
+
+hero_meshes=Counter(mesh_signature(o) for o in export_collection.all_objects if o.type=='MESH')
+lineup_meshes=Counter(mesh_signature(o) for o in auto.children_recursive if o.type=='MESH')
+assert hero_meshes==lineup_meshes, 'The gallery auto must contain the current hero geometry.'
+print(json.dumps({'vehicles':sorted(report,key=lambda o:o['kind']),'packed_reference_boards':len(refs),'scene_isolated':True,'lineup_matches_hero':True,'all_checks_passed':True}))

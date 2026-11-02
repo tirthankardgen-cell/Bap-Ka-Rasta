@@ -71,7 +71,9 @@ export function autoRickshaw(root: THREE.Group) {
   if (!speedometer) throw new Error("Mumbai auto is missing its working speedometer");
   const setSpeed = (metresPerSecond: number) => {
     const kmh = Number.isFinite(metresPerSecond) ? Math.abs(metresPerSecond) * 3.6 : 0;
-    speedometer.rotation.y = 2.35 - Math.min(80, kmh) / 80 * 4.7;
+    // glTF's quaternion may decompose to X/Z = PI. Reset all Euler axes so
+    // changing Y keeps the needle in the authored dial plane and on its scale.
+    speedometer.rotation.set(0, 2.35 - Math.min(80, kmh) / 80 * 4.7, 0);
   };
   setSpeed(0);
   return { root, wheels, steering, speedometer, setSpeed };

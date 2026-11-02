@@ -1,5 +1,8 @@
 # Changelog
 
+- Saved the edited thirteen-vehicle Blender fleet and refreshed the game exports and review images. The auto now has a continuous curved windscreen surround, bowed glass, a rounded pressed cowl with inset lamps, and a fitted canopy. Added an open-session saver with recovery copies, restored studio placement and a check that the gallery auto matches its dedicated source. Landmark source saves now contain only their own scene.
+- Corrected the runtime speedometer rotation so its needle preserves the Blender model's zero position and follows the printed scale in driver view.
+
 - Recovered the interrupted vehicle update and rebuilt all thirteen city vehicle types from the supplied real-photo references. Added a single editable Blender fleet with packed reference boards, photo-based Thar/Fortuner/Toto/Dio/Duke shapes, a detailed red BEST bus, sedan/taxi and four everyday-car silhouettes. The auto has a corrected front, black mudguard, driver/passenger partition, rear fare meter and working speedometer.
 - Fixed first-person look so the seated torso, hands and feet stay with the auto. Completed traffic loading, parked taxi reuse and cancellation cleanup, matched collision lengths to the exports, and added checks for every actual model, wheel pivot, meter placement and body anchoring. Isolated Blender exports prevent other open scenes or reference photos from leaking into game downloads.
 

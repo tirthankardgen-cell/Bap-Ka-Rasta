@@ -18,7 +18,10 @@ test("exported auto fits the game and has grounded, independent wheel pivots", a
   const { scene } = await new GLTFLoader().parseAsync(
     file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength), "",
   );
+  const authoredZero = scene.getObjectByName("speedometer_needle")!.quaternion.clone().normalize();
   const { wheels, steering, speedometer, setSpeed } = autoRickshaw(scene);
+  assert.ok(speedometer.quaternion.angleTo(authoredZero) < 1e-6,
+    "binding must preserve the Blender needle's authored zero, regardless of Euler decomposition");
   const bounds = new Box3().setFromObject(scene);
   const size = bounds.getSize(new Vector3());
   assert.ok(Math.abs(bounds.min.y) < 0.015, "tires must meet the ground");
@@ -63,6 +66,8 @@ test("exported auto fits the game and has grounded, independent wheel pivots", a
   assert.ok(partition.min.x < -.55 && partition.max.x > .55, "divider spans the cabin");
   setSpeed(0); assert.equal(speedometer.rotation.y, 2.35);
   setSpeed(40 / 3.6); assert.ok(Math.abs(speedometer.rotation.y) < 1e-9);
+  assert.ok(new Vector3(0, 0, 1).applyQuaternion(speedometer.quaternion).distanceTo(new Vector3(0, 0, 1)) < 1e-9,
+    "at the middle of the scale the needle points forward in the dial plane");
   setSpeed(-40 / 3.6); assert.ok(Math.abs(speedometer.rotation.y) < 1e-9);
   setSpeed(100); assert.equal(speedometer.rotation.y, -2.35);
   setSpeed(Number.NaN); assert.equal(speedometer.rotation.y, 2.35);
