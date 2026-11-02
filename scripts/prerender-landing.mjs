@@ -13,6 +13,8 @@ const server = await createServer({
   configFile: false,
   root,
   plugins: [react()],
+  // This server renders components only; archived tools are not browser entries.
+  optimizeDeps: { noDiscovery: true, include: [] },
   server: { middlewareMode: true },
   appType: "custom",
 });

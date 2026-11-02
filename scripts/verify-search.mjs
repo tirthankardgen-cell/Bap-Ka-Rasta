@@ -23,7 +23,13 @@ try {
     for (let attempt = 0; attempt < 60; attempt++) {
       if (spawnError) throw spawnError;
       if (server.exitCode !== null) throw new Error(log);
-      if (log.includes("127.0.0.1:4181")) { ready = true; break; }
+      try {
+        const response = await fetch(new URL("/favicon.ico", base), { signal: AbortSignal.timeout(1000) });
+        await response.body?.cancel();
+        if (response.ok) { ready = true; break; }
+      } catch {
+        // The listener is not ready yet. Console colours must not affect readiness.
+      }
       await delay(250);
     }
     assert(ready, "Preview server did not start: " + log);

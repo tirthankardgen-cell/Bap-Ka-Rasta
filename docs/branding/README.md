@@ -43,6 +43,8 @@ Run `npm run verify:search` after building to check actual HTTP pages, metadata,
 
 Validation on Node.js 22.23.4: the production build, all 91 simulation/asset tests, the HTTP `verify:search` check across four public pages and seventeen linked resources, and both existing branding browser tests passed. A separate browser inspection confirmed the complete guide with JavaScript disabled, mobile/desktop layouts without horizontal overflow, and homepage → guide → game-selection navigation without page errors. The Vite warning about the existing large game chunk remains unchanged; the guide has no application script.
 
+The HTTP verifier waits for an actual favicon response rather than parsing Vite's console URL, which contains ANSI colour codes in GitHub CI. The temporary prerender server disables browser dependency discovery so archived preview tools cannot pollute the build with unrelated missing-export errors.
+
 For the GitHub repository's social preview, upload `og-cover.png` in repository Settings → General → Social preview. The image is supplied here; the GitHub settings UI is not changed by committing it.
 
 ## Rebuilding assets
