@@ -50,6 +50,7 @@ export default function Landing({ onStart }: { onStart: () => void }) {
           <span className="hero-note">
             LOGIN KA CHAKKAR NAHI. BAS CHAL PAD.
           </span>
+          <a className="hero-guide" href="/guide.html">Explore the game world &amp; controls <ArrowUpRight size={16} aria-hidden="true" /></a>
         </div>
         <div className="scene-label">
           <MapPin size={16} />

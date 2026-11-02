@@ -39,6 +39,17 @@ a:focus-visible {
   min-height: 480px;
   overflow: hidden;
 }
+.hero-guide {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .hero-art,
 .hero-shade {
   position: absolute;

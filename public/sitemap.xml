@@ -2,9 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://rasta.vihar.online/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-02</lastmod>
+    <image:image><image:loc>https://rasta.vihar.online/brand/icon-192.png</image:loc></image:image>
     <image:image><image:loc>https://rasta.vihar.online/images/landing-hero.webp</image:loc></image:image>
     <image:image><image:loc>https://rasta.vihar.online/brand/br-mark.svg</image:loc></image:image>
     <image:image><image:loc>https://rasta.vihar.online/brand/og-cover.png</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://rasta.vihar.online/guide.html</loc>
+    <lastmod>2026-11-02</lastmod>
+    <image:image><image:loc>https://rasta.vihar.online/images/landing-hero.webp</image:loc></image:image>
+    <image:image><image:loc>https://rasta.vihar.online/images/world-board.webp</image:loc></image:image>
+    <image:image><image:loc>https://rasta.vihar.online/images/vehicle-gallery.webp</image:loc></image:image>
+    <image:image><image:loc>https://rasta.vihar.online/images/toto-erickshaw.png</image:loc></image:image>
+  </url>
+  <url><loc>https://rasta.vihar.online/audio/credits.html</loc></url>
+  <url><loc>https://rasta.vihar.online/audio/mumbai/voices/</loc></url>
 </urlset>

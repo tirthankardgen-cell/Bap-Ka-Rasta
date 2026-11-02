@@ -34,6 +34,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build && node scripts/prerender-landing.mjs",
     "preview": "vite preview --host 0.0.0.0",
+    "verify:search": "node scripts/verify-search.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "assets:characters:pack": "node scripts/characters/pack_mumbai_characters.mjs",

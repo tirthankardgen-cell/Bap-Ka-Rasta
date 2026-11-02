@@ -119,6 +119,7 @@ Run these commands from the repository root:
 | `npm run dev` | Start the Vite development server, normally on port 5173 |
 | `npm run build` | Run TypeScript checks, build to `dist/`, and prerender the landing screen for crawlers and initial display |
 | `npm run preview` | Serve the existing production build locally, normally on port 4173 |
+| `npm run verify:search` | Check the built public pages, game guide, metadata, sitemap, favicons and linked assets; `VERIFY_SITE_URL` selects a live site |
 | `npm test` | Run simulation and pavement-layout tests |
 | `npm run test:e2e` | Run Playwright browser tests against a production build |
 | `npm run voices:generate` | Regenerate missing/changed voice files using the private ElevenLabs key and included voices |
