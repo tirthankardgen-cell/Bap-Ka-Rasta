@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import { createEngine, type Engine, type Stats } from "./engine";
 import { loadGameAssets, disposeGameAssets } from "./game-assets";
-import type { Input } from "./simulation";
+import { newDrive, type Input } from "./simulation";
+import { PLAYER_VEHICLES, type PlayerVehicleId } from "./player-vehicles";
 import "./game.css";
 const initial: Stats = {
   gear: 1,
@@ -45,7 +46,8 @@ const initial: Stats = {
   impact: false,
   fps: 0,
 };
-export default function Game({ onExit }: { onExit: () => void }) {
+export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void; vehicle?: PlayerVehicleId }) {
+  const ride = PLAYER_VEHICLES[vehicle];
   const host = useRef<HTMLDivElement>(null),
     engine = useRef<Engine | null>(null);
   const [stats, setStats] = useState(initial),
@@ -91,7 +93,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
             assets.characterModels,
             assets.landmarkModels,
             assets.trafficModels,
-            undefined,
+            newDrive(vehicle),
             controller.signal,
           );
           if (!active) { created.dispose(); return; }
@@ -105,7 +107,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
       .catch((e: unknown) => {
         if (!active) return;
         setError(
-          "Auto ya scene load nahi hua, bhidu. Connection check karke phir try karo. WebGL 2 aur hardware acceleration bhi chalu hona chahiye.",
+          "Sawaari ya scene load nahi hua, bhidu. Connection check karke phir try karo. WebGL 2 aur hardware acceleration bhi chalu hona chahiye.",
         );
         console.error(e);
       });
@@ -116,7 +118,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
       engine.current = null;
       if (hornTimer.current) clearTimeout(hornTimer.current);
     };
-  }, [session]);
+  }, [session, vehicle]);
   const introducing = status === "driving" && stats.introStage !== "done";
   function start(skip = false) {
     if (status === "ready") {
@@ -194,7 +196,8 @@ export default function Game({ onExit }: { onExit: () => void }) {
     <>
       <main
         className="game"
-        aria-label="Mumbai auto rickshaw game"
+        aria-label={`Mumbai ${ride.name.toLowerCase()} game`}
+        data-vehicle={vehicle}
         data-status={status}
         data-incident={stats.incident?.phase ?? "none"}
         data-stage={stats.introStage}
@@ -301,7 +304,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
             </div>
             <div className="keyboard-hint">
               WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE{" "}
-              <i>·</i> C CAMERA <i>·</i> 1–4 GEARS
+              <i>·</i> C CAMERA <i>·</i> {ride.automatic ? "AUTOMATIC SCOOTY" : "1–4 GEARS"}
             </div>
             <div className="drive-buttons">
               <div className="steering">
@@ -309,7 +312,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                 {pedal("right", "Steer right", <ArrowRight />)}
               </div>
               <div className="drive-centre">
-                <div
+                {!ride.automatic && <div
                   className="gear-selector"
                   role="group"
                   aria-label="Select gear"
@@ -326,9 +329,9 @@ export default function Game({ onExit }: { onExit: () => void }) {
                       <small>{GEAR_LIMITS[gear]}</small>
                     </button>
                   ))}
-                </div>
+                </div>}
                 <span className="gear-caption">
-                  GEAR · {GEAR_LIMITS[stats.gear]} KM/H MAX
+                  {ride.automatic ? `AUTOMATIC · ${ride.maxSpeed}` : `GEAR · ${GEAR_LIMITS[stats.gear]}`} KM/H MAX
                 </span>
                 <div className="utility">
                   <button onClick={horn} aria-label="Horn">
@@ -350,7 +353,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
           </>
         )}
         {stats.incident?.phase === "report" && !error && (
-          <IncidentNewspaper incident={stats.incident} onExit={incidentExit} leaving={leaving} />
+          <IncidentNewspaper incident={stats.incident} vehicleName={ride.shortName.toLowerCase()} onExit={incidentExit} leaving={leaving} />
         )}
         {(status !== "driving" || error) && (
           <div className="game-overlay">
@@ -380,14 +383,16 @@ export default function Game({ onExit }: { onExit: () => void }) {
               ) : status === "ready" ? (
                 <>
                   <span className="panel-kicker">
-                    MUMBAI · APNA SHEHER, APNI RIDE
+                    {ride.automatic ? "RIYA · SCOOTY RIDER · MUMBAI" : "MUMBAI · APNA SHEHER, APNI RIDE"}
                   </span>
                   <h1 id="drive-panel-title">
-                    Meter down.
+                    {ride.automatic ? "Chhoti sawaari." : "Meter down."}
                     <br />
-                    <em>Tension down.</em>
+                    <em>{ride.automatic ? "Poori azaadi." : "Tension down."}</em>
                   </h1>
-                  <p>Auto mein baitho. Mumbai apne andaaz mein ghoomo.</p>
+                  <p>{ride.automatic
+                    ? "Riya ke saath scooty pe niklo. Helmet on, automatic ride — bas accelerator dabao aur Mumbai ghoomo."
+                    : "Auto mein baitho. Mumbai apne andaaz mein ghoomo."}</p>
                   <button
                     className="game-primary"
                     disabled={!loaded}
@@ -396,14 +401,14 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     {loaded ? "Chal Chala" : "Rasta taiyaar ho raha hai…"}{" "}
                     <ArrowRight size={20} />
                   </button>
-                  <button
+                  {!ride.automatic && <button
                     className="game-secondary"
                     disabled={!loaded}
                     onClick={() => start(true)}
                     aria-label="Drive without intro"
                   >
                     Seedha drive · intro baad mein
-                  </button>
+                  </button>}
                 </>
               ) : (
                 <>
@@ -413,7 +418,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                     <br />
                     <em>ho jaaye?</em>
                   </h1>
-                  <p>Auto side mein hai. Chai pee, phir scene banate hain.</p>
+                  <p>{ride.shortName} side mein hai. Chai pee, phir scene banate hain.</p>
                   <a
                     href="/audio/credits.html"
                     target="_blank"
@@ -436,7 +441,7 @@ export default function Game({ onExit }: { onExit: () => void }) {
                         start();
                       }}
                     >
-                      <RotateCcw size={18} /> Auto seedha karo
+                      <RotateCcw size={18} /> {ride.shortName} seedha karo
                     </button>
                     <button onClick={toggleSound}>
                       {sound ? <Volume2 size={18} /> : <VolumeX size={18} />}

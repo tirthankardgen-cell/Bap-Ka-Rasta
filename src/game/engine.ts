@@ -29,7 +29,9 @@ import {
 } from "./simulation";
 import { landscapeDelta } from "../LandscapeStage";
 import { createCameraLook, followCamera, type CameraMode } from "./camera";
-import { AUTO_DRIVER_EYE_HEIGHT, AUTO_WHEEL_RADIUS } from "./auto-model";
+import { AUTO_WHEEL_RADIUS } from "./auto-model";
+import { PLAYER_VEHICLES } from "./player-vehicles";
+import { createPlayerScooty } from "./scooty-model";
 import type { LandmarkModels } from "./landmark-models";
 import type { TrafficModels } from "./traffic-models";
 export type { CameraMode } from "./camera";
@@ -68,6 +70,8 @@ export async function createEngine(
   initialDrive = newDrive(),
   startupSignal?: AbortSignal,
 ) {
+  const vehicle = PLAYER_VEHICLES[initialDrive.vehicle];
+  const isScooty = initialDrive.vehicle === "scooty";
   const checkpoint = setupCheckpoint(startupSignal);
   await checkpoint(true);
   const renderer = new THREE.WebGLRenderer({
@@ -91,7 +95,8 @@ export async function createEngine(
   const scene = new THREE.Scene();
   let lighting!: ReturnType<typeof atmosphere>;
   let world!: Awaited<ReturnType<typeof makeWorld>>;
-  let player!: ReturnType<typeof autoRickshaw>;
+  let player!: Pick<ReturnType<typeof autoRickshaw>, "root" | "wheels" | "steering" | "setSpeed">;
+  let scooty: ReturnType<typeof createPlayerScooty> | undefined;
   let placeTraffic!: Awaited<ReturnType<typeof trafficVisuals>>;
   const traffic = newTraffic();
   const trafficHorn = createTrafficHornScheduler();
@@ -100,7 +105,13 @@ export async function createEngine(
     lighting.quality(!automaticShadows);
     await checkpoint(true);
     world = await makeWorld(scene, characterModels, landmarkModels, trafficModels, startupSignal);
-    player = autoRickshaw(autoModel);
+    if (isScooty) {
+      scooty = createPlayerScooty(trafficModels, characterModels);
+      player = scooty;
+      // Keep the auto resources session-owned even when it is only used by traffic.
+      autoModel.visible = false;
+      scene.add(autoModel);
+    } else player = autoRickshaw(autoModel);
     scene.add(player.root);
     placeTraffic = await trafficVisuals(scene, traffic, autoModel, trafficModels, startupSignal);
     await checkpoint(true);
@@ -110,17 +121,22 @@ export async function createEngine(
     renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
     throw error;
   }
-  // Traffic keeps its cheap anonymous drivers; Sachin is the reference-cast model.
-  autoModel.traverse((object) => {
-    if (object.userData.driver) {
-      object.visible = false;
-      object.userData.driver = false;
-    }
-  });
-  const sachin = characterPlayerPart(characterModels, "seated");
-  sachin.userData.driver = true;
-  player.root.add(sachin);
-  renderer.domElement.dataset.vehicleModel = "mumbai-auto";
+  if (!isScooty) {
+    // Traffic keeps its anonymous drivers; the player auto uses seated Sachin.
+    autoModel.traverse((object) => {
+      if (object.userData.driver) {
+        object.visible = false;
+        object.userData.driver = false;
+      }
+    });
+    const sachin = characterPlayerPart(characterModels, "seated");
+    sachin.userData.driver = true;
+    player.root.add(sachin);
+  }
+  renderer.domElement.dataset.vehicleModel = vehicle.model;
+  renderer.domElement.dataset.driverName = vehicle.driver;
+  renderer.domElement.dataset.driverGender = vehicle.driverGender;
+  renderer.domElement.dataset.transmission = vehicle.automatic ? "automatic" : "geared";
   renderer.domElement.dataset.characterModels = "blender-reference-cast";
   renderer.domElement.dataset.landmarkCount = String(landmarkModels.sites.length);
   renderer.domElement.dataset.cameraMode = "third-person";
@@ -130,8 +146,8 @@ export async function createEngine(
   const previousPose = { x: state.x, z: state.z, yaw: state.yaw };
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
   scene.add(camera);
-  const hands = driverHands(camera, characterModels);
-  const seatedBody = seatedDriverView(player.root, characterModels);
+  const hands = isScooty ? null : driverHands(camera, characterModels);
+  const seatedBody = scooty?.firstPersonBody ?? seatedDriverView(player.root, characterModels);
   let introActive = false,
     introStarted = false,
     introTime = 0,
@@ -192,7 +208,7 @@ export async function createEngine(
     if (!introStarted || incident) streetDialogues = [];
     else if (introActive) streetDialogues = [introDialogue(introTime)];
     else if (!paused) streetDialogues = world.crowd.greeting(
-      state.time, state.x, state.z, state.speed, dialogueClock, state.signal,
+      state.time, state.x, state.z, state.speed, dialogueClock, state.signal, state.vehicle,
     );
     streetAudio.dialogue(streetDialogues, state);
     currentDialogue = streetAudio.caption ?? streetDialogues.find((cue) => cue.audience === "player") ?? null;
@@ -243,11 +259,12 @@ export async function createEngine(
     player.setSpeed(state.speed);
     const portrait = host.clientHeight > host.clientWidth;
     const outside = cameraMode === "third-person";
-    const distance = outside ? (portrait ? 9 : 7.5) : -0.08;
-    const lateral = outside ? 1.8 : 0;
-    const height = outside ? (portrait ? 5.8 : 4.4) : AUTO_DRIVER_EYE_HEIGHT;
+    const distance = outside ? vehicle.chaseDistance + (portrait ? 1.5 : 0) : -vehicle.eyeForward;
+    const lateral = outside ? vehicle.chaseOffset : 0;
+    const height = outside ? vehicle.chaseHeight + (portrait ? 1.4 : 0) : vehicle.eyeHeight;
+    if (snap && scooty) scooty.lean.rotation.z = 0;
     camera.near = outside ? 0.1 : 0.04;
-    camera.fov = outside ? 55 : 70;
+    camera.fov = outside ? 55 : vehicle.driverFov;
     camera.updateProjectionMatrix();
     cameraTarget.set(
       pose.x - Math.sin(pose.yaw) * distance + Math.cos(pose.yaw) * lateral,
@@ -257,9 +274,9 @@ export async function createEngine(
     followCamera(followPosition, cameraTarget, cameraMode, dt, snap);
     camera.position.copy(followPosition);
     lookTarget.set(
-      pose.x + Math.sin(pose.yaw) * 8,
-      outside ? 1.1 : 1.5,
-      pose.z + Math.cos(pose.yaw) * 8,
+      pose.x + Math.sin(pose.yaw) * vehicle.lookAhead,
+      outside ? 1.1 : vehicle.driverLookHeight,
+      pose.z + Math.cos(pose.yaw) * vehicle.lookAhead,
     );
     if (outside && (look.yaw || look.pitch)) {
       camera.position.sub(lookTarget);
@@ -281,7 +298,7 @@ export async function createEngine(
     placeTraffic(pose.x, pose.z);
     lighting.update(pose.x, pose.z, state.time);
     world.update(state.time, pose.x, pose.z, lowQuality);
-    hands.update(false, false, state.time, reducedMotion);
+    hands?.update(false, false, state.time, reducedMotion);
     seatedBody.visible = cameraMode === "driver" && !introActive;
     if (introActive) placeIntro();
     if (incident) placeIncident();
@@ -315,7 +332,7 @@ export async function createEngine(
     }
     camera.updateProjectionMatrix();
     const walking = introTime < 6;
-    hands.update(!frame.exterior && walking, walking, introTime, reducedMotion);
+    hands?.update(!frame.exterior && walking, walking, introTime, reducedMotion);
     seatedBody.visible = !frame.exterior && !walking;
     world.update(introTime, state.x, state.z, lowQuality);
   }
@@ -338,6 +355,8 @@ export async function createEngine(
   }
   function beginIntro() {
     if (introStarted) return;
+    // The auto's walk-in scene and Sachin voice clips belong only to that ride.
+    if (isScooty) { finishIntro(); return; }
     introStarted = true;
     introActive = true;
     introTime = 0;
@@ -402,7 +421,7 @@ export async function createEngine(
     "Space",
   ]);
   function selectGear(gear: Gear) {
-    if (paused || introActive || incident) return;
+    if (paused || introActive || incident || vehicle.automatic) return;
     state.gear = gear;
     publish();
   }
@@ -548,7 +567,7 @@ export async function createEngine(
       .add(camera.position);
     cameraMode = "third-person";
     driverVisibility(true);
-    hands.update(false, false, state.time, true);
+    hands?.update(false, false, state.time, true);
     seatedBody.visible = false;
     clear();
     state.speed = 0;
@@ -651,7 +670,9 @@ export async function createEngine(
         return;
       }
       place(false, dt);
-      player.steering.rotation.y = steeringAngleFor(state.steer, state.speed);
+      const steeringAngle = steeringAngleFor(state.steer, state.speed, state.vehicle);
+      player.steering.rotation.y = steeringAngle;
+      scooty?.updateLean(steeringAngle, state.speed, dt, reducedMotion);
       const honking = trafficHorn(traffic, state, state.time);
       if (honking) {
         const x = honking.x - state.x,
@@ -662,7 +683,7 @@ export async function createEngine(
         );
       }
       player.wheels.forEach((w) => {
-        w.rotation.x += (state.speed * dt) / AUTO_WHEEL_RADIUS;
+        w.rotation.x += (state.speed * dt) / (w.userData.wheelRadius ?? AUTO_WHEEL_RADIUS);
       });
       streetAudio.update(
         state.speed,
@@ -671,6 +692,7 @@ export async function createEngine(
           .length,
         world.marketIntensity(state.x, state.z),
         state.gear,
+        vehicle.automatic,
       );
       renderer.render(scene, camera);
     }

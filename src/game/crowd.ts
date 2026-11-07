@@ -1,4 +1,5 @@
 import { createCrowdMotion } from "./crowd-motion.ts";
+import type { PlayerVehicleId } from "./player-vehicles.ts";
 import { crowdHeightVariation } from "./world-scale.ts";
 import { createPedestrianRules, fallPose } from "./pedestrian-rules.ts";
 import * as THREE from "three";
@@ -161,7 +162,7 @@ export function makeCrowd(
     stats,
     collide(
       before: { x: number; z: number },
-      after: { x: number; z: number; yaw: number },
+      after: { x: number; z: number; yaw: number; vehicle?: PlayerVehicleId },
       previousTime: number,
       time: number,
       speed: number,
@@ -276,8 +277,8 @@ export function makeCrowd(
         finishCastBatch(pair.crowd);
       }
     },
-    greeting(time: number, x: number, z: number, speed: number, clock = time, signal = "") {
-      return dialogue.update({ time, clock, x, z, speed, signal, poses: motion.sample(time), reactions: rules.reactions });
+    greeting(time: number, x: number, z: number, speed: number, clock = time, signal = "", vehicle: PlayerVehicleId = "auto") {
+      return dialogue.update({ time, clock, x, z, speed, signal, vehicle, poses: motion.sample(time), reactions: rules.reactions });
     },
     clearDialogue(until = 0) {
       dialogue.clear(until);

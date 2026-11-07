@@ -1,3 +1,5 @@
+import { PLAYER_VEHICLES, type PlayerVehicleId } from "./player-vehicles.ts";
+
 /** Shared physical scale: metres, standing heights include hair / headwear. */
 export const CHARACTER_HEIGHTS: Readonly<Record<string, number>> = {
   sachin: 1.73, raju: 1.67, meera: 1.60, sameer: 1.78, aarti: 1.64,
@@ -32,10 +34,11 @@ export function trafficDimensions(kind: number) {
 
 /** Minimum separation of the actual oriented body envelopes, excluding mirrors. */
 export function vehicleContact(
-  player: { x: number; z: number; yaw: number },
+  player: { x: number; z: number; yaw: number; vehicle?: PlayerVehicleId },
   other: { x: number; z: number; yaw: number; kind: number },
 ) {
-  const a = trafficDimensions(4), b = trafficDimensions(other.kind);
+  const a = trafficDimensions(PLAYER_VEHICLES[player.vehicle ?? "auto"].trafficKind),
+    b = trafficDimensions(other.kind);
   const ac = Math.cos(player.yaw), as = Math.sin(player.yaw);
   const bc = Math.cos(other.yaw), bs = Math.sin(other.yaw);
   const dx = player.x-other.x, dz = player.z-other.z;

@@ -6,10 +6,12 @@ export default function IncidentNewspaper({
   incident,
   onExit,
   leaving = false,
+  vehicleName = "auto",
 }: {
   incident: IncidentReport;
   onExit: () => void;
   leaving?: boolean;
+  vehicleName?: string;
 }) {
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function IncidentNewspaper({
                 hua.
               </p>
               <p>
-                Ghatna ke waqt auto ki raftaar lagbhag{" "}
+                Ghatna ke waqt {vehicleName} ki raftaar lagbhag{" "}
                 {Math.round(incident.speed)} km/h thi. Takkar lagne ke baad{" "}
                 {incident.name} sadak par gir pade aur unki jaan chali gayi.
                 Ghatnasthal ki tasveer is haadse ka manzar bayaan karti hai.

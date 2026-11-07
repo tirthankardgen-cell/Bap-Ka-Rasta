@@ -114,3 +114,15 @@ test("opening and reactions explicitly address the player", () => {
   assert.equal(sachin.channel, "foreground");
   assert.equal(characterLines("patil", "warning").length, 1);
 });
+
+test("the female scooty rider keeps street conversations without Sachin's self-talk", () => {
+  const director = createDialogueDirector(stand, () => true);
+  let neighbours = false;
+  for (const clock of [0, 2, 8, 50, 60, 120, 200]) {
+    const cues = director.update(frame(clock, { vehicle: "scooty", signal: "red" }));
+    assert.ok(cues.every((cue) => cue.line.characterId !== "sachin"));
+    assert.ok(cues.every((cue) => cue.audience !== "self"));
+    neighbours ||= cues.some((cue) => cue.audience === "neighbours");
+  }
+  assert.ok(neighbours, "the rest of the street should still talk");
+});

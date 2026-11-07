@@ -8,13 +8,13 @@ The current build provides:
 
 - Landing, city selection, and vehicle selection screens.
 - Free driving through an authored South Mumbai-inspired street network.
-- An auto rickshaw, NPC traffic, pedestrians, crossings, and roadside activity.
+- An auto rickshaw and automatic scooty with female rider Riya, NPC traffic, pedestrians, crossings, and roadside activity.
 - A skippable voiced driver-entry opening, twenty character designs, neighbourhood crowd variety and 118 short Mumbai recordings, including nearby conversations and character-specific reactions.
 - Keyboard and touch input, pause/resume, safe reset, sound, and graphics controls.
 - Recorded engine, horn, traffic, and market audio with attribution.
 - Simulation/layout tests, browser flows, and a static production build.
 
-Mumbai and the auto rickshaw are the only playable combination. See the [playable guide](Mumbai-Playable.md) for the detailed implementation.
+Mumbai is playable with the auto rickshaw or scooty. See the [playable guide](Mumbai-Playable.md) for the detailed implementation.
 
 ## Validation and reliability
 
@@ -30,7 +30,8 @@ The automated repository checks cover the build, simulation/layout tests, and au
 ## Planned content expansion
 
 - [ ] Add playable Delhi, Kolkata, Chennai, and Bangalore environments.
-- [ ] Add the planned Thar, Fortuner, Scooty, and KTM player-vehicle roles with appropriate handling and original visuals.
+- [x] Add the playable scooty with a female rider, automatic handling and two camera views.
+- [ ] Add the planned Thar, Fortuner, Toto and KTM player-vehicle roles with appropriate handling and original visuals.
 - [ ] Reuse the existing road, vehicle, interface, and asset conventions as content grows.
 - [ ] Validate each new city/vehicle combination on desktop and touch devices before marking it available.
 

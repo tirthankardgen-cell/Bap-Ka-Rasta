@@ -145,7 +145,7 @@ test("circular vehicle chooser selects previews, wraps, drags and keeps future r
   await expect(
     page.getByRole("heading", { name: "Thar", exact: true }),
   ).toBeVisible();
-  for (const name of ["Fortuner", "Toto e-rickshaw", "KTM", "Scooty"]) {
+  for (const name of ["Fortuner", "Toto e-rickshaw", "KTM"]) {
     await page.getByRole("button", { name, exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Coming soon", exact: true }),
@@ -154,6 +154,9 @@ test("circular vehicle chooser selects previews, wraps, drags and keeps future r
       page.getByRole("button", { name: "Drive Mumbai", exact: true }),
     ).toHaveCount(0);
   }
+  await page.getByRole("button", { name: "Scooty", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Drive Mumbai", exact: true })).toBeEnabled();
+  await expect(page.getByRole("region", { name: "Selected vehicle" })).toContainText("FEMALE RIDER");
   await page
     .getByRole("button", { name: "Auto rickshaw", exact: true })
     .click();

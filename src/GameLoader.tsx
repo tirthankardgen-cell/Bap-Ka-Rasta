@@ -1,9 +1,10 @@
 import RoadLoading from "./RoadLoading";
 import { useEffect, useState, type ComponentType } from "react";
+import type { PlayerVehicleId } from "./game/player-vehicles";
 
-type Props = { onExit: () => void };
+type Props = { onExit: () => void; vehicle?: PlayerVehicleId };
 /** Keep navigation available when a deployment chunk is missing or a download stalls. */
-export default function GameLoader({ onExit }: Props) {
+export default function GameLoader({ onExit, vehicle = "auto" }: Props) {
   const [Game, setGame] = useState<ComponentType<Props> | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function GameLoader({ onExit }: Props) {
       window.clearTimeout(timer);
     };
   }, []);
-  if (Game) return <Game onExit={onExit} />;
+  if (Game) return <Game vehicle={vehicle} onExit={onExit} />;
   return (
     <div className="game-loading">
       {failed ? "Rasta load nahi hua, bhidu." : <RoadLoading />}

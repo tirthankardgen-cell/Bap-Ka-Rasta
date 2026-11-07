@@ -1,4 +1,5 @@
 import { gearedSpeed, type Gear } from "./gears.ts";
+import { PLAYER_VEHICLES, scootySpeed, type PlayerVehicleId } from "./player-vehicles.ts";
 import { trafficDimensions, vehicleContact, TRAFFIC_KIND_COUNT } from "./world-scale.ts";
 import {
   streets,
@@ -56,6 +57,7 @@ export type Traffic = {
   decisions: number;
 };
 export type Drive = {
+  vehicle: PlayerVehicleId;
   gear: Gear;
   x: number;
   z: number;
@@ -72,9 +74,10 @@ export type Drive = {
   street: string;
   signal: string;
 };
-export function newDrive(): Drive {
+export function newDrive(vehicle: PlayerVehicleId = "auto"): Drive {
   return {
     ...SPAWN,
+    vehicle,
     gear: 1,
     speed: 0,
     steer: 0,
@@ -255,6 +258,7 @@ export function updateTraffic(
 }
 export function resetDrive(s: Drive, traffic: Traffic[]) {
   s.gear = 1;
+  const clearance = PLAYER_VEHICLES[s.vehicle].clearance;
   const near = nearestStreet(s.checkpoint.x, s.checkpoint.z);
   for (let i = 0; i < 100; i++) {
     const edge = i < 20 ? near.edge : (i - 20) % streets.length,
@@ -278,9 +282,9 @@ export function resetDrive(s: Drive, traffic: Traffic[]) {
         : g.length * 0.5;
     const p = lanePosition(edge, from, progress, trafficLane(edge));
     if (
-      !roadContains(p.x, p.z) ||
+      !roadContains(p.x, p.z, clearance) ||
       traffic.some((t) => Math.hypot(t.x - p.x, t.z - p.z) < 12) ||
-      obstacles.some((o) => Math.hypot(o.x - p.x, o.z - p.z) < o.r + 2)
+      obstacles.some((o) => Math.hypot(o.x - p.x, o.z - p.z) < o.r + clearance + 1)
     )
       continue;
     Object.assign(s, {
@@ -297,6 +301,7 @@ export function resetDrive(s: Drive, traffic: Traffic[]) {
   }
 }
 export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
+  const vehicle = PLAYER_VEHICLES[s.vehicle];
   s.time += dt;
   s.cooldown = Math.max(0, s.cooldown - dt);
   s.impact = Math.max(0, s.impact - dt);
@@ -310,20 +315,22 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
       if (s.speed > 0) s.speed = 0;
       s.reverseWait += dt;
       if (!input.throttle && s.reverseWait >= 0.4)
-        s.speed = Math.max(-3.3, s.speed - 3 * dt);
+        s.speed = Math.max(-vehicle.reverseSpeed, s.speed - 3 * dt);
     }
   } else {
     s.reverseWait = 0;
-    s.speed = gearedSpeed(s.speed, s.gear, input.throttle, dt);
+    s.speed = vehicle.automatic
+      ? scootySpeed(s.speed, input.throttle, dt)
+      : gearedSpeed(s.speed, s.gear, input.throttle, dt);
   }
   if (input.handbrake) s.speed *= Math.exp(-3 * dt);
   const targetSteer = Number(input.left) - Number(input.right);
   s.steer += (targetSteer - s.steer) * (1 - Math.exp(-8 * dt));
-  const steeringAngle = steeringAngleFor(s.steer, s.speed);
-  s.yaw += (s.speed / 1.8) * Math.tan(steeringAngle) * dt;
+  const steeringAngle = steeringAngleFor(s.steer, s.speed, s.vehicle);
+  s.yaw += (s.speed / vehicle.wheelbase) * Math.tan(steeringAngle) * dt;
   s.x += Math.sin(s.yaw) * s.speed * dt;
   s.z += Math.cos(s.yaw) * s.speed * dt;
-  const boundary = constrainRoad(s.x, s.z);
+  const boundary = constrainRoad(s.x, s.z, vehicle.clearance);
   if (boundary.hit) {
     s.x = boundary.x;
     s.z = boundary.z;
@@ -350,7 +357,7 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
     const dx = s.x - other.x,
       dz = s.z - other.z,
       d = Math.hypot(dx, dz),
-      radius = other.r + 1;
+      radius = other.r + vehicle.clearance;
     if (d < radius) {
       const nx = d > 0.001 ? dx / d : Math.cos(s.yaw),
         nz = d > 0.001 ? dz / d : -Math.sin(s.yaw);
@@ -363,7 +370,7 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
       }
     }
   }
-  const final = constrainRoad(s.x, s.z);
+  const final = constrainRoad(s.x, s.z, vehicle.clearance);
   s.x = final.x;
   s.z = final.z;
   if (s.impact === 0)
@@ -395,8 +402,9 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
 }
 
 /** Shared by physics and the GLB front-wheel steering pivot. */
-export function steeringAngleFor(steer: number, speed: number) {
-  return steer * (0.46 / (1 + Math.abs(speed) * 0.24));
+export function steeringAngleFor(steer: number, speed: number, vehicle: PlayerVehicleId = "auto") {
+  const angle = vehicle === "scooty" ? 0.40 : 0.46;
+  return steer * (angle / (1 + Math.abs(speed) * 0.24));
 }
 
 /** Only honk at the player when they are the immediate obstruction. */

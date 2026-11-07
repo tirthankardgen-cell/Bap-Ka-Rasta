@@ -1,5 +1,6 @@
 import { geometry, lanePosition, streets, type Point } from "./network.ts";
 import { sweptPersonContact } from "./pedestrian-rules.ts";
+import type { PlayerVehicleId } from "./player-vehicles.ts";
 
 export function coneLocations(): Point[] {
   const points: Point[] = [
@@ -61,7 +62,7 @@ export function createCones(locations = coneLocations()) {
     reset,
     step(
       before: Point,
-      after: Point & { yaw: number },
+      after: Point & { yaw: number; vehicle?: PlayerVehicleId },
       speed: number,
       dt: number,
       heightAt: (x: number, z: number) => number = () => 0,
@@ -73,7 +74,7 @@ export function createCones(locations = coneLocations()) {
           c.armed &&
           c.y < 1.5 &&
           Math.abs(speed) > 0.25 &&
-          sweptPersonContact(before, after, after.yaw, c, c)
+          sweptPersonContact(before, after, after.yaw, c, c, after.vehicle)
         ) {
           const forward = Math.sign(speed),
             strength = Math.min(18, Math.abs(speed));

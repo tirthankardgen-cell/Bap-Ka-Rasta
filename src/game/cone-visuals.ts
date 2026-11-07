@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { createCones } from "./cones.ts";
+import type { PlayerVehicleId } from "./player-vehicles.ts";
 
 export function makeCones(
   scene: THREE.Scene,
@@ -52,7 +53,7 @@ export function makeCones(
     reset: physics.reset,
     step: (
       before: { x: number; z: number },
-      after: { x: number; z: number; yaw: number },
+      after: { x: number; z: number; yaw: number; vehicle?: PlayerVehicleId },
       speed: number,
       dt: number,
     ) => physics.step(before, after, speed, dt, heightAt),

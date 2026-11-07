@@ -1,8 +1,12 @@
-# Mumbai / auto rickshaw — connected streets
+# Mumbai / auto rickshaw and scooty — connected streets
 
 ## Play
 
-From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai**, press **Yahin Chalao**, choose **Auto rickshaw**, then **Drive Mumbai** and **Chal Chala**. Both selection screens are full-screen galleries with arrows, keyboard navigation, swipe and direct selection dots. Vehicle selection uses a perspective oval of five clickable vehicle previews, with the selected ride enlarged above centered details; future vehicles remain locked. The implementation follows the repository’s circular-gallery concept using the existing vehicle artwork. Only Mumbai and the auto are playable in this build. **Chal Chala** starts a guided, approximately 10-second driver POV opening with Raju Kaka and Meera Tai beside the kerbside auto. The driver walks over, enters, sits at the controls and hands off to third-person driving. **Seedha drive** or Enter skips the intro; the ready screen also offers **Drive without intro**. Pause, reset, exit and reduced-motion mode are supported.
+From the landing page, press **Mera Bap Ka Rasta**, choose **Mumbai**, press **Yahin Chalao**, choose **Auto rickshaw** or **Scooty**, then **Drive Mumbai** and **Chal Chala**. Both selection screens are full-screen galleries with arrows, keyboard navigation, swipe and direct selection dots. Vehicle selection uses a perspective oval of five clickable vehicle previews, with the selected ride enlarged above centered details; future vehicles remain locked.
+
+The auto starts a guided, approximately 10-second driver POV opening with Raju Kaka and Meera Tai beside the kerbside auto. Sachin walks over, enters, sits at the controls and hands off to third-person driving. **Seedha drive** or Enter skips the intro; the auto's ready screen also offers **Drive without intro**. Pause, reset, exit and reduced-motion mode are supported for both rides.
+
+The turquoise **Scooty** starts directly with **Riya**, a female rider with a ponytail and an open-face helmet. It has automatic acceleration up to 60 km/h, a 1.26 m wheelbase, scooter-sized vehicle/pedestrian/cone contacts, gentle turn banking (disabled with reduced motion), spinning wheels and a working instrument needle. Hold brake to stop, then continue holding to back up at walking pace. It has no gear buttons or gear shortcuts. **C** switches between the closer chase camera and Riya's eye-level view with her hands and legs anchored to the scooter. Street conversations continue; Sachin's auto opening and self-talk are not used for this rider.
 
 ## City environment
 

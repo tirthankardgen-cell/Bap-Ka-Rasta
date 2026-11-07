@@ -2,6 +2,7 @@ import { characters, actorIdentity, type Actor } from "./characters.ts";
 import { roadContains, SPAWN } from "./network.ts";
 import type { PedestrianHit } from "./pedestrian-rules.ts";
 import { voiceLines, type VoiceLine, type VoiceEvent } from "./voice-lines.generated.ts";
+import type { PlayerVehicleId } from "./player-vehicles.ts";
 
 export { voiceLines, type VoiceLine } from "./voice-lines.generated.ts";
 const byId = new Map(voiceLines.map((line) => [line.id, line]));
@@ -38,6 +39,7 @@ export type SpeechProgress = {
 export type SpeakerPose = { x: number; z: number; moving: boolean };
 type DialogueFrame = {
   clock: number; time: number; x: number; z: number; speed: number; signal: string;
+  vehicle?: PlayerVehicleId;
   poses: readonly SpeakerPose[];
   reactions: ReadonlyMap<number, PedestrianHit>;
 };
@@ -220,6 +222,8 @@ export function createDialogueDirector(
         return;
       }
     }
+    // Riya has no recorded self-talk yet; preserve the neighbours and warnings.
+    if (frame.vehicle === "scooty") return;
     let event: VoiceEvent | null = null;
     if (redSince !== null && !redSpoken && now - redSince >= 8) event = "red_wait";
     else if (leftStand && Math.hypot(frame.x - SPAWN.x, frame.z - SPAWN.z) < 15) event = "stand";

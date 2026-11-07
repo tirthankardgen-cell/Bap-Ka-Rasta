@@ -4,7 +4,7 @@
 
 **Apna sheher. Apni sawaari. Apna rasta.**
 
-A single-player, browser-based 3D driving game inspired by Indian streets. Explore a Mumbai-inspired city in a black-and-yellow auto rickshaw, sharing the roads with traffic, pedestrians, and street vendors.
+A single-player, browser-based 3D driving game inspired by Indian streets. Explore a Mumbai-inspired city in a black-and-yellow auto rickshaw or a turquoise scooty with Riya, a female rider, sharing the roads with traffic, pedestrians, and street vendors.
 
 Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the browser and can be deployed as a static site without accounts, a backend, API keys, or a database.
 
@@ -22,15 +22,16 @@ Built with React, TypeScript, Vite, and Three.js. The game runs entirely in the 
 
 ## Current build
 
-The project is an early playable prototype. Mumbai and the auto rickshaw are available; the remaining city and vehicle galleries show concept previews.
+The project is an early playable prototype. Mumbai, the auto rickshaw and the scooty are available; the remaining city and vehicle galleries show concept previews.
 
 | Content | Playable now | Planned content shown in the galleries |
 | --- | --- | --- |
 | Cities | Mumbai | Delhi, Kolkata, Chennai, Bangalore |
-| Player vehicles | Auto rickshaw | Thar, Fortuner, Scooty, KTM, Toto e-rickshaw |
+| Player vehicles | Auto rickshaw, Scooty | Thar, Fortuner, KTM, Toto e-rickshaw |
 
 The current build includes:
 
+- **Playable scooty:** a turquoise scooter with Riya, a helmeted female rider, automatic acceleration up to 60 km/h, gentle banking, a smaller collision footprint and third-person/rider-eye cameras. It starts directly without the auto's voiced opening; backing up is limited to walking pace.
 - **Connected streets:** 227 road segments, 100 signalized intersections and 38.29 km of road centreline across a 1,488 × 2,400 m city inspired by Colaba, Fort, Worli, Dadar, Bandra and Juhu.
 - **Neighbourhood lanes:** 126 narrow streets with one lane each way, including 91 curved segments distributed across all four map quadrants. Four clockwise roundabouts include the large central Mumbai Chowk, Fort Circle and smaller Dadar/Cuffe Parade garden circles.
 - **Recognisable destinations:** 29 [Blender landmarks, celebrity homes and shops](docs/Mumbai-Landmarks.md), including Taj, Gateway, Antilia, CSMT, Mannat, Galaxy, Jalsa, Mount Mary, Siddhivinayak, World One and World Trade Centre. Detailed façades, terraces, domes and local shop signs use original geometry and masonry textures. Open approaches keep the landmarks visible from the street.
@@ -70,7 +71,7 @@ The development server binds to `0.0.0.0`. To try touch controls on a phone conn
 
 1. Select **Mera Bap Ka Rasta** on the landing page.
 2. Choose **Mumbai**, then select **Yahin Chalao**.
-3. Choose **Auto rickshaw**, then select **Drive Mumbai**.
+3. Choose **Auto rickshaw** or **Scooty**, then select **Drive Mumbai**.
 4. Select **Chal Chala** to start driving and unlock browser audio.
 
 The city and vehicle galleries support arrow buttons, Left/Right arrow keys, swipe gestures, and selection dots. **Escape** returns to the previous screen. Entries marked **Coming soon** cannot start a drive.
@@ -242,7 +243,7 @@ The PDF builder currently uses Segoe UI and Consolas from `C:/Windows/Fonts`. On
 
 ## Known limitations and troubleshooting
 
-- **Prototype scope:** Mumbai and the auto rickshaw are the only playable combination. The other galleries and design documents contain future content.
+- **Prototype scope:** Mumbai is playable with the auto rickshaw or scooty. The other galleries and design documents contain future content.
 - **Map fidelity:** the streets and landmark positions form an independently authored, compressed Mumbai-inspired game layout. Published building heights are identified separately from visual estimates in the catalogue; footprints and routes are not survey data. There is no live map integration.
 - **Device coverage:** automated browser checks use Chromium and simulated touch. Real Android/iOS performance, Safari compatibility, and extended manual playtesting still need validation.
 - **Low frame rate:** enable browser hardware acceleration and switch to **Low graphics** in the pause panel. This reduces rendering resolution and fog distance and disables shadows.

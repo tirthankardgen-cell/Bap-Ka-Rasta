@@ -9,8 +9,9 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import "./vehicle-selection.css";
+import type { PlayerVehicleId } from "../game/player-vehicles";
 
-type Vehicle = {
+export type VehicleOption = {
   name: string;
   subtitle: string;
   description: string;
@@ -18,9 +19,10 @@ type Vehicle = {
   x: number;
   y: number;
   image?: string;
+  playerId?: PlayerVehicleId;
 };
 type Props = {
-  vehicles: Vehicle[];
+  vehicles: VehicleOption[];
   selected: number;
   onSelect: (index: number) => void;
   onBack: () => void;
@@ -46,6 +48,7 @@ export default function VehicleSelection({
   } | null>(null);
   const current = order.indexOf(selected),
     vehicle = vehicles[selected];
+  const available = !!vehicle.playerId;
   const move = (direction: number) =>
     onSelect(order[(current + direction + order.length) % order.length]);
   useEffect(() => {
@@ -205,7 +208,7 @@ export default function VehicleSelection({
                 <span className="ride-preview-label" aria-hidden={offset === 0}>
                   <strong>{item.name}</strong>
                   <small>
-                    {id === 0 ? (
+                    {item.playerId ? (
                       <>
                         <i /> AVAILABLE NOW
                       </>
@@ -237,9 +240,9 @@ export default function VehicleSelection({
       </section>
       <section className="ride-details" aria-label="Selected vehicle">
         <span
-          className={`ride-availability ${selected === 0 ? "available" : ""}`}
+          className={`ride-availability ${available ? "available" : ""}`}
         >
-          {selected === 0 ? (
+          {available ? (
             <>
               <i />
               AVAILABLE NOW
@@ -262,9 +265,9 @@ export default function VehicleSelection({
         <button
           className="ride-confirm"
           onClick={onConfirm}
-          disabled={selected !== 0}
+          disabled={!available}
         >
-          {selected === 0 ? (
+          {available ? (
             <>
               Drive Mumbai <ArrowRight size={23} />
             </>
@@ -298,7 +301,7 @@ export default function VehicleSelection({
         </span>
       </footer>
       <span className="sr-only" aria-live="polite" aria-atomic="true">
-        {vehicle.name}. {selected === 0 ? "Available now." : "Coming soon."}{" "}
+        {vehicle.name}. {available ? "Available now." : "Coming soon."}{" "}
         {current + 1} of {order.length}.
       </span>
     </main>

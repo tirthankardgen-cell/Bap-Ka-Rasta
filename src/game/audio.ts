@@ -161,6 +161,7 @@ export function createStreetAudio(
       nearby: number,
       market: number,
       gear: Gear,
+      automatic = false,
     ) {
       if (!context || !enabled || paused) return;
       const engine = loops.get("engine"),
@@ -168,11 +169,13 @@ export function createStreetAudio(
         crowd = loops.get("market");
       if (engine) {
         engine.source.playbackRate.setTargetAtTime(
-          enginePitch(speed, gear, throttle),
+          automatic
+            ? 1.05 + Math.min(Math.abs(speed) / (60 / 3.6), 1) * 0.65 + (throttle ? 0.12 : 0)
+            : enginePitch(speed, gear, throttle),
           context.currentTime,
           0.25,
         );
-        level("engine", throttle ? 0.8 : 0.5, 0.2);
+        level("engine", automatic ? (throttle ? 0.6 : 0.35) : (throttle ? 0.8 : 0.5), 0.2);
       }
       if (traffic) level("traffic", 0.15 + Math.min(nearby / 12, 1) * 0.22, 0.8);
       if (crowd) level("market", market * 0.3, 0.8);

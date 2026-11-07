@@ -1,6 +1,8 @@
 import { actorPose, actorIdentity, characters, type Actor } from "./characters.ts";
 import { characterLines } from "./dialogue.ts";
 import { geometry, junctions, type Point } from "./network.ts";
+import { PLAYER_VEHICLES, type PlayerVehicleId } from "./player-vehicles.ts";
+import { trafficDimensions } from "./world-scale.ts";
 
 export const SERIOUS_IMPACT_SPEED = 20 / 3.6;
 export type PedestrianHit = {
@@ -27,7 +29,9 @@ export function sweptPersonContact(
   yaw: number,
   p0: Point,
   p1: Point,
+  vehicle: PlayerVehicleId = "auto",
 ) {
+  const body = trafficDimensions(PLAYER_VEHICLES[vehicle].trafficKind);
   const local = (p: Point, v: Point) => {
     const x = p.x - v.x,
       z = p.z - v.z;
@@ -41,7 +45,7 @@ export function sweptPersonContact(
   let enter = 0,
     leave = 1;
   for (let axis = 0; axis < 2; axis++) {
-    const radius = axis === 0 ? 1.15 : 1.7,
+    const radius = axis === 0 ? body.width / 2 + 0.425 : body.length / 2 + 0.325,
       delta = b[axis] - a[axis];
     if (Math.abs(delta) < 1e-8) {
       if (Math.abs(a[axis]) > radius) return false;
@@ -82,7 +86,7 @@ export function createPedestrianRules(actors: Actor[]) {
     reactions,
     collide(
       before: Point,
-      after: Point & { yaw: number },
+      after: Point & { yaw: number; vehicle?: PlayerVehicleId },
       previousTime: number,
       time: number,
       speed: number,
@@ -115,7 +119,7 @@ export function createPedestrianRules(actors: Actor[]) {
           old && time - old.time < 5
             ? old
             : (afterPoses?.[i] ?? actorPose(a, time));
-        if (!sweptPersonContact(before, after, after.yaw, p0, p1)) continue;
+        if (!sweptPersonContact(before, after, after.yaw, p0, p1, after.vehicle)) continue;
         const identity = actorIdentity(a);
         const hit: PedestrianHit = {
           actorId: a.id,

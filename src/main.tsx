@@ -9,7 +9,7 @@ import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/dm-sans/latin-800.css";
 import "./style.css";
 import LandscapeStage from "./LandscapeStage";
-import Selection, { cities } from "./selection/Selection";
+import Selection, { cities, vehicles } from "./selection/Selection";
 
 import GameLoader from "./GameLoader";
 import { mobileFullscreen } from "./fullscreen";
@@ -31,7 +31,7 @@ function App() {
   if (screen === "game")
     return (
       <LandscapeStage>
-        <GameLoader onExit={() => navigate("home")} />
+        <GameLoader vehicle={vehicles[selectedVehicle].playerId!} onExit={() => navigate("home")} />
       </LandscapeStage>
     );
 
@@ -52,7 +52,7 @@ function App() {
             } else if (
               screen === "vehicle" &&
               selectedCity === 0 &&
-              selectedVehicle === 0
+              vehicles[selectedVehicle].playerId
             )
               navigate("game");
           }}

@@ -31,7 +31,7 @@ try {
   const { default: GameGuide } = await server.ssrLoadModule("/src/GameGuide.tsx");
   const guideUrl = "https://rasta.vihar.online/guide.html";
   const title = "Bap Ka Rasta — Game World, Cities, Vehicles and Controls";
-  const description = "Explore Bap Ka Rasta’s playable Mumbai auto rickshaw game, planned cities and vehicles, characters, landmarks, controls, images and audio credits.";
+  const description = "Explore Bap Ka Rasta’s playable Mumbai auto rickshaw and scooty game, planned cities and vehicles, characters, landmarks, controls, images and audio credits.";
   function searchHead(url, pageTitle, pageDescription) {
     let head = html.match(/<head>([\s\S]*?)<\/head>/)[1]
       .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "")

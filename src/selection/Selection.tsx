@@ -9,7 +9,7 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import "./selection.css";
-import VehicleSelection from "./VehicleSelection";
+import VehicleSelection, { type VehicleOption } from "./VehicleSelection";
 export const cities = [
   {
     name: "Mumbai",
@@ -57,9 +57,10 @@ export const cities = [
     y: 539,
   },
 ];
-export const vehicles = [
+export const vehicles: VehicleOption[] = [
   {
     name: "Auto rickshaw",
+    playerId: "auto",
     subtitle: "Galiyon ka asli hero",
     description:
       "Teen pahiye, full Mumbai swag. Khaki mein apna driver aur kaali-peeli auto — meter down, tension down!",
@@ -87,10 +88,11 @@ export const vehicles = [
   },
   {
     name: "Scooty",
+    playerId: "scooty",
     subtitle: "Chhoti sawaari, full azaadi.",
     description:
-      "Halki-phulki ride, poora sheher apna. Apni turquoise scooty raaste mein hai.",
-    detail: "CITY SCOOTER · COMING SOON",
+      "Riya ke saath turquoise scooty pe niklo. Helmet on, poora Mumbai apna — bas accelerator dabao!",
+    detail: "60 KM/H · AUTOMATIC · FEMALE RIDER",
     x: 0,
     y: 512,
   },

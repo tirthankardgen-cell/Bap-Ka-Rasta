@@ -440,16 +440,16 @@ export function roadContains(x: number, z: number, r = 1) {
     return p >= -r && p <= g.length + r && Math.abs(o) <= e.width / 2 - r;
   });
 }
-export function constrainRoad(x: number, z: number) {
-  if (roadContains(x, z)) return { x, z, hit: false };
+export function constrainRoad(x: number, z: number, radius = 1) {
+  if (roadContains(x, z, radius)) return { x, z, hit: false };
   let best = { x: SPAWN.x, z: SPAWN.z, d: Infinity };
   for (const e of streets) {
     const p = project(e.id, x, z),
-      o = Math.max(-e.width / 2 + 1.05, Math.min(e.width / 2 - 1.05, p.offset));
+      o = Math.max(-e.width / 2 + radius + 0.05, Math.min(e.width / 2 - radius - 0.05, p.offset));
     const px = p.x + p.dz * o,
       pz = p.z - p.dx * o,
       d = Math.hypot(px - x, pz - z);
-    if (d < best.d && roadContains(px, pz)) best = { x: px, z: pz, d };
+    if (d < best.d && roadContains(px, pz, radius)) best = { x: px, z: pz, d };
   }
   return { x: best.x, z: best.z, hit: true };
 }

@@ -42,8 +42,13 @@ The references are modelling guides, not image planes or textures on the vehicle
 - There is exactly one scene in each GLB. Studio cameras, lighting and reference
   photographs are excluded. Downloads, cancellation and cleanup are session owned.
 - All thirteen kinds appear in city traffic. Parked taxis use the same Blender
-  library. Only the auto is currently player-selectable; additional vehicle
-  controllers and unlocking remain future gameplay work.
+  library. The auto and scooty are player-selectable; the other rides remain previews.
+- The playable scooty clones this library's scooter and seated body. Riya, its
+  female rider, uses a fitted head and ponytail from the existing Pooja cast mesh
+  with an original open-face helmet. `src/game/scooty-model.ts` assembles these
+  session-owned parts, head-free first-person body, wheel steering and banking
+  without modifying the Blender source or other traffic riders. Its automatic
+  controller reaches 60 km/h and uses the scooter's physical dimensions.
 
 ## Save edits from the open Blender session
 

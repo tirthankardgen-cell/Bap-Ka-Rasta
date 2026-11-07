@@ -45,6 +45,8 @@ Changes are recorded here for contributors and maintainers. Entries under Unrele
 
 ### Added
 
+- Playable turquoise scooty with helmeted female rider Riya, automatic 60 km/h handling, scooter-sized collisions, turning lean, wheel animation, and third-person/rider-eye cameras. Vehicle selection, ready/pause screens and the game guide now support both rides; the scooty starts directly without Sachin's auto dialogue.
+
 - Continuous land-side building frontages in place of road-end warning barriers; open seafront retained.
 - Smooth Fort Circle and gently curved bazaar streets sharing road, traffic and collision geometry; selected side corridors now have one lane each way.
 
