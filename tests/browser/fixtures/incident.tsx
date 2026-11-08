@@ -14,9 +14,11 @@ import {
 import { newDrive } from "../../../src/game/simulation";
 import { createActors, actorPose } from "../../../src/game/characters";
 import IncidentNewspaper from "../../../src/game/IncidentNewspaper";
+import { PLAYER_VEHICLES, type PlayerVehicleId } from "../../../src/game/player-vehicles";
 import LandscapeStage from "../../../src/LandscapeStage";
 import "../../../src/game/game.css";
 function Fixture() {
+  const vehicle: PlayerVehicleId = location.search.includes("scooty") ? "scooty" : "auto";
   const host = useRef<HTMLDivElement>(null),
     engine = useRef<Engine | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -31,7 +33,7 @@ function Fixture() {
       const a = createActors().find((a) => a.cross >= 0)!;
       const time = 35 - (a.cross % 4) * 4;
       const p = actorPose(a, time);
-      const drive = Object.assign(newDrive(), {
+      const drive = Object.assign(newDrive(vehicle), {
         x: p.x,
         z: p.z + 1.8,
         yaw: Math.PI,
@@ -82,6 +84,7 @@ function Fixture() {
         {stats?.incident?.phase === "report" && (
           <IncidentNewspaper
             incident={stats.incident}
+            vehicleName={PLAYER_VEHICLES[vehicle].name}
             onExit={() => location.assign("/")}
           />
         )}

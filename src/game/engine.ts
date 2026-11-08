@@ -190,6 +190,7 @@ export async function createEngine(
       }
       if (event.state === "ended") renderer.domElement.dataset.voiceEnded = event.key;
     },
+    initialDrive.vehicle,
   );
   let incident: IncidentReport | null = null;
   let incidentTime = 0;

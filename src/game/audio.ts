@@ -1,11 +1,13 @@
 import { enginePitch, type Gear } from "./gears.ts";
 import { createVoiceAudio } from "./voice-audio.ts";
 import type { DialogueCue, SpeechProgress } from "./dialogue.ts";
+import type { PlayerVehicleId } from "./player-vehicles.ts";
 // Field-recorded stems, fetched only after the player's sound gesture.
 export function createStreetAudio(
   report: (state: string) => void,
   reportVoice: (state: string, clipId: string) => void = () => {},
   speechProgress: (event: SpeechProgress) => void = () => {},
+  vehicle: PlayerVehicleId = "auto",
 ) {
   let context: AudioContext | null = null,
     enabled = false,
@@ -23,6 +25,7 @@ export function createStreetAudio(
   >();
   const shots = new Set<AudioBufferSourceNode>();
   let hornBuffer: AudioBuffer | null = null,
+    trafficHornBuffer: AudioBuffer | null = null,
     lastHorn = -10,
     syncVersion = 0;
   function level(name: string, value: number, fade: number) {
@@ -77,8 +80,15 @@ export function createStreetAudio(
     report("loading");
     try {
       const clips = await Promise.all(
-        ["engine", "traffic", "market", "horn"].map(async (name) => {
-          const response = await fetch(`/audio/mumbai/${name}.mp3`, {
+        [
+          { name: "engine", file: vehicle === "scooty" ? "scooty-engine" : "engine" },
+          { name: "horn", file: vehicle === "scooty" ? "scooty-horn" : "horn" },
+          { name: "traffic", file: "traffic" },
+          { name: "market", file: "market" },
+          // Nearby traffic keeps its own horn when the player rides a scooter.
+          ...(vehicle === "scooty" ? [{ name: "trafficHorn", file: "horn" }] : []),
+        ].map(async ({ name, file }) => {
+          const response = await fetch(`/audio/mumbai/${file}.mp3`, {
             signal: abort.signal,
           });
           if (!response.ok)
@@ -93,6 +103,11 @@ export function createStreetAudio(
       for (const { name, buffer } of clips) {
         if (name === "horn") {
           hornBuffer = buffer;
+          if (vehicle === "auto") trafficHornBuffer = buffer;
+          continue;
+        }
+        if (name === "trafficHorn") {
+          trafficHornBuffer = buffer;
           continue;
         }
         const source = context!.createBufferSource(),
@@ -205,11 +220,11 @@ export function createStreetAudio(
       source.start();
     },
     trafficHorn(distance: number, pan: number) {
-      if (!context || !hornBuffer || !enabled || paused || disposed) return;
+      if (!context || !trafficHornBuffer || !enabled || paused || disposed) return;
       const source = context.createBufferSource();
       const gain = context.createGain();
       const stereo = context.createStereoPanner();
-      source.buffer = hornBuffer;
+      source.buffer = trafficHornBuffer;
       source.playbackRate.value = 0.85;
       gain.gain.value = 0.55 * Math.max(0, 1 - distance / 24);
       stereo.pan.value = Math.max(-1, Math.min(1, pan));
@@ -223,7 +238,7 @@ export function createStreetAudio(
         gain.disconnect();
         stereo.disconnect();
       };
-      source.start(0, 0, Math.min(0.65, hornBuffer.duration));
+      source.start(0, 0, Math.min(0.65, trafficHornBuffer.duration));
     },
     dispose() {
       if (disposed) return;

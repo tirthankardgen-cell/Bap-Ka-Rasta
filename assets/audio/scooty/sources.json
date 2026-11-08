@@ -1,0 +1,47 @@
+{
+  "checkedOn": "2026-11-08",
+  "recordings": [
+    {
+      "role": "engine",
+      "creator": "lovretta",
+      "soundId": 140384,
+      "source": "https://freesound.org/people/lovretta/sounds/140384/",
+      "preview": "https://cdn.freesound.org/previews/140/140384_581937-hq.mp3",
+      "license": "CC0-1.0",
+      "file": "gilera-runner-idle-140384.mp3",
+      "sourcePageSha256": "67a7c57cffcec176b78e5121f2ca404ca8c5fb1547a386aa127a92c5bb33aa6e",
+      "sha256": "02ec9988e29cf93d3ef2b5a7a8115fec3db03cf67dfb02f4e5d50b5af8dda352",
+      "bytes": 1348520,
+      "runtime": {
+        "file": "public/audio/mumbai/scooty-engine.mp3",
+        "startSeconds": 4.0,
+        "durationSeconds": 3.8,
+        "filters": "highpass=f=70,lowpass=f=6500,loudnorm=I=-22:TP=-2:LRA=7",
+        "encoding": "mono 44.1 kHz, 128 kbps MP3",
+        "sha256": "0db4dec585c820dbb9be567dea5d0a6da1ba346ce8868dcdc25de08ca641ba88",
+        "bytes": 61902
+      }
+    },
+    {
+      "role": "horn",
+      "creator": "extrafonia",
+      "soundId": 198612,
+      "source": "https://freesound.org/people/extrafonia/sounds/198612/",
+      "preview": "https://cdn.freesound.org/previews/198/198612_948861-hq.mp3",
+      "license": "CC-BY-4.0",
+      "file": "moped-horn-198612.mp3",
+      "sourcePageSha256": "1f9f19d6d384dc017c3e80480223e50cb66bcf61461bfa42a55ca8ba6f5c81eb",
+      "sha256": "d376877d2f89113df16a7f728651f83d95bf71e535643f1ca404da220d9981fc",
+      "bytes": 176745,
+      "runtime": {
+        "file": "public/audio/mumbai/scooty-horn.mp3",
+        "startSeconds": 0.04,
+        "durationSeconds": 0.44,
+        "filters": "highpass=f=250,lowpass=f=4500,loudnorm=I=-18:TP=-2:LRA=7,afade=t=in:d=0.01,afade=t=out:st=0.41:d=0.03",
+        "encoding": "mono 44.1 kHz, 128 kbps MP3",
+        "sha256": "2a6b6127a246cead17cc2b6732c3d49f2ffedb65d30a16083457be5485f02a6d",
+        "bytes": 7985
+      }
+    }
+  ]
+}

@@ -356,7 +356,7 @@ export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void;
           </>
         )}
         {stats.incident?.phase === "report" && !error && (
-          <IncidentNewspaper incident={stats.incident} vehicleName={ride.shortName.toLowerCase()} onExit={incidentExit} leaving={leaving} />
+          <IncidentNewspaper incident={stats.incident} vehicleName={ride.name} onExit={incidentExit} leaving={leaving} />
         )}
         {(status !== "driving" || error) && (
           <div className="game-overlay">

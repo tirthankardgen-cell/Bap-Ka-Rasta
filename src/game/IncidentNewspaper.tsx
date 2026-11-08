@@ -6,7 +6,7 @@ export default function IncidentNewspaper({
   incident,
   onExit,
   leaving = false,
-  vehicleName = "auto",
+  vehicleName = "Auto rickshaw",
 }: {
   incident: IncidentReport;
   onExit: () => void;
@@ -57,13 +57,13 @@ export default function IncidentNewspaper({
             </figure>
             <div className="paper-copy" id="incident-summary">
               <p>
-                <strong>MUMBAI, {incident.street.toUpperCase()}:</strong> Auto
-                rickshaw ki takkar mein {incident.name} ({incident.role}) ki
+                <strong>MUMBAI, {incident.street.toUpperCase()}:</strong> {vehicleName}
+                {" "}ki takkar mein {incident.name} ({incident.role}) ki
                 maut ho gayi. Haadsa sheher ki rozmarra ki aawajaahi ke beech
                 hua.
               </p>
               <p>
-                Ghatna ke waqt {vehicleName} ki raftaar lagbhag{" "}
+                Ghatna ke waqt {vehicleName.toLowerCase()} ki raftaar lagbhag{" "}
                 {Math.round(incident.speed)} km/h thi. Takkar lagne ke baad{" "}
                 {incident.name} sadak par gir pade aur unki jaan chali gayi.
                 Ghatnasthal ki tasveer is haadse ka manzar bayaan karti hai.
