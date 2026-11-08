@@ -91,7 +91,7 @@ export const vehicles: VehicleOption[] = [
     playerId: "scooty",
     subtitle: "Chhoti sawaari, full azaadi.",
     description:
-      "Riya ke saath turquoise scooty pe niklo. Helmet on, poora Mumbai apna — bas accelerator dabao!",
+      "Turquoise scooty ka ulta scene: left se right, right se left. Brake pe aage uthkar dono pair zameen par!",
     detail: "60 KM/H · AUTOMATIC · FEMALE RIDER",
     x: 0,
     y: 512,

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { TrafficModels } from "./traffic-models.ts";
 import type { CharacterModels } from "./character-models.ts";
+import { riderBrakePose } from "./scooty-braking.ts";
 
 /** Riya's face uses the authored female cast, fitted to the scooter's seated rider. */
 function riderHead(models: CharacterModels) {
@@ -80,6 +81,7 @@ export function createPlayerScooty(traffic: TrafficModels, characters: Character
   firstPersonBody.name = "Riya | vehicle-anchored first-person body";
   firstPersonBody.visible = false;
   const riders: THREE.Mesh[] = [];
+  const posedRiders: THREE.Mesh[] = [];
   const wheels: THREE.Object3D[] = [];
   model.traverse((object) => {
     if (Number.isFinite(object.userData.wheelRadius)) wheels.push(object);
@@ -96,6 +98,8 @@ export function createPlayerScooty(traffic: TrafficModels, characters: Character
       continue;
     }
     rider.userData.driver = true;
+    rider.geometry = rider.geometry.clone();
+    posedRiders.push(rider);
     const body = rider.clone();
     body.userData.driver = false;
     body.name = `Riya first-person | ${rider.name}`;
@@ -110,8 +114,12 @@ export function createPlayerScooty(traffic: TrafficModels, characters: Character
     geometry.setIndex(indices);
     body.geometry = geometry;
     firstPersonBody.add(body);
+    posedRiders.push(body);
   }
-  model.add(riderHead(characters), firstPersonBody);
+  const head = riderHead(characters);
+  head.traverse((o) => { if (o instanceof THREE.Mesh) posedRiders.push(o); });
+  model.add(head, firstPersonBody);
+  const updateBrakePose = riderBrakePose(posedRiders);
 
   // Keep front-wheel yaw separate from the rolling axle.
   const front = wheels.reduce((a, b) => a.position.z > b.position.z ? a : b);
@@ -135,10 +143,11 @@ export function createPlayerScooty(traffic: TrafficModels, characters: Character
   }
   setSpeed(0);
   return {
-    root, wheels, steering, setSpeed, firstPersonBody, lean,
-    updateLean(angle: number, speed: number, dt: number, reducedMotion: boolean) {
+    root, wheels, steering, setSpeed, firstPersonBody, lean, updateBrakePose,
+    updateLean(angle: number, speed: number, dt: number, reducedMotion: boolean, footBrake = 0) {
       const bank = reducedMotion ? 0 : -THREE.MathUtils.clamp(speed * speed / 1.26 * Math.tan(angle) / 9.81, -0.28, 0.28);
-      lean.rotation.z += (bank - lean.rotation.z) * (1 - Math.exp(-9 * dt));
+      lean.rotation.z = footBrake === 1 ? 0
+        : (lean.rotation.z + (bank - lean.rotation.z) * (1 - Math.exp(-9 * dt))) * (1 - footBrake);
     },
   };
 }

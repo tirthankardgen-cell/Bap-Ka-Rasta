@@ -31,7 +31,7 @@ The project is an early playable prototype. Mumbai, the auto rickshaw and the sc
 
 The current build includes:
 
-- **Playable scooty:** a turquoise scooter with Riya, a helmeted female rider, automatic acceleration up to 60 km/h, gentle banking, a smaller collision footprint and third-person/rider-eye cameras. It starts directly without the auto's voiced opening; backing up is limited to walking pace.
+- **Playable scooty:** a turquoise scooter with Riya, a helmeted rider, automatic acceleration up to 60 km/h, reversed steering, gentle banking, a smaller collision footprint and third-person/rider-eye cameras. Braking moves the rider forward toward the handlebars, rises from the seat and plants both feet on the road before slowing. These comedy mechanics belong to the scooty, regardless of rider gender. It starts directly without the auto's voiced opening; backing up is limited to walking pace.
 - **Connected streets:** 227 road segments, 100 signalized intersections and 38.29 km of road centreline across a 1,488 × 2,400 m city inspired by Colaba, Fort, Worli, Dadar, Bandra and Juhu.
 - **Neighbourhood lanes:** 126 narrow streets with one lane each way, including 91 curved segments distributed across all four map quadrants. Four clockwise roundabouts include the large central Mumbai Chowk, Fort Circle and smaller Dadar/Cuffe Parade garden circles.
 - **Recognisable destinations:** 29 [Blender landmarks, celebrity homes and shops](docs/Mumbai-Landmarks.md), including Taj, Gateway, Antilia, CSMT, Mannat, Galaxy, Jalsa, Mount Mary, Siddhivinayak, World One and World Trade Centre. Detailed façades, terraces, domes and local shop signs use original geometry and masonry textures. Open approaches keep the landmarks visible from the street.
@@ -92,6 +92,8 @@ The city and vehicle galleries support arrow buttons, Left/Right arrow keys, swi
 | Sound on / off | Select the sound button | Speaker button or pause-panel sound toggle |
 
 Keep holding brake after stopping to reverse; reverse engages after a short delay. Steering and acceleration can be held together. Switching tabs or losing focus pauses the game and clears held inputs; resume explicitly when returning.
+
+**Scooty controls:** left input turns right and right input turns left, on keyboard and touch. `S` / `ArrowDown` or the **Pair brake** pedal moves the rider forward, rises from the seat and lowers both feet to the road. Foot braking begins once the soles touch down, after a 0.24-second transition; release to sit back and lift the feet. `Space` uses the same foot brake without reversing. Reduced motion shows the planted pose immediately. The auto keeps its normal steering and brakes.
 
 The pause panel also lets you change graphics quality and end the drive. **Aaj ka ho gaya** and **Ghar chalo** return to the landing page.
 

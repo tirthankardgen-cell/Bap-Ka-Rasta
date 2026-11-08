@@ -10,6 +10,7 @@ export const PLAYER_VEHICLES = {
     driverGender: "male",
     trafficKind: 4,
     automatic: false,
+    reversedSteering: false,
     maxSpeed: 65,
     wheelbase: 1.8,
     clearance: 1,
@@ -31,6 +32,7 @@ export const PLAYER_VEHICLES = {
     driverGender: "female",
     trafficKind: 5,
     automatic: true,
+    reversedSteering: true,
     maxSpeed: 60,
     wheelbase: 1.26,
     clearance: 0.55,
@@ -45,6 +47,10 @@ export const PLAYER_VEHICLES = {
     lookAhead: 5,
   },
 } as const;
+
+/** The scooty's arcade brake first moves the rider forward, then plants both feet. */
+export const SCOOTY_FOOT_LOWER_TIME = 0.24;
+export const SCOOTY_FOOT_RAISE_TIME = 0.18;
 
 /** CVT scooter: full speed is available without selecting the auto's gears. */
 export function scootySpeed(speed: number, throttle: boolean, dt: number) {

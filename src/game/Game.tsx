@@ -35,6 +35,7 @@ const initial: Stats = {
   cameraMode: "third-person",
   audioStatus: "idle",
   speed: 0,
+  footBrake: 0,
   distance: 0,
   topSpeed: 0,
   street: "Marine Drive",
@@ -184,7 +185,7 @@ export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void;
               left: "Baayein",
               right: "Daayein",
               throttle: "Chalao",
-              brake: "Ruko / reverse",
+              brake: ride.reversedSteering ? "Pair brake" : "Ruko / reverse",
               handbrake: "Brake",
             }[action]
           }
@@ -203,6 +204,8 @@ export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void;
         data-stage={stats.introStage}
         data-distance={stats.distance.toFixed(2)}
         data-speed={stats.speed.toFixed(2)}
+        data-foot-brake={stats.footBrake.toFixed(2)}
+        data-yaw={stats.yaw.toFixed(3)}
         data-gear={stats.gear}
         data-position={`${stats.x.toFixed(2)},${stats.z.toFixed(2)}`}
       >
@@ -304,12 +307,12 @@ export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void;
             </div>
             <div className="keyboard-hint">
               WASD / ARROWS <i>·</i> H HORN <i>·</i> R RESET <i>·</i> ESC PAUSE{" "}
-              <i>·</i> C CAMERA <i>·</i> {ride.automatic ? "AUTOMATIC SCOOTY" : "1–4 GEARS"}
+              <i>·</i> C CAMERA <i>·</i> {ride.reversedSteering ? "SCOOTY: LEFT ↔ RIGHT · FOOT BRAKE" : "1–4 GEARS"}
             </div>
             <div className="drive-buttons">
               <div className="steering">
-                {pedal("left", "Steer left", <ArrowLeft />)}
-                {pedal("right", "Steer right", <ArrowRight />)}
+                {pedal("left", ride.reversedSteering ? "Left input, steer right" : "Steer left", <ArrowLeft />)}
+                {pedal("right", ride.reversedSteering ? "Right input, steer left" : "Steer right", <ArrowRight />)}
               </div>
               <div className="drive-centre">
                 {!ride.automatic && <div
@@ -346,7 +349,7 @@ export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void;
                 </div>
               </div>
               <div className="pedals">
-                {pedal("brake", "Brake / reverse", <ArrowDown />)}
+                {pedal("brake", ride.reversedSteering ? "Foot brake / reverse" : "Brake / reverse", <ArrowDown />)}
                 {pedal("throttle", "Accelerate", <ArrowUp />)}
               </div>
             </div>
@@ -391,7 +394,7 @@ export default function Game({ onExit, vehicle = "auto" }: { onExit: () => void;
                     <em>{ride.automatic ? "Poori azaadi." : "Tension down."}</em>
                   </h1>
                   <p>{ride.automatic
-                    ? "Riya ke saath scooty pe niklo. Helmet on, automatic ride — bas accelerator dabao aur Mumbai ghoomo."
+                    ? "Scooty ka ulta scene: left dabao, right jaao; right dabao, left jaao. Brake pe aage uthkar dono pair zameen par — phir ruko!"
                     : "Auto mein baitho. Mumbai apne andaaz mein ghoomo."}</p>
                   <button
                     className="game-primary"

@@ -1,5 +1,5 @@
 import { gearedSpeed, type Gear } from "./gears.ts";
-import { PLAYER_VEHICLES, scootySpeed, type PlayerVehicleId } from "./player-vehicles.ts";
+import { PLAYER_VEHICLES, scootySpeed, SCOOTY_FOOT_LOWER_TIME, SCOOTY_FOOT_RAISE_TIME, type PlayerVehicleId } from "./player-vehicles.ts";
 import { trafficDimensions, vehicleContact, TRAFFIC_KIND_COUNT } from "./world-scale.ts";
 import {
   streets,
@@ -64,6 +64,7 @@ export type Drive = {
   yaw: number;
   speed: number;
   steer: number;
+  footBrake: number;
   distance: number;
   topSpeed: number;
   reverseWait: number;
@@ -81,6 +82,7 @@ export function newDrive(vehicle: PlayerVehicleId = "auto"): Drive {
     gear: 1,
     speed: 0,
     steer: 0,
+    footBrake: 0,
     distance: 0,
     topSpeed: 0,
     reverseWait: 0,
@@ -293,6 +295,7 @@ export function resetDrive(s: Drive, traffic: Traffic[]) {
       yaw: p.yaw,
       speed: 0,
       steer: 0,
+      footBrake: 0,
       reverseWait: 0,
       cooldown: 1,
       impact: 0,
@@ -307,7 +310,18 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
   s.impact = Math.max(0, s.impact - dt);
   const oldX = s.x,
     oldZ = s.z;
-  if (input.brake) {
+  const footBraking = s.vehicle === "scooty" && (input.brake || input.handbrake);
+  s.footBrake = s.vehicle !== "scooty" ? 0 : footBraking
+    ? Math.min(1, s.footBrake + dt / SCOOTY_FOOT_LOWER_TIME)
+    : Math.max(0, s.footBrake - dt / SCOOTY_FOOT_RAISE_TIME);
+  if (footBraking && s.footBrake < 1) {
+    // Brake input wins over throttle while the rider reaches for the road.
+    s.reverseWait = 0;
+  } else if (footBraking && input.handbrake) {
+    // Space plants the feet and stops in either direction, without reversing.
+    s.speed = s.speed < 0 ? Math.min(0, s.speed + 9 * dt) : Math.max(0, s.speed - 9 * dt);
+    s.reverseWait = 0;
+  } else if (input.brake) {
     if (s.speed > 0.12) {
       s.speed = Math.max(0, s.speed - 9 * dt);
       s.reverseWait = 0;
@@ -323,8 +337,8 @@ export function step(s: Drive, input: Input, traffic: Traffic[], dt = STEP) {
       ? scootySpeed(s.speed, input.throttle, dt)
       : gearedSpeed(s.speed, s.gear, input.throttle, dt);
   }
-  if (input.handbrake) s.speed *= Math.exp(-3 * dt);
-  const targetSteer = Number(input.left) - Number(input.right);
+  if (input.handbrake && s.vehicle !== "scooty") s.speed *= Math.exp(-3 * dt);
+  const targetSteer = (Number(input.left) - Number(input.right)) * (vehicle.reversedSteering ? -1 : 1);
   s.steer += (targetSteer - s.steer) * (1 - Math.exp(-8 * dt));
   const steeringAngle = steeringAngleFor(s.steer, s.speed, s.vehicle);
   s.yaw += (s.speed / vehicle.wheelbase) * Math.tan(steeringAngle) * dt;

@@ -47,6 +47,7 @@ export type Stats = {
   cameraMode: CameraMode;
   audioStatus: string;
   speed: number;
+  footBrake: number;
   distance: number;
   topSpeed: number;
   street: string;
@@ -236,6 +237,7 @@ export async function createEngine(
       cameraMode,
       audioStatus,
       speed: state.speed * 3.6,
+      footBrake: state.footBrake,
       distance: state.distance,
       topSpeed: state.topSpeed,
       street: introActive ? "Apna auto stand" : state.street,
@@ -262,7 +264,10 @@ export async function createEngine(
     const distance = outside ? vehicle.chaseDistance + (portrait ? 1.5 : 0) : -vehicle.eyeForward;
     const lateral = outside ? vehicle.chaseOffset : 0;
     const height = outside ? vehicle.chaseHeight + (portrait ? 1.4 : 0) : vehicle.eyeHeight;
-    if (snap && scooty) scooty.lean.rotation.z = 0;
+    if (snap && scooty) {
+      scooty.lean.rotation.z = 0;
+      scooty.updateBrakePose(state.footBrake, reducedMotion);
+    }
     camera.near = outside ? 0.1 : 0.04;
     camera.fov = outside ? 55 : vehicle.driverFov;
     camera.updateProjectionMatrix();
@@ -672,7 +677,9 @@ export async function createEngine(
       place(false, dt);
       const steeringAngle = steeringAngleFor(state.steer, state.speed, state.vehicle);
       player.steering.rotation.y = steeringAngle;
-      scooty?.updateLean(steeringAngle, state.speed, dt, reducedMotion);
+      // Planted feet keep the scooty upright, with their soles on the road.
+      scooty?.updateLean(steeringAngle, state.speed, dt, reducedMotion, state.footBrake);
+      scooty?.updateBrakePose(state.footBrake, reducedMotion);
       const honking = trafficHorn(traffic, state, state.time);
       if (honking) {
         const x = honking.x - state.x,
